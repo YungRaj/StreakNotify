@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		A51D6E8B1C80D653007FD54D /* StreakNotifyListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StreakNotifyListController.h; sourceTree = "<group>"; };
 		A5C874331C7F7D5300F20B40 /* entry.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = entry.plist; sourceTree = "<group>"; };
 		A5C874341C7F7D5300F20B40 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A5C874351C7F7D5300F20B40 /* obj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = obj; sourceTree = "<group>"; };
 		A5C874361C7F7D5300F20B40 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
-		A5C874371C7F7D5300F20B40 /* SN_Prefs.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SN_Prefs.mm; sourceTree = "<group>"; };
+		A5C874371C7F7D5300F20B40 /* StreakNotifyListController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = StreakNotifyListController.mm; sourceTree = "<group>"; };
 		A5C874381C7F7D5300F20B40 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -23,7 +24,8 @@
 				A5C874341C7F7D5300F20B40 /* Makefile */,
 				A5C874351C7F7D5300F20B40 /* obj */,
 				A5C874361C7F7D5300F20B40 /* Resources */,
-				A5C874371C7F7D5300F20B40 /* SN_Prefs.mm */,
+				A5C874371C7F7D5300F20B40 /* StreakNotifyListController.mm */,
+				A51D6E8B1C80D653007FD54D /* StreakNotifyListController.h */,
 				A5C874381C7F7D5300F20B40 /* theos */,
 			);
 			sourceTree = "<group>";
