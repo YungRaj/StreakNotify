@@ -77,7 +77,7 @@ the generation of a class list and an automatic constructor.
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,
                                     (CFNotificationCallback)LoadPreferences,
-                                    CFSTR("NoahDevSearchDeletePreferencesChangedNotification"),
+                                    CFSTR("YungRajStreakNotifyDeletePreferencesChangedNotification"),
                                     NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     LoadPreferences();
