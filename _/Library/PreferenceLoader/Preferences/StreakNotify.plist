@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = SN_Prefs;
+	cell = PSLinkCell;
+	detail = SN_PrefsListController;
+	icon = SN_Prefs.png;
+	isController = 1;
+	label = SN_Prefs;
+    };
+}

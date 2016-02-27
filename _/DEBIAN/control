@@ -1,0 +1,10 @@
+Package: com.YungRaj.streaknotify
+Name: StreakNotify
+Depends: mobilesubstrate
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Ilhan Raja
+Author: Ilhan Raja
+Section: Tweaks
+Version: 0.0.1-1
+Installed-Size: 28
