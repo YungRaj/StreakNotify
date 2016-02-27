@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
+// not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables will be used 
 
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
