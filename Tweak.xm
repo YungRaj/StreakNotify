@@ -5,6 +5,8 @@
 #import <objc/runtime.h>
 #import <substrate.h>
 
+#import "Interfaces.h"
+
 #define kiOS7 (kCFCoreFoundationVersionNumber >= 847.20 && kCFCoreFoundationVersionNumber <= 847.27)
 #define kiOS8 (kCFCoreFoundationVersionNumber >= 1140.10 && kCFCoreFoundationVersionNumber >= 1145.15)
 #define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
