@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9F19FBD9-EA16-42D8-BAA7-BADEE29510A5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3" : "StreakNotify\/",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : "..\/..\/..\/..\/..\/opt\/theos"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "StreakNotify",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "StreakNotify.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/github.com\/ilhanraja\/StreakNotify",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/DHowett\/theos.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580"
+    }
+  ]
+}

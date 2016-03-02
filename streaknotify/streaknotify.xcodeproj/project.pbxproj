@@ -1,0 +1,148 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		A5D223201C856858002B8AA1 /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = file; path = .DS_Store; sourceTree = "<group>"; };
+		A5D223211C856858002B8AA1 /* entry.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = entry.plist; sourceTree = "<group>"; };
+		A5D223221C856858002B8AA1 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		A5D223231C856858002B8AA1 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		A5D223251C856858002B8AA1 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
+		A5D2232D1C856889002B8AA1 /* StreakNotifyListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreakNotifyListController.h; sourceTree = "<group>"; };
+		A5D2232E1C856889002B8AA1 /* StreakNotifyListController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StreakNotifyListController.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A5D2231A1C856858002B8AA1 = {
+			isa = PBXGroup;
+			children = (
+				A5D223201C856858002B8AA1 /* .DS_Store */,
+				A5D223211C856858002B8AA1 /* entry.plist */,
+				A5D223221C856858002B8AA1 /* Makefile */,
+				A5D2232D1C856889002B8AA1 /* StreakNotifyListController.h */,
+				A5D2232E1C856889002B8AA1 /* StreakNotifyListController.mm */,
+				A5D223231C856858002B8AA1 /* Resources */,
+				A5D223251C856858002B8AA1 /* theos */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		A5D2231F1C856858002B8AA1 /* streaknotify */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = A5D223261C856858002B8AA1 /* Build configuration list for PBXLegacyTarget "streaknotify" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/ilhan/Downloads/Files/GitHub/StreakNotify/streaknotify;
+			dependencies = (
+			);
+			name = streaknotify;
+			passBuildSettingsInEnvironment = 1;
+			productName = streaknotify;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		A5D2231B1C856858002B8AA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = A5D2231E1C856858002B8AA1 /* Build configuration list for PBXProject "streaknotify" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A5D2231A1C856858002B8AA1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A5D2231F1C856858002B8AA1 /* streaknotify */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		A5D2231C1C856858002B8AA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		A5D2231D1C856858002B8AA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		A5D223271C856858002B8AA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = streaknotify;
+			};
+			name = Debug;
+		};
+		A5D223281C856858002B8AA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = streaknotify;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A5D2231E1C856858002B8AA1 /* Build configuration list for PBXProject "streaknotify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5D2231C1C856858002B8AA1 /* Debug */,
+				A5D2231D1C856858002B8AA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A5D223261C856858002B8AA1 /* Build configuration list for PBXLegacyTarget "streaknotify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5D223271C856858002B8AA1 /* Debug */,
+				A5D223281C856858002B8AA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A5D2231B1C856858002B8AA1 /* Project object */;
+}
