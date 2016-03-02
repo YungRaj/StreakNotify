@@ -55,9 +55,41 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 
 
 
-/*static NSString* GetTimeRemaining(Friend *f, SCChat *c){
-    return nil;
-}*/
+static NSString* GetTimeRemaining(Friend *f, SCChat *c){
+    NSDate *date = [NSDate date];
+    NSArray *snapsToView = [c snapsToView];
+    NSDate *latestSnapDate = [[NSDate alloc] initWithTimeIntervalSince1970:0];
+    for(Snap *snap in snapsToView){
+        latestSnapDate = [latestSnapDate laterDate:snap.timestamp];
+    }
+    int daysToAdd = 1;
+    NSDate *latestSnapDateDayAfter = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
+    NSCalendar *gregorianCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSUInteger unitFlags = NSSecondCalendarUnit | NSMinuteCalendarUnit |NSHourCalendarUnit | NSDayCalendarUnit;
+    NSDateComponents *components = [gregorianCal components:unitFlags
+                                                fromDate:date
+                                                  toDate:latestSnapDateDayAfter
+                                                 options:0];
+    NSInteger day = [components day];
+    NSInteger hour = [components hour];
+    NSInteger minute = [components minute];
+    NSInteger second = [components second];
+    
+    if(day){
+        return @"Limited";
+    }else if(hour){
+        return [NSString stringWithFormat:@"%ld hr",(long)hour];
+    }else if(minute){
+        return [NSString stringWithFormat:@"%ld m",(long)minute];
+    }else if(second){
+        return [NSString stringWithFormat:@"%ld s",(long)second];
+    }else{
+        return @"Unknown";
+    }
+    
+                                   
+    
+}
 
 %group iOS9
 
@@ -94,7 +126,7 @@ static NSMutableArray *labels;
                                      size.width/4,
                                      size.height/4);
             UILabel *label = [[UILabel alloc] initWithFrame:rect];
-            label.text = @"Time remaining: 1hr";
+            label.text = [NSString stringWithFormat:@"Time remaining: %@",GetTimeRemaining(f,chat)];
             [instances addObject:self];
             [labels addObject:labels];
             
