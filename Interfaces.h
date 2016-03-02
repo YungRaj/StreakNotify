@@ -5,7 +5,71 @@
 #import <objc/runtime.h>
 
 
-// not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables will be used 
+// not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables will be used
+
+@class NSDate, NSMutableArray, NSString, SCChat;
+@protocol SCFeedItemDelegate, SCFilterableProtocol;
+
+@interface SCChatViewModelForFeed : NSObject
+{
+    NSDate *_currentDisplayMessageGeneratedTimestamp;
+    id  _currentDisplayingMessage;
+    id  _feedDisplayedMessageDelegate;
+    SCChat *_chat;
+    NSMutableArray *_messagesToDisplayInFeed;
+    unsigned long long _nextMessageToDisplayIndex;
+    double _timeUntilCurrentFeedIconExpires;
+    long long _currentPriority;
+}
+
+@property(nonatomic) long long currentPriority;
+@property(nonatomic) double timeUntilCurrentFeedIconExpires;
+@property(nonatomic) unsigned long long nextMessageToDisplayIndex;
+@property(retain, nonatomic) NSMutableArray *messagesToDisplayInFeed;
+@property(retain, nonatomic) SCChat *chat;
+@property(weak, nonatomic) __weak id feedDisplayedMessageDelegate;
+@property(retain, nonatomic) id currentDisplayingMessage;
+- (_Bool)shouldShowPendingChatInfo;
+- (long long)compareMessagesTimestamp:(id)arg1 message2:(id)arg2;
+- (_Bool)matches:(id)arg1;
+- (_Bool)shouldDisableMiniProfile;
+- (_Bool)shouldDisableFeedSwiping;
+- (long long)compareTo:(id)arg1;
+- (_Bool)shouldShowReplyLabelBriefly;
+- (id)username;
+- (id)snapToDisplay;
+- (void)resetFeedItem;
+- (_Bool)isExpired;
+- (void)refreshData;
+- (void)resetNextVC:(id)arg1;
+- (void)prepareNextVC:(id)arg1;
+- (_Bool)shouldBounceCellByDefault;
+- (unsigned long long)displayedLeftTime;
+- (_Bool)shouldShowIconWithTime;
+- (id)showedSubLabelCompletionHandler;
+- (double)timeUntilDisplayedMessageExpires;
+- (id)friendForFeedItem;
+- (_Bool)shouldHighlightBackgroundIcon;
+- (id)iconForBackgroundHighlightedImageName;
+- (id)iconForBackgroundImageName;
+- (_Bool)shouldShowActivityIndicator;
+- (_Bool)shouldShowSubLabelWithoutAppendingDate;
+- (_Bool)shouldHideSubLabel;
+- (id)feedIconImageName;
+- (id)timestamp;
+- (id)subLabelText;
+- (id)mainLabelFontKey;
+- (id)mainLabelText;
+- (void)updateMostRecentMessagesToDisplayWithLastMessages;
+- (void)clearAllAttributes;
+- (void)addOrReplaceNewReceivedMessages:(id)arg1 newMessage:(id)arg2;
+- (void)updateMessagesToDisplay;
+- (void)updateWithChat:(id)arg1;
+- (id)initWithSCChat:(id)arg1;
+@end
+
+
+
 @protocol SCMediaOwnerProtocol, SCUserProtocol;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
@@ -19,7 +83,7 @@
     _Bool _isScrolling;
     _Bool _deceleratingToZero;
     id _delegate;
-    id _feedItem;
+    SCChatViewModelForFeed *_feedItem;
     UIScrollView *_scrollView;
     UIView *_containerView;
     UIImageView *_feedIconView;
@@ -119,7 +183,6 @@
 - (id)initWithFriend:(id)arg1 andLineHeight:(unsigned long long)arg2 andViewType:(long long)arg3;
 
 @end
-
 
 
 

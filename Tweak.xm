@@ -11,6 +11,7 @@
 #define kiOS8 (kCFCoreFoundationVersionNumber >= 1140.10 && kCFCoreFoundationVersionNumber >= 1145.15)
 #define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
 
+#pragma mark App freezes when retrieving data 
 
 static NSDictionary* prefs = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
@@ -62,21 +63,45 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 
 %hook SCFeedTableViewCell
 
+static NSMutableArray *instances;
+static NSMutableArray *labels;
+
 
 -(void)layoutSubviews{
     
     %orig();
+    if(!instances && !labels){
+        instances = [[NSMutableArray alloc] init];
+        labels = [[NSMutableArray alloc] init];
+    }
     
-    CGSize size = self.frame.size;
-    CGRect rect = CGRectMake(size.width*.6,
-                             size.height/8,
-                             size.width/4,
-                             size.height/4);
-    UILabel *label = [[UILabel alloc] initWithFrame:rect];
-    label.text = @"Time remaining: 1hr";
-    SizeLabelToRect(label,rect);
-    [self.containerView addSubview:label];
-    
+    if(![instances containsObject:self]){
+        User *user = [%c(User) createUser];
+        Friends *friends = [user friends];
+        
+        SCChatViewModelForFeed *feedItem = self.feedItem;
+        
+        SCChat *chat = [feedItem chat];
+        NSString *recipient = [chat recipient];
+        
+        Friend *f = [friends friendForName:recipient];
+        
+        
+        if([f snapStreakCount] && [chat hasUnviewedSnaps]){
+            CGSize size = self.frame.size;
+            CGRect rect = CGRectMake(size.width*.55,
+                                     size.height/8,
+                                     size.width/4,
+                                     size.height/4);
+            UILabel *label = [[UILabel alloc] initWithFrame:rect];
+            label.text = @"Time remaining: 1hr";
+            [instances addObject:self];
+            [labels addObject:labels];
+            
+            SizeLabelToRect(label,rect);
+            [self.containerView addSubview:label];
+        }
+    }
     
 }
 
