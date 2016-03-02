@@ -11,17 +11,16 @@
 #define kiOS8 (kCFCoreFoundationVersionNumber >= 1140.10 && kCFCoreFoundationVersionNumber >= 1145.15)
 #define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
 
-#pragma mark App freezes when retrieving data 
 
 static NSDictionary* prefs = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 static void LoadPreferences() {
-    if (CFPreferencesAppSynchronize(applicationID)) { //sharedRoutine - MSGAutoSave8
+    if (CFPreferencesAppSynchronize(applicationID)) {
         CFArrayRef keyList = CFPreferencesCopyKeyList(applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) ?: CFArrayCreate(NULL, NULL, 0, NULL);
         if (access("/var/mobile/Library/Preferences/com.YungRaj.streaknotify", F_OK) != -1) {
             prefs = (__bridge NSDictionary *)CFPreferencesCopyMultiple(keyList, applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-        } else { //register defaults for first launch
+        } else {
             
         }
         
@@ -30,7 +29,6 @@ static void LoadPreferences() {
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
-    label.frame = labelRect;
     int fontSize = 15;
     int minFontSize = 3;
     
@@ -56,12 +54,14 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
-    NSDate *date = [NSDate date];
-    NSArray *snapsToView = [c snapsToView];
-    NSDate *latestSnapDate = [[NSDate alloc] initWithTimeIntervalSince1970:0];
-    for(Snap *snap in snapsToView){
-        latestSnapDate = [latestSnapDate laterDate:snap.timestamp];
+    if(!f || !c){
+        return @"";
     }
+    
+    NSDate *date = [NSDate date];
+    Snap *lastSnap = [c lastSnap];
+    
+    NSDate *latestSnapDate = [lastSnap timestamp];
     int daysToAdd = 1;
     NSDate *latestSnapDateDayAfter = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
     NSCalendar *gregorianCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -95,46 +95,78 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 %hook SCFeedTableViewCell
 
-static NSMutableArray *instances;
-static NSMutableArray *labels;
+static NSMutableArray *instances = nil;
+static NSMutableArray *labels = nil;
 
 
 -(void)layoutSubviews{
-    
     %orig();
-    if(!instances && !labels){
+    
+    if(!instances){
         instances = [[NSMutableArray alloc] init];
+    } if(!labels){
         labels = [[NSMutableArray alloc] init];
     }
     
+    User *user = [%c(User) createUser];
+    Friends *friends = [user friends];
+    
+    SCChatViewModelForFeed *feedItem = self.feedItem;
+    SCChat *chat = [feedItem chat];
+    
+    NSString *recipient = [chat recipient];
+        
+    Friend *f = [friends friendForName:recipient];
+    
+    NSString *lastSnapSender = [[chat lastSnap] sender];
+    
+    NSString *friendName = [f name];
+    
     if(![instances containsObject:self]){
-        User *user = [%c(User) createUser];
-        Friends *friends = [user friends];
         
-        SCChatViewModelForFeed *feedItem = self.feedItem;
+        CGSize size = self.frame.size;
+        CGRect rect = CGRectMake(size.width*.55,
+                                 size.height/8,
+                                 size.width/4,
+                                 size.height/4);
+        UILabel *label = [[UILabel alloc] initWithFrame:rect];
         
-        SCChat *chat = [feedItem chat];
-        NSString *recipient = [chat recipient];
-        
-        Friend *f = [friends friendForName:recipient];
-        
-        
-        if([f snapStreakCount] && [chat hasUnviewedSnaps]){
-            CGSize size = self.frame.size;
-            CGRect rect = CGRectMake(size.width*.55,
-                                     size.height/8,
-                                     size.width/4,
-                                     size.height/4);
-            UILabel *label = [[UILabel alloc] initWithFrame:rect];
-            label.text = [NSString stringWithFormat:@"Time remaining: %@",GetTimeRemaining(f,chat)];
-            [instances addObject:self];
-            [labels addObject:labels];
+        [instances addObject:self];
+        [labels addObject:label];
             
-            SizeLabelToRect(label,rect);
-            [self.containerView addSubview:label];
+        SizeLabelToRect(label,rect);
+        [self.containerView addSubview:label];
+        
+        if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
+            label.text = [NSString stringWithFormat:@"Time remaining: %@",
+                          GetTimeRemaining(f,chat)];
+            label.hidden = NO;
+        }else {
+            label.text = @"";
+            label.hidden = YES;
+        }
+    }else {
+        UILabel *label = [labels objectAtIndex:[instances indexOfObject:self]];
+        if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
+            label.text = [NSString stringWithFormat:@"Time remaining: %@",
+                          GetTimeRemaining(f,chat)];
+            label.hidden = NO;
+        }else {
+            label.text = @"";
+            label.hidden = YES;
         }
     }
     
+    
+}
+
+-(void)dealloc{
+    NSInteger index = [instances indexOfObject:self];
+    UILabel *label = [labels objectAtIndex:index];
+    [labels removeObjectAtIndex:index];
+    [instances removeObjectAtIndex:index];
+    [label removeFromSuperview];
+    %orig();
 }
 
 
