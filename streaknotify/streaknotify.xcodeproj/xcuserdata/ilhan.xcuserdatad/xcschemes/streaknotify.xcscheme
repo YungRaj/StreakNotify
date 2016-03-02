@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A5C874321C7F7D5300F20B40"
-               BuildableName = "sn_prefs"
-               BlueprintName = "sn_prefs"
-               ReferencedContainer = "container:sn_prefs.xcodeproj">
+               BlueprintIdentifier = "A5D2231F1C856858002B8AA1"
+               BuildableName = "streaknotify"
+               BlueprintName = "streaknotify"
+               ReferencedContainer = "container:streaknotify.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A5C874321C7F7D5300F20B40"
-            BuildableName = "sn_prefs"
-            BlueprintName = "sn_prefs"
-            ReferencedContainer = "container:sn_prefs.xcodeproj">
+            BlueprintIdentifier = "A5D2231F1C856858002B8AA1"
+            BuildableName = "streaknotify"
+            BlueprintName = "streaknotify"
+            ReferencedContainer = "container:streaknotify.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A5C874321C7F7D5300F20B40"
-            BuildableName = "sn_prefs"
-            BlueprintName = "sn_prefs"
-            ReferencedContainer = "container:sn_prefs.xcodeproj">
+            BlueprintIdentifier = "A5D2231F1C856858002B8AA1"
+            BuildableName = "streaknotify"
+            BlueprintName = "streaknotify"
+            ReferencedContainer = "container:streaknotify.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

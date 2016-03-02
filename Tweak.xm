@@ -28,7 +28,61 @@ static void LoadPreferences() {
     }
 }
 
+static void SizeLabelToRect(UILabel *label, CGRect labelRect){
+    label.frame = labelRect;
+    int fontSize = 15;
+    int minFontSize = 3;
+    
+    CGSize constraintSize = CGSizeMake(label.frame.size.width, MAXFLOAT);
+    
+    do {
+        label.font = [UIFont fontWithName:label.font.fontName size:fontSize];
+        
+        CGRect textRect = [[label text] boundingRectWithSize:constraintSize
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:@{NSFontAttributeName:label.font}
+                                                     context:nil];
+        
+        CGSize labelSize = textRect.size;
+        if( labelSize.height <= label.frame.size.height )
+            break;
+        
+        fontSize -= 2;
+        
+    } while (fontSize > minFontSize);
+}
+
+
+
+/*static NSString* GetTimeRemaining(Friend *f, SCChat *c){
+    return nil;
+}*/
+
 %group iOS9
+
+%hook SCFeedTableViewCell
+
+
+-(void)layoutSubviews{
+    
+    %orig();
+    
+    CGSize size = self.frame.size;
+    CGRect rect = CGRectMake(size.width*.6,
+                             size.height/8,
+                             size.width/4,
+                             size.height/4);
+    UILabel *label = [[UILabel alloc] initWithFrame:rect];
+    label.text = @"Time remaining: 1hr";
+    SizeLabelToRect(label,rect);
+    [self.containerView addSubview:label];
+    
+    
+}
+
+
+
+%end
 
 %end
 
@@ -40,40 +94,6 @@ static void LoadPreferences() {
 
 %end
 
-/* How to Hook with Logos
-Hooks are written with syntax similar to that of an Objective-C @implementation.
-You don't need to #include <substrate.h>, it will be done automatically, as will
-the generation of a class list and an automatic constructor.
-
-%hook ClassName
-
-// Hooking a class method
-+ (id)sharedInstance {
-	return %orig;
-}
-
-// Hooking an instance method with an argument.
-- (void)messageName:(int)argument {
-	%log; // Write a message about this call, including its class, name and arguments, to the system log.
-
-	%orig; // Call through to the original function with its original arguments.
-	%orig(nil); // Call through to the original function with a custom argument.
-
-	// If you use %orig(), you MUST supply all arguments (except for self and _cmd, the automatically generated ones.)
-}
-
-// Hooking an instance method with no arguments.
-- (id)noArguments {
-	%log;
-	id awesome = %orig;
-	[awesome doSomethingElse];
-
-	return awesome;
-}
-
-// Always make sure you clean up after yourself; Not doing so could have grave consequences!
-%end
-*/
 
 %ctor {
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
@@ -83,6 +103,7 @@ the generation of a class list and an automatic constructor.
                                     NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     LoadPreferences();
+
     
     if (kiOS9)
         %init(iOS9);

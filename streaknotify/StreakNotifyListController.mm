@@ -1,8 +1,9 @@
-#import <Preferences/Preferences.h>
+#import "StreakNotifyListController.h"
 
-@interface StreakNotifyListController: PSListController {
+@interface StreakNotifyListController () {
     
 }
+
 @end
 
 @implementation StreakNotifyListController
@@ -15,7 +16,7 @@
 }
 
 -(void)respring {
-    [[UIApplication sharedApplication] suspend];
+    [[UIApplication sharedApplication] performSelector:@selector(suspend)];
     usleep(51500);
     
     [(SpringBoard*)[UIApplication sharedApplication] _relaunchSpringBoardNow];

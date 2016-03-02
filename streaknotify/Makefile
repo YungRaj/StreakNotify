@@ -1,11 +1,12 @@
 include theos/makefiles/common.mk
 
-ARCHS = arm64 armv7 
+ARCHS = armv7 arm64 
+
 BUNDLE_NAME = StreakNotify
-SN_Prefs_FILES = StreakNotifyListController.mm
-SN_Prefs_INSTALL_PATH = /Library/PreferenceBundles
-SN_Prefs_FRAMEWORKS = UIKit
-SN_Prefs_PRIVATE_FRAMEWORKS = Preferences
+StreakNotify_FILES = StreakNotifyListController.mm
+StreakNotify_INSTALL_PATH = /Library/PreferenceBundles
+StreakNotify_FRAMEWORKS = UIKit
+StreakNotify_PRIVATE_FRAMEWORKS = Preferences
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 

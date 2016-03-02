@@ -1896,7 +1896,7 @@
 		A51989791C7EBFC1004BB62B /* tweak.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = tweak.nic.tar; sourceTree = "<group>"; };
 		A519897A1C7EBFC1004BB62B /* Tweak.xm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Tweak.xm; sourceTree = "<group>"; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
-		A5C8743C1C7F7D5300F20B40 /* sn_prefs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = sn_prefs.xcodeproj; path = sn_prefs/sn_prefs.xcodeproj; sourceTree = "<group>"; };
+		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1909,7 +1909,7 @@
 				A51981B61C7EBFB6004BB62B /* StreakNotify.plist */,
 				A51981B71C7EBFB6004BB62B /* theos */,
 				A519897A1C7EBFC1004BB62B /* Tweak.xm */,
-				A5C8743C1C7F7D5300F20B40 /* sn_prefs.xcodeproj */,
+				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -4620,7 +4620,7 @@
 			path = iphone;
 			sourceTree = "<group>";
 		};
-		A5C8743D1C7F7D5300F20B40 /* Products */ = {
+		A5D2232A1C856859002B8AA1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -4668,8 +4668,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = A5C8743D1C7F7D5300F20B40 /* Products */;
-					ProjectRef = A5C8743C1C7F7D5300F20B40 /* sn_prefs.xcodeproj */;
+					ProductGroup = A5D2232A1C856859002B8AA1 /* Products */;
+					ProjectRef = A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */;
 				},
 			);
 			projectRoot = "";

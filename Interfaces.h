@@ -95,6 +95,33 @@
 
 @end
 
+@class NSString, UILabel;
+
+@interface SCFriendmojiView : UIView
+{
+    double _currentWidth;
+    double _currentHeight;
+    UILabel *_label;
+    NSString *_currentlyDisplayedEmoji;
+}
+
++ (id)createFriendmojiViewWithFriend:(id)arg1 andViewType:(long long)arg2;
++ (id)createFriendmojiViewWithFriend:(id)arg1;
+@property(retain, nonatomic) NSString *currentlyDisplayedEmoji; 
+@property(retain, nonatomic) UILabel *label;
+@property(nonatomic) double currentHeight;
+@property(nonatomic) double currentWidth;
+- (_Bool)setLabelToText:(id)arg1;
+- (void)layoutSubviews;
+- (id)getFriendmojiForFriend:(id)arg1 andViewType:(long long)arg2;
+- (_Bool)updateWithFriend:(id)arg1 andLineHeight:(unsigned long long)arg2 andViewType:(long long)arg3;
+- (_Bool)updateWithFriend:(id)arg1 andViewType:(long long)arg2;
+- (id)initWithFriend:(id)arg1 andLineHeight:(unsigned long long)arg2 andViewType:(long long)arg3;
+
+@end
+
+
+
 
 @protocol SCBaseMediaMessageUploadingDelegate, SCBaseMessageParametersDelegate, SCChatMediaMessageSendingDelegate, SCChatReceiveBufferDelegate, SCMessage;
 
