@@ -122,6 +122,8 @@ static NSMutableArray *labels = nil;
     
     NSString *friendName = [f name];
     
+    UILabel *label;
+    
     if(![instances containsObject:self]){
         
         CGSize size = self.frame.size;
@@ -129,7 +131,7 @@ static NSMutableArray *labels = nil;
                                  size.height/8,
                                  size.width/4,
                                  size.height/4);
-        UILabel *label = [[UILabel alloc] initWithFrame:rect];
+        label = [[UILabel alloc] initWithFrame:rect];
         
         [instances addObject:self];
         [labels addObject:label];
@@ -137,26 +139,18 @@ static NSMutableArray *labels = nil;
         SizeLabelToRect(label,rect);
         [self.containerView addSubview:label];
         
-        if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
-            label.text = [NSString stringWithFormat:@"Time remaining: %@",
-                          GetTimeRemaining(f,chat)];
-            label.hidden = NO;
-        }else {
-            label.text = @"";
-            label.hidden = YES;
-        }
     }else {
-        UILabel *label = [labels objectAtIndex:[instances indexOfObject:self]];
-        if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
-            label.text = [NSString stringWithFormat:@"Time remaining: %@",
-                          GetTimeRemaining(f,chat)];
-            label.hidden = NO;
-        }else {
-            label.text = @"";
-            label.hidden = YES;
-        }
+        label = [labels objectAtIndex:[instances indexOfObject:self]];
     }
     
+    if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
+        label.text = [NSString stringWithFormat:@"Time remaining: %@",
+                        GetTimeRemaining(f,chat)];
+        label.hidden = NO;
+    }else {
+        label.text = @"";
+        label.hidden = YES;
+    }
     
 }
 
