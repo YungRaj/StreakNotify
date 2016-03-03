@@ -29,6 +29,8 @@ static void LoadPreferences() {
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
+    label.frame = labelRect;
+    
     int fontSize = 15;
     int minFontSize = 3;
     
@@ -50,7 +52,6 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
         
     } while (fontSize > minFontSize);
 }
-
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
@@ -93,73 +94,85 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 %group iOS9
 
-%hook SCFeedTableViewCell
-
 static NSMutableArray *instances = nil;
 static NSMutableArray *labels = nil;
 
 
--(void)layoutSubviews{
-    %orig();
+%hook SCFeedViewController
+
+
+-(SCFeedTableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
-    if(!instances){
-        instances = [[NSMutableArray alloc] init];
-    } if(!labels){
-        labels = [[NSMutableArray alloc] init];
-    }
-    
-    User *user = [%c(User) createUser];
-    Friends *friends = [user friends];
-    
-    SCChatViewModelForFeed *feedItem = self.feedItem;
-    SCChat *chat = [feedItem chat];
-    
-    NSString *recipient = [chat recipient];
+    SCFeedTableViewCell *cell = %orig(tableView,indexPath);
+
+    dispatch_async(dispatch_get_main_queue(), ^{
         
-    Friend *f = [friends friendForName:recipient];
-    
-    NSString *lastSnapSender = [[chat lastSnap] sender];
-    
-    NSString *friendName = [f name];
-    
-    UILabel *label;
-    
-    if(![instances containsObject:self]){
+        if(!instances){
+            instances = [[NSMutableArray alloc] init];
+        } if(!labels){
+            labels = [[NSMutableArray alloc] init];
+        }
         
-        CGSize size = self.frame.size;
-        CGRect rect = CGRectMake(size.width*.55,
-                                 size.height/8,
-                                 size.width/4,
-                                 size.height/4);
-        label = [[UILabel alloc] initWithFrame:rect];
+        Manager *manager = [%c(Manager) shared];
+        User *user = [manager user];
+        Friends *friends = [user friends];
         
-        [instances addObject:self];
-        [labels addObject:label];
+        SCChatViewModelForFeed *feedItem = cell.feedItem;
+        SCChat *chat = [feedItem chat];
+        
+        NSString *recipient = [chat recipient];
+        
+        Friend *f = [friends friendForName:recipient];
+        
+        NSString *lastSnapSender = [[chat lastSnap] sender];
+        
+        NSString *friendName = [f name];
+        
+        UILabel *label;
+        
+        %log(lastSnapSender,recipient,user);
+        
+        %log(@"Sucessfully retrieved models %@ %ld",recipient,(long)[f snapStreakCount]);
+        
+        if(![instances containsObject:cell]){
             
-        SizeLabelToRect(label,rect);
-        [self.containerView addSubview:label];
+            CGSize size = cell.frame.size;
+            CGRect rect = CGRectMake(size.width*.55,
+                                     size.height/8,
+                                     size.width/4,
+                                     size.height/4);
+            label = [[UILabel alloc] initWithFrame:rect];
+            
+            [instances addObject:cell];
+            [labels addObject:label];
+            
+            [cell.containerView addSubview:label];
+            %log(@"Added label to array and containerView");
+            
+            
+        }else {
+            %log(@"Added label");
+            label = [labels objectAtIndex:[instances indexOfObject:cell]];
+        }
         
-    }else {
-        label = [labels objectAtIndex:[instances indexOfObject:self]];
-    }
+        if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
+            label.text = [NSString stringWithFormat:@"Time remaining: %@",GetTimeRemaining(f,chat)];
+            SizeLabelToRect(label,label.frame);
+            label.hidden = NO;
+            %log(@"Showing label %@ %@ %@",recipient, lastSnapSender, label);
+        }else {
+            label.text = @"";
+            label.hidden = YES;
+            %log(@"Not showing label %@ %@ %@",recipient, lastSnapSender, label);
+        }
+    });
     
-    if([f snapStreakCount] && [lastSnapSender isEqual:friendName]){
-        label.text = [NSString stringWithFormat:@"Time remaining: %@",
-                        GetTimeRemaining(f,chat)];
-        label.hidden = NO;
-    }else {
-        label.text = @"";
-        label.hidden = YES;
-    }
-    
+    return cell;
 }
 
 -(void)dealloc{
-    NSInteger index = [instances indexOfObject:self];
-    UILabel *label = [labels objectAtIndex:index];
-    [labels removeObjectAtIndex:index];
-    [instances removeObjectAtIndex:index];
-    [label removeFromSuperview];
+    [instances removeAllObjects];
+    [labels removeAllObjects];
     %orig();
 }
 
