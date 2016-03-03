@@ -94,6 +94,18 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 %group iOS9
 
+
+%hook AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    [application cancelAllLocalNotifications];
+    return %orig();
+}
+
+%end
+
+
 static NSMutableArray *instances = nil;
 static NSMutableArray *labels = nil;
 
@@ -129,10 +141,7 @@ static NSMutableArray *labels = nil;
         NSString *friendName = [f name];
         
         UILabel *label;
-        
-        %log(lastSnapSender,recipient,user);
-        
-        %log(@"Sucessfully retrieved models %@ %ld",recipient,(long)[f snapStreakCount]);
+
         
         if(![instances containsObject:cell]){
             
@@ -147,11 +156,9 @@ static NSMutableArray *labels = nil;
             [labels addObject:label];
             
             [cell.containerView addSubview:label];
-            %log(@"Added label to array and containerView");
             
             
         }else {
-            %log(@"Added label");
             label = [labels objectAtIndex:[instances indexOfObject:cell]];
         }
         
@@ -159,15 +166,23 @@ static NSMutableArray *labels = nil;
             label.text = [NSString stringWithFormat:@"Time remaining: %@",GetTimeRemaining(f,chat)];
             SizeLabelToRect(label,label.frame);
             label.hidden = NO;
-            %log(@"Showing label %@ %@ %@",recipient, lastSnapSender, label);
         }else {
             label.text = @"";
             label.hidden = YES;
-            %log(@"Not showing label %@ %@ %@",recipient, lastSnapSender, label);
         }
     });
     
     return cell;
+}
+
+#pragma mark add local notification
+
+-(void)didFinishReloadData{
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    SCChats *chats = [user chats];
+    %log(chats);
+    
 }
 
 -(void)dealloc{
