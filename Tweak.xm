@@ -21,7 +21,10 @@ static void LoadPreferences() {
         if (access("/var/mobile/Library/Preferences/com.YungRaj.streaknotify", F_OK) != -1) {
             prefs = (__bridge NSDictionary *)CFPreferencesCopyMultiple(keyList, applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
         } else {
-            
+            prefs = @{@"kTwelveHours" : @YES,
+                      @"kFiveHours" : @YES,
+                      @"kOneHour" : @YES,
+                      @"kTenMinutes" : @YES};
         }
         
         CFRelease(keyList);
@@ -99,9 +102,50 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    
     [application cancelAllLocalNotifications];
+    UIUserNotificationType types = UIUserNotificationTypeBadge |
+    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    
+    UIUserNotificationSettings *mySettings =
+    [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    
+    [application registerUserNotificationSettings:mySettings];
     return %orig();
 }
+
+%end
+
+%hook Snap
+
+-(void)didSend{
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    SCChats *chats = [user chats];
+    
+    
+    NSString *recipient = [self recipient];
+    
+    
+    SCChat *chat = [chats chatForUsername:recipient];
+    Friend *f = [friends friendForName:recipient];
+    
+    %log(chat,f);
+    
+    NSString *displayName = [friends displayNameForUsername:recipient];
+    
+    NSArray *localNotifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    
+    for(UILocalNotification *localNotification in localNotifications){
+        if([localNotification.alertBody containsString:displayName]){
+            [[UIApplication sharedApplication] cancelLocalNotification:localNotification];
+        }
+    }
+            
+           
+}
+
 
 %end
 
@@ -116,7 +160,8 @@ static NSMutableArray *labels = nil;
 -(SCFeedTableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
     SCFeedTableViewCell *cell = %orig(tableView,indexPath);
-
+    
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if(!instances){
@@ -141,7 +186,7 @@ static NSMutableArray *labels = nil;
         NSString *friendName = [f name];
         
         UILabel *label;
-
+        
         
         if(![instances containsObject:cell]){
             
@@ -175,15 +220,67 @@ static NSMutableArray *labels = nil;
     return cell;
 }
 
-#pragma mark add local notification
 
 -(void)didFinishReloadData{
+    %orig();
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
+    Friends *friends = [user friends];
     SCChats *chats = [user chats];
-    %log(chats);
+    
+    
+    for(SCChat *chat in [chats allChats]){
+        NSDate *snapDate = [[chat lastSnap] timestamp];
+        Friend *f = [friends friendForName:[chat recipient]];
+        NSString *lastSnapSender = [[chat lastSnap] sender];
+        NSString *friendName = [f name];
+        if([f snapStreakCount]<=0 && ![lastSnapSender isEqual:friendName]){
+            continue;
+        }
+        
+        NSString *displayName = [friends displayNameForUsername:[chat recipient]];
+        if([prefs[@"kTwelveHours"] boolValue]){
+            NSDate *notificationDate =
+                                [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*12
+                                                        sinceDate:snapDate];
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = notificationDate;
+            notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 12 hours left!",displayName];
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+            
+        } if([prefs[@"kFiveHours"] boolValue]){
+            NSDate *notificationDate =
+            [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*5
+                                       sinceDate:snapDate];
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = notificationDate;
+            notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 5 hours left!",displayName];
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+            
+        } if([prefs[@"kOneHour"] boolValue]){
+            NSDate *notificationDate =
+            [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60
+                                       sinceDate:snapDate];
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = notificationDate;
+            notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 1 hour left!",displayName];
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+            
+        } if([prefs[@"kTenMinutes"] boolValue]){
+            NSDate *notificationDate =
+            [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*10
+                                       sinceDate:snapDate];
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = notificationDate;
+            notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 10 minutes left!",displayName];
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+            
+        }
+    }
+    
     
 }
+
 
 -(void)dealloc{
     [instances removeAllObjects];
@@ -213,7 +310,10 @@ static NSMutableArray *labels = nil;
                                     CFSTR("YungRajStreakNotifyDeletePreferencesChangedNotification"),
                                     NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    LoadPreferences();
+    prefs = @{@"kTwelveHours" : @YES,
+              @"kFiveHours" : @YES,
+              @"kOneHour" : @YES,
+              @"kTenMinutes" : @YES};
 
     
     if (kiOS9)
