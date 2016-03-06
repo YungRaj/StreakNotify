@@ -16,21 +16,16 @@ static NSDictionary* prefs = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 static void LoadPreferences() {
-    if (CFPreferencesAppSynchronize(applicationID)) {
-        CFArrayRef keyList = CFPreferencesCopyKeyList(applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) ?: CFArrayCreate(NULL, NULL, 0, NULL);
-        if (access("/var/mobile/Library/Preferences/com.YungRaj.streaknotify", F_OK) != -1) {
-            prefs = (__bridge NSDictionary *)CFPreferencesCopyMultiple(keyList, applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-        } else {
-            prefs = @{@"kTwelveHours" : @NO,
-                      @"kFiveHours" : @NO,
-                      @"kOneHour" : @NO,
-                      @"kTenMinutes" : @NO,
-                      @"kCustomHours" : @"23",
-                      @"kCustomMinutes" : @"20",
-                      @"kCustomSeconds" : @"35"};
-        }
-        
-        CFRelease(keyList);
+     prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
+     if(!prefs) {
+        prefs = @{@"kTwelveHours" : @NO,
+                  @"kFiveHours" : @NO,
+                  @"kOneHour" : @NO,
+                  @"kTenMinutes" : @NO,
+                  @"kCustomHours" : @"0",
+                  @"kCustomMinutes" : @"0",
+                  @"kCustomSeconds" : @"0"};
+
     }
 }
 
@@ -106,7 +101,6 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     
-    [application cancelAllLocalNotifications];
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
     
@@ -287,7 +281,7 @@ static NSMutableArray *labels = nil;
         NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
         if(hours || minutes || seconds){
             NSDate *notificationDate =
-            [[NSDate alloc] initWithTimeInterval:60*60*24 - (hours*60*60 + minutes*60 + seconds)
+            [[NSDate alloc] initWithTimeInterval:60*60*24 - (hours*60*60+minutes*60+seconds)
                                        sinceDate:snapDate];
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.fireDate = notificationDate;
