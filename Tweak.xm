@@ -21,10 +21,13 @@ static void LoadPreferences() {
         if (access("/var/mobile/Library/Preferences/com.YungRaj.streaknotify", F_OK) != -1) {
             prefs = (__bridge NSDictionary *)CFPreferencesCopyMultiple(keyList, applicationID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
         } else {
-            prefs = @{@"kTwelveHours" : @YES,
-                      @"kFiveHours" : @YES,
-                      @"kOneHour" : @YES,
-                      @"kTenMinutes" : @YES};
+            prefs = @{@"kTwelveHours" : @NO,
+                      @"kFiveHours" : @NO,
+                      @"kOneHour" : @NO,
+                      @"kTenMinutes" : @NO,
+                      @"kCustomHours" : @"23",
+                      @"kCustomMinutes" : @"20",
+                      @"kCustomSeconds" : @"35"};
         }
         
         CFRelease(keyList);
@@ -223,6 +226,7 @@ static NSMutableArray *labels = nil;
 
 -(void)didFinishReloadData{
     %orig();
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -234,7 +238,7 @@ static NSMutableArray *labels = nil;
         Friend *f = [friends friendForName:[chat recipient]];
         NSString *lastSnapSender = [[chat lastSnap] sender];
         NSString *friendName = [f name];
-        if([f snapStreakCount]<=0 && ![lastSnapSender isEqual:friendName]){
+        if([f snapStreakCount]<=2 && ![lastSnapSender isEqual:friendName]){
             continue;
         }
         
@@ -276,6 +280,20 @@ static NSMutableArray *labels = nil;
             [[UIApplication sharedApplication] scheduleLocalNotification:notification];
             
         }
+        float hours = [prefs[@"kCustomHours"] floatValue] ;
+        float minutes = [prefs[@"kCustomMinutes"] floatValue];
+        float seconds = [prefs[@"kCustomSeconds"] floatValue];
+        float t = hours ? hours : minutes ? minutes : seconds;
+        NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
+        if(hours || minutes || seconds){
+            NSDate *notificationDate =
+            [[NSDate alloc] initWithTimeInterval:60*60*24 - (hours*60*60 + minutes*60 + seconds)
+                                       sinceDate:snapDate];
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = notificationDate;
+            notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. %ld %@ left!",displayName,(long)t,time];
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        }
     }
     
     
@@ -310,10 +328,7 @@ static NSMutableArray *labels = nil;
                                     CFSTR("YungRajStreakNotifyDeletePreferencesChangedNotification"),
                                     NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    prefs = @{@"kTwelveHours" : @YES,
-              @"kFiveHours" : @YES,
-              @"kOneHour" : @YES,
-              @"kTenMinutes" : @YES};
+    LoadPreferences();
 
     
     if (kiOS9)
