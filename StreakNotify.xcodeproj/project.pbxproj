@@ -1894,7 +1894,7 @@
 		A51989771C7EBFC1004BB62B /* preference_bundle.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = preference_bundle.nic.tar; sourceTree = "<group>"; };
 		A51989781C7EBFC1004BB62B /* tool.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = tool.nic.tar; sourceTree = "<group>"; };
 		A51989791C7EBFC1004BB62B /* tweak.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = tweak.nic.tar; sourceTree = "<group>"; };
-		A519897A1C7EBFC1004BB62B /* Tweak.xm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Tweak.xm; sourceTree = "<group>"; };
+		A519897A1C7EBFC1004BB62B /* Tweak.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tweak.mm; sourceTree = "<group>"; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1908,7 +1908,7 @@
 				A51981B51C7EBFB6004BB62B /* Makefile */,
 				A51981B61C7EBFB6004BB62B /* StreakNotify.plist */,
 				A51981B71C7EBFB6004BB62B /* theos */,
-				A519897A1C7EBFC1004BB62B /* Tweak.xm */,
+				A519897A1C7EBFC1004BB62B /* Tweak.mm */,
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 			);
 			sourceTree = "<group>";
