@@ -18,6 +18,10 @@ static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 static void LoadPreferences() {
      prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
      if(!prefs) {
+         /*UIAlertController *controller = [UIAlertController controllerWithType:UIAlertControllerTypeAlert];*/
+         // notify on launch that the user has not selected to create any settings to notify
+         
+         
         prefs = @{@"kTwelveHours" : @NO,
                   @"kFiveHours" : @NO,
                   @"kOneHour" : @NO,
@@ -77,8 +81,12 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     NSInteger minute = [components minute];
     NSInteger second = [components second];
     
-    if(day){
+    if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
+    }
+    
+    if(day){
+        return [NSString stringWithFormat:@"%ldd",(long)day];
     }else if(hour){
         return [NSString stringWithFormat:@"%ld hr",(long)hour];
     }else if(minute){
@@ -100,6 +108,8 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    
+    [application cancelAllLocalNotifications];
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -139,10 +149,12 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
             [[UIApplication sharedApplication] cancelLocalNotification:localNotification];
         }
     }
-            
-           
-}
 
+#pragma mark hide the UILabels if they are not being used 
+    
+    
+    
+}
 
 %end
 
