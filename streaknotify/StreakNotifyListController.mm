@@ -1,5 +1,6 @@
 #import "StreakNotifyListController.h"
 
+
 @interface StreakNotifyListController () {
     
 }
@@ -32,7 +33,7 @@
 }
 
 - (void)github {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/ilhanraja"]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/ilhanraja/SearchDelete"]];
 }
 
 @end

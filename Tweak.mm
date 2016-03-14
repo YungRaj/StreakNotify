@@ -236,11 +236,12 @@ static NSMutableArray *labels = nil;
         if(![instances containsObject:cell]){
             
             CGSize size = cell.frame.size;
-            CGRect rect = CGRectMake(size.width*.55,
-                                     size.height/8,
+            CGRect rect = CGRectMake(size.width*.7,
+                                     size.height*.65,
                                      size.width/4,
                                      size.height/4);
             label = [[UILabel alloc] initWithFrame:rect];
+    
             
             [instances addObject:cell];
             [labels addObject:label];
