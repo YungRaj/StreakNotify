@@ -88,6 +88,21 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
 }
 
+void ScheduleNotification(NSDate *snapDate, NSString *displayName, int seconds, int minutes, int hours){
+    float t = hours ? hours : minutes ? minutes : seconds;
+    NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
+    NSDate *notificationDate =
+    [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
+                               sinceDate:snapDate];
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.fireDate = notificationDate;
+    notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. %ld %@ left!",displayName,(long)t,time];
+    NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
+    if(latestDate==notificationDate){
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
+}
+
 %group iOS9
 
 %hook MainViewController
@@ -131,8 +146,6 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
-    
-    [application cancelAllLocalNotifications];
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -270,55 +283,23 @@ static NSMutableArray *labels = nil;
         if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
             NSString *displayName = [friends displayNameForUsername:[chat recipient]];
             if([prefs[@"kTwelveHours"] boolValue]){
-                NSDate *notificationDate =
-                [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*12
-                                           sinceDate:snapDate];
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = notificationDate;
-                notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 12 hours left!",displayName];
-                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                ScheduleNotification(snapDate,displayName,0,0,12);
                 
             } if([prefs[@"kFiveHours"] boolValue]){
-                NSDate *notificationDate =
-                [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*5
-                                           sinceDate:snapDate];
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = notificationDate;
-                notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 5 hours left!",displayName];
-                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                ScheduleNotification(snapDate,displayName,0,0,5);
                 
             } if([prefs[@"kOneHour"] boolValue]){
-                NSDate *notificationDate =
-                [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60
-                                           sinceDate:snapDate];
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = notificationDate;
-                notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 1 hour left!",displayName];
-                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                ScheduleNotification(snapDate,displayName,0,0,1);
                 
             } if([prefs[@"kTenMinutes"] boolValue]){
-                NSDate *notificationDate =
-                [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*10
-                                           sinceDate:snapDate];
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = notificationDate;
-                notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. 10 minutes left!",displayName];
-                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-                
+                ScheduleNotification(snapDate,displayName,0,10,0);
             }
-            float hours = [prefs[@"kCustomHours"] floatValue] ;
-            float minutes = [prefs[@"kCustomMinutes"] floatValue];
+            
             float seconds = [prefs[@"kCustomSeconds"] floatValue];
-            float t = hours ? hours : minutes ? minutes : seconds;
-            NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
+            float minutes = [prefs[@"kCustomMinutes"] floatValue];
+            float hours = [prefs[@"kCustomHours"] floatValue] ;
             if(hours || minutes || seconds){
-                NSDate *notificationDate =
-                [[NSDate alloc] initWithTimeInterval:60*60*24 - (hours*60*60+minutes*60+seconds)
-                                           sinceDate:snapDate];
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = notificationDate;
-                notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. %ld %@ left!",displayName,(long)t,time];
-                [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                ScheduleNotification(snapDate,displayName,seconds,minutes,hours);
             }
         }
     }
