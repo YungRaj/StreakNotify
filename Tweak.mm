@@ -15,6 +15,8 @@
 static NSDictionary* prefs = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
+NSString *kSnapDidSendNotification = @"snapDidSendNotification";
+
 static void LoadPreferences() {
     prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
     
@@ -46,6 +48,8 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 }
 
 
+
+
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     if(!f || !c){
         return @"";
@@ -53,6 +57,10 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
     NSDate *date = [NSDate date];
     Snap *lastSnap = [c lastSnap];
+    
+    if(!lastSnap){
+        return @"";
+    }
     
     NSDate *latestSnapDate = [lastSnap timestamp];
     int daysToAdd = 1;
@@ -84,11 +92,13 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
         return @"Unknown";
     }
     
-                                   
-    
 }
 
-void ScheduleNotification(NSDate *snapDate, NSString *displayName, int seconds, int minutes, int hours){
+static void ScheduleNotification(NSDate *snapDate,
+                                 NSString *displayName,
+                                 int seconds,
+                                 int minutes,
+                                 int hours){
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *notificationDate =
@@ -100,6 +110,44 @@ void ScheduleNotification(NSDate *snapDate, NSString *displayName, int seconds, 
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
+}
+
+static void ResetNotifications(){
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    SCChats *chats = [user chats];
+    
+    for(SCChat *chat in [chats allChats]){
+        NSDate *snapDate = [[chat lastSnap] timestamp];
+        Friend *f = [friends friendForName:[chat recipient]];
+        NSString *lastSnapSender = [[chat lastSnap] sender];
+        NSString *friendName = [f name];
+        
+        if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
+            NSString *displayName = [friends displayNameForUsername:[chat recipient]];
+            if([prefs[@"kTwelveHours"] boolValue]){
+                ScheduleNotification(snapDate,displayName,0,0,12);
+                
+            } if([prefs[@"kFiveHours"] boolValue]){
+                ScheduleNotification(snapDate,displayName,0,0,5);
+                
+            } if([prefs[@"kOneHour"] boolValue]){
+                ScheduleNotification(snapDate,displayName,0,0,1);
+                
+            } if([prefs[@"kTenMinutes"] boolValue]){
+                ScheduleNotification(snapDate,displayName,0,10,0);
+            }
+            
+            float seconds = [prefs[@"kCustomSeconds"] floatValue];
+            float minutes = [prefs[@"kCustomMinutes"] floatValue];
+            float hours = [prefs[@"kCustomHours"] floatValue] ;
+            if(hours || minutes || seconds){
+                ScheduleNotification(snapDate,displayName,seconds,minutes,hours);
+            }
+        }
     }
 }
 
@@ -144,7 +192,7 @@ void ScheduleNotification(NSDate *snapDate, NSString *displayName, int seconds, 
 
 %hook AppDelegate
 
-- (BOOL)application:(UIApplication *)application
+-(BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
@@ -154,7 +202,15 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     [UIUserNotificationSettings settingsForTypes:types categories:nil];
     
     [application registerUserNotificationSettings:mySettings];
+    
+    ResetNotifications();
+    
     return %orig();
+}
+
+-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    %orig();
+    ResetNotifications();
 }
 
 %end
@@ -185,7 +241,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
             [[UIApplication sharedApplication] cancelLocalNotification:localNotification];
         }
     }
-
+    
+    
 #pragma mark hide the UILabels if they are not being used 
     
     
@@ -225,6 +282,10 @@ static NSMutableArray *labels = nil;
         NSString *recipient = [chat recipient];
         
         Friend *f = [friends friendForName:recipient];
+        
+        if(![chat lastSnap]){
+            return;
+        }
         
         NSString *lastSnapSender = [[chat lastSnap] sender];
         
@@ -269,41 +330,8 @@ static NSMutableArray *labels = nil;
 
 -(void)didFinishReloadData{
     %orig();
-    [[UIApplication sharedApplication] cancelAllLocalNotifications];
-    Manager *manager = [%c(Manager) shared];
-    User *user = [manager user];
-    Friends *friends = [user friends];
-    SCChats *chats = [user chats];
+    ResetNotifications();
     
-    for(SCChat *chat in [chats allChats]){
-        NSDate *snapDate = [[chat lastSnap] timestamp];
-        Friend *f = [friends friendForName:[chat recipient]];
-        NSString *lastSnapSender = [[chat lastSnap] sender];
-        NSString *friendName = [f name];
-        
-        if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
-            NSString *displayName = [friends displayNameForUsername:[chat recipient]];
-            if([prefs[@"kTwelveHours"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,12);
-                
-            } if([prefs[@"kFiveHours"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,5);
-                
-            } if([prefs[@"kOneHour"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,1);
-                
-            } if([prefs[@"kTenMinutes"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,10,0);
-            }
-            
-            float seconds = [prefs[@"kCustomSeconds"] floatValue];
-            float minutes = [prefs[@"kCustomMinutes"] floatValue];
-            float hours = [prefs[@"kCustomHours"] floatValue] ;
-            if(hours || minutes || seconds){
-                ScheduleNotification(snapDate,displayName,seconds,minutes,hours);
-            }
-        }
-    }
 }
 
 
