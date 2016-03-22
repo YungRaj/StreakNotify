@@ -43,7 +43,7 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
         if( labelSize.height <= label.frame.size.height )
             break;
         
-        fontSize -= 2;
+        fontSize -= 0.5;
         
     } while (fontSize > minFontSize);
 }
@@ -62,6 +62,23 @@ static NSArray* GetFriendDisplayNames(){
     }
     return names;
 }
+
+// will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
+/*static NSArray* GetFriendDisplayNamesWithStreaksOnly(){
+    // provide display names for friends with streaks only
+    
+    NSMutableArray *names = [[NSMutableArray alloc] init];
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    for(Friend *f in [friends getAllFriends]){
+        if([f snapStreakCount]>2){
+            NSString *displayName = [f display];
+            [names addObject:displayName];
+        }
+    }
+    return names;
+}*/
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){

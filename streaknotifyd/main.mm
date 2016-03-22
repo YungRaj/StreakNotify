@@ -76,7 +76,7 @@
         
         // once the app's server sends this notification after the client (the daemon [us]) starts listening that means we have the display names and we can safely hand them over to the preferences bundle
         
-        // sets the displayNames ivar just in case requesting them from the app (tweak) is needed, most likely a good idea in the future cause then we don't need to keep talking to the app (tweak) each time
+        // sets the displayNames ivar just in case requesting them from the app (tweak) is not needed, most likely a good idea in the future cause then we don't need to keep talking to the app (tweak) each time
         NSDictionary *userInfo = [notification userInfo];
         CPDistributedNotificationCenter *notificationCenter = [CPDistributedNotificationCenter centerNamed:@"com.YungRaj.streaknotifyd"];
         if([[userInfo objectForKey:@"displayNames"] isKindOfClass:[NSArray class]]){
