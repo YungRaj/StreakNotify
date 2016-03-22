@@ -23,6 +23,7 @@ static void LoadPreferences() {
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
+    // utility method to make sure that the label's size doesn't truncate the text that it is supposed to display 
     label.frame = labelRect;
     
     int fontSize = 15;
@@ -48,9 +49,23 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 }
 
 
+static NSArray* GetFriendDisplayNames(){
+    // provide display names for each friend into an array
+    
+    NSMutableArray *names = [[NSMutableArray alloc] init];
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    for(Friend *f in [friends getAllFriends]){
+        NSString *displayName = [f display];
+        [names addObject:displayName];
+    }
+    return names;
+}
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
+    // good utility method to figure out the time remaining for the streak, might want to add a few fixes, because we are only assuming that the time remaining is 24 hours after the last sent snap when it could be different. We don't really know how the snap streaks start and end at the server level because it does all the work for figuring that out. As far as I've seen by reverse engineering the app, the app can only request to the server to up or even change the snap streak count... 
     if(!f || !c){
         return @"";
     }
@@ -78,6 +93,8 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
     if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
+        // this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
+        // again this could happen because we don't know how the streaks start and end because as far as I've know the server does all the work for that... might have to ask someone more intelligent to figure out a way around this
     }
     
     if(day){
@@ -96,9 +113,10 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
 
 static void ScheduleNotification(NSDate *snapDate,
                                  NSString *displayName,
-                                 int seconds,
-                                 int minutes,
-                                 int hours){
+                                 float seconds,
+                                 float minutes,
+                                 float hours){
+    // schedules the notification and makes sure it isn't before the current time
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *notificationDate =
@@ -106,7 +124,7 @@ static void ScheduleNotification(NSDate *snapDate,
                                sinceDate:snapDate];
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.fireDate = notificationDate;
-    notification.alertBody = [NSString stringWithFormat:@"Reply to streak with %@. %ld %@ left!",displayName,(long)t,time];
+    notification.alertBody = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
@@ -114,6 +132,7 @@ static void ScheduleNotification(NSDate *snapDate,
 }
 
 static void ResetNotifications(){
+    // ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
@@ -156,6 +175,8 @@ static void ResetNotifications(){
 %hook MainViewController
 
 -(void)viewDidLoad{
+    
+    // easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their streaks to work
     %orig();
     if(!prefs) {
         UIAlertController *controller =
@@ -192,8 +213,10 @@ static void ResetNotifications(){
 
 %hook AppDelegate
 
--(BOOL)application:(UIApplication *)application
-didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+-(BOOL)application:(UIApplication*)application
+didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
+    
+    // just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -202,13 +225,42 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     [UIUserNotificationSettings settingsForTypes:types categories:nil];
     
     [application registerUserNotificationSettings:mySettings];
+
+    [mySettings release];
     
     ResetNotifications();
+    
+    // run the server on the app so that the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
+    
+    CPDistributedNotificationCenter* notificationCenter;
+    notificationCenter = [CPDistributedNotificationCenter centerNamed:@"com.YungRaj.streaknotify"];
+    [notificationCenter runServer];
+    [notificationCenter retain];
+    
+    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self
+           selector:@selector(clientDidStartListening:)
+               name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
+             object:notificationCenter];
+    
     
     return %orig();
 }
 
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+%new
+       
+// also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later to only show current active streaks in PSLinkList if the user only wants to see those 
+-(void)clientDidStartListeningNotification:(NSNotification*)notification{
+    // this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
+    CPDistributedNotificationCenter *notificationCenter = [notification object];
+    [notificationCenter postNotificationName:@"displayNamesFromApp"
+                                    userInfo:@{GetFriendDisplayNames():
+                                                @"displayNames"}];
+}
+
+
+-(void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
+    // everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time
     %orig();
     ResetNotifications();
 }
@@ -218,6 +270,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
 %hook Snap
 
 -(void)didSend{
+    // make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
+    
+    // can call ResetNotifications, but this might be faster... keeping it for now
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -242,8 +297,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
         }
     }
     
+    [manager release];
     
-#pragma mark hide the UILabels if they are not being used 
+    
+// hide the UILabels if they are not being used or refresh the table view (not sure if that will cause infinite recursion yet cause we don't know if we can assume that this is not being called during a refresh)
     
     
     
@@ -261,10 +318,15 @@ static NSMutableArray *labels = nil;
 
 -(SCFeedTableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
+    // updating tableview and we want to make sure the labels are updated too, if not created if the feed is now being populated
+    
     SCFeedTableViewCell *cell = %orig(tableView,indexPath);
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        // want to do this on the main thread because all ui updates should be done on the main thread
+        // creates the labels
         
         if(!instances){
             instances = [[NSMutableArray alloc] init];
@@ -322,6 +384,8 @@ static NSMutableArray *labels = nil;
             label.text = @"";
             label.hidden = YES;
         }
+        
+        [manager release];
     });
     
     return cell;
@@ -329,6 +393,7 @@ static NSMutableArray *labels = nil;
 
 
 -(void)didFinishReloadData{
+    // want to update notifications if something has changed after reloading data
     %orig();
     ResetNotifications();
     
@@ -357,19 +422,19 @@ static NSMutableArray *labels = nil;
 
 
 %ctor {
+    
+    // constructor for the tweak, registers preferences stored in /var/mobile
+    // and uses iOS 9 preferences, might want to use Snapchat version instead but we'll see
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,
                                     (CFNotificationCallback)LoadPreferences,
-                                    CFSTR("YungRajStreakNotifyDeletePreferencesChangedNotification"),
+                                    CFSTR("YungRajStreakNotifyPreferencesChangedNotification"),
                                     NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     LoadPreferences();
+    
 
     
     if (kiOS9)
         %init(iOS9);
-    if (kiOS8)
-        %init(iOS8);
-    if (kiOS7)
-        %init(iOS7)
 }

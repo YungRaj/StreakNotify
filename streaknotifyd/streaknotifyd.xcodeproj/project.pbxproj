@@ -1,0 +1,140 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		A586A5ED1CA065C3009D163B /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = file; path = .DS_Store; sourceTree = "<group>"; };
+		A586A5EE1CA065C3009D163B /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		A586A5EF1CA065C3009D163B /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A586A5E71CA065C3009D163B = {
+			isa = PBXGroup;
+			children = (
+				A586A5ED1CA065C3009D163B /* .DS_Store */,
+				A586A5EE1CA065C3009D163B /* main.mm */,
+				A586A5EF1CA065C3009D163B /* Makefile */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		A586A5EC1CA065C3009D163B /* streaknotifyd */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = A586A5F01CA065C3009D163B /* Build configuration list for PBXLegacyTarget "streaknotifyd" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/ilhan/Downloads/Files/GitHub/StreakNotify/streaknotifyd;
+			dependencies = (
+			);
+			name = streaknotifyd;
+			passBuildSettingsInEnvironment = 1;
+			productName = streaknotifyd;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		A586A5E81CA065C3009D163B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = A586A5EB1CA065C3009D163B /* Build configuration list for PBXProject "streaknotifyd" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A586A5E71CA065C3009D163B;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A586A5EC1CA065C3009D163B /* streaknotifyd */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		A586A5E91CA065C3009D163B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		A586A5EA1CA065C3009D163B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		A586A5F11CA065C3009D163B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = streaknotifyd;
+			};
+			name = Debug;
+		};
+		A586A5F21CA065C3009D163B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = streaknotifyd;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A586A5EB1CA065C3009D163B /* Build configuration list for PBXProject "streaknotifyd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A586A5E91CA065C3009D163B /* Debug */,
+				A586A5EA1CA065C3009D163B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A586A5F01CA065C3009D163B /* Build configuration list for PBXLegacyTarget "streaknotifyd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A586A5F11CA065C3009D163B /* Debug */,
+				A586A5F21CA065C3009D163B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A586A5E81CA065C3009D163B /* Project object */;
+}

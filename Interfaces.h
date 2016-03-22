@@ -5,7 +5,32 @@
 #import <objc/runtime.h>
 
 
-// not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables will be used
+// I'm sorry this is a spam file, haven't gone through each definition of each class to figure out what methods are used and which ones are not... but these are just classes dumped by class-dump so that I can get this thing to compile
+// Remember: not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables/properties will be used
+
+@class NSLock, NSMutableDictionary, NSString;
+
+@interface CPDistributedNotificationCenter : NSObject {
+    NSString* _centerName;
+    NSLock* _lock;
+    CFRunLoopSourceRef _receiveNotificationSource;
+    BOOL _isServer;
+    NSMutableDictionary* _sendPorts;
+    unsigned _startCount;
+}
++(CPDistributedNotificationCenter*)centerNamed:(NSString*)centerName;
+-(id)_initWithServerName:(NSString*)serverName;
+-(NSString*)name;
+-(void)_createReceiveSourceForRunLoop:(CFRunLoopRef)runLoop;
+-(void)_checkIn;
+-(void)_checkOutAndRemoveSource;
+-(void)_notificationServerWasRestarted;
+-(void)runServer;
+-(void)startDeliveringNotificationsToMainThread;
+-(void)postNotificationName:(NSString*)name;
+-(void)postNotificationName:(NSString*)name userInfo:(NSDictionary*)info;
+-(BOOL)postNotificationName:(NSString*)name userInfo:(NSDictionary*)info toBundleIdentifier:(NSString*)bundleIdentifier;
+@end
 
 @class NSDate, NSMutableArray, NSString, SCChat;
 @protocol SCFeedItemDelegate, SCFilterableProtocol;

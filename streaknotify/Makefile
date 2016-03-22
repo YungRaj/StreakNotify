@@ -6,7 +6,7 @@ BUNDLE_NAME = StreakNotify
 StreakNotify_FILES = StreakNotifyListController.mm
 StreakNotify_INSTALL_PATH = /Library/PreferenceBundles
 StreakNotify_FRAMEWORKS = UIKit
-StreakNotify_PRIVATE_FRAMEWORKS = Preferences
+StreakNotify_PRIVATE_FRAMEWORKS = Preferences AppSupport 
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
