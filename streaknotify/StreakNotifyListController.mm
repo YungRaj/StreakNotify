@@ -13,12 +13,12 @@
 -(id)specifiers {
     if(!_specifiers) {
 		_specifiers = [[self loadSpecifiersFromPlistName:@"StreakNotify" target:self] retain];
-        // not going to work yet because the UIApplication sharedApplication object is not the SpringBoard (it's the Settings application object), we need to find it somehow
-        // putting this here just to let us know that we have to start the snapchat application in the background before requesting the displayNames, otherwise none of the code that uses the CPDistributedNotificationCenter will work
+        /* not going to work yet because the UIApplication sharedApplication object is not the SpringBoard (it's the Settings application object), we need to find it somehow */
+        /* putting this here just to let us know that we have to start the snapchat application in the background before requesting the displayNames, otherwise none of the code that uses the CPDistributedNotificationCenter will work */
         [(SpringBoard*)[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.toyopagroup.picaboo" suspended:YES];
         
-        // become a client of the daemon's server so that it will trigger retrieval of the display names from the app
-        // assuming that the daemon started correctly after a respring or reboot, we can assume that the server exists so go ahead and become a client
+        /* become a client of the daemon's server so that it will trigger retrieval of the display names from the app */
+        /* assuming that the daemon started correctly after a respring or reboot, we can assume that the server exists so go ahead and become a client */
         
         CPDistributedNotificationCenter* notificationCenter;
         notificationCenter = [CPDistributedNotificationCenter centerNamed:@"com.YungRaj.streaknotifyd"];
@@ -35,8 +35,8 @@
 
 -(void)displayNamesFromDaemon:(NSNotification*)notification{
     
-    // notification is sent from daemon after requesting the displayNames from the application/tweak 
-    // finally sets the displayName property so that the PSLinkList can be populated and the user can finally choose which friends he/she wants to enable for custom notifications for certain friends
+    /* notification is sent from daemon after requesting the displayNames from the application/tweak */
+    /* finally sets the displayName property so that the PSLinkList can be populated and the user can finally choose which friends he/she wants to enable for custom notifications for certain friends */
     if([[notification name] isEqual:@"displayNamesFromDaemon"]){
         NSDictionary *userInfo = [notification userInfo];
         if([[userInfo objectForKey:@"displayNames"] isKindOfClass:[NSArray class]]){
@@ -47,7 +47,7 @@
 }
 
 -(void)respring{
-    // use the springboard's relaunchSpringBoardNow function to respring
+    /* use the springboard's relaunchSpringBoardNow function to respring */
     [[UIApplication sharedApplication] performSelector:@selector(suspend)];
     usleep(51500);
     

@@ -1,3 +1,8 @@
+/*
+This tweak notifies a user when a snapchat streak with another friend is running down in time. It also tells a user how much time is remanining in their feed. Customizable with a bunch of settings, custom time, custom friends, and even preset values that you can enable with a switch in preferences 
+ 
+*/
+
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -23,7 +28,7 @@ static void LoadPreferences() {
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
-    // utility method to make sure that the label's size doesn't truncate the text that it is supposed to display 
+    /* utility method to make sure that the label's size doesn't truncate the text that it is supposed to display */
     label.frame = labelRect;
     
     int fontSize = 15;
@@ -50,7 +55,7 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 
 
 static NSArray* GetFriendDisplayNames(){
-    // provide display names for each friend into an array
+    /* provide display names for each friend into an array */
     
     NSMutableArray *names = [[NSMutableArray alloc] init];
     Manager *manager = [%c(Manager) shared];
@@ -63,7 +68,8 @@ static NSArray* GetFriendDisplayNames(){
     return names;
 }
 
-// will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
+/* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
+*/
 /*static NSArray* GetFriendDisplayNamesWithStreaksOnly(){
     // provide display names for friends with streaks only
     
@@ -82,7 +88,8 @@ static NSArray* GetFriendDisplayNames(){
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
-    // good utility method to figure out the time remaining for the streak, might want to add a few fixes, because we are only assuming that the time remaining is 24 hours after the last sent snap when it could be different. We don't really know how the snap streaks start and end at the server level because it does all the work for figuring that out. As far as I've seen by reverse engineering the app, the app can only request to the server to up or even change the snap streak count... 
+    /* good utility method to figure out the time remaining for the streak, might want to add a few fixes, because we are only assuming that the time remaining is 24 hours after the last sent snap when it could be different. We don't really know how the snap streaks start and end at the server level because it does all the work for figuring that out. As far as I've seen by reverse engineering the app, the app can only request to the server to up or even change the snap streak count...
+     */
     if(!f || !c){
         return @"";
     }
@@ -110,8 +117,9 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
     if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
-        // this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
-        // again this could happen because we don't know how the streaks start and end because as far as I've know the server does all the work for that... might have to ask someone more intelligent to figure out a way around this
+        /*this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
+         again this could happen because we don't know how the streaks start and end because as far as I've know the server does all the work for that... might have to ask someone more intelligent to figure out a way around this
+         */
     }
     
     if(day){
@@ -149,7 +157,8 @@ static void ScheduleNotification(NSDate *snapDate,
 }
 
 static void ResetNotifications(){
-    // ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
+    /* ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
+     */
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
@@ -193,7 +202,8 @@ static void ResetNotifications(){
 
 -(void)viewDidLoad{
     
-    // easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their streaks to work
+    /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
+     */
     %orig();
     if(!prefs) {
         UIAlertController *controller =
@@ -233,7 +243,8 @@ static void ResetNotifications(){
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
-    // just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
+    /* just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
+     */
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -247,7 +258,8 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     ResetNotifications();
     
-    // run the server on the app so that the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
+    /* run the server on the app (tweak) so that when the preferences bundle becomes a client of the daemon's server, the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
+    */
     
     CPDistributedNotificationCenter* notificationCenter;
     notificationCenter = [CPDistributedNotificationCenter centerNamed:@"com.YungRaj.streaknotify"];
@@ -266,9 +278,12 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 
 %new
        
-// also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later to only show current active streaks in PSLinkList if the user only wants to see those 
+/* also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later for ease of access to only show current active streaks in PSLinkList if the user only wants to see those
+*/
+
 -(void)clientDidStartListeningNotification:(NSNotification*)notification{
-    // this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
+    /* this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
+    */
     CPDistributedNotificationCenter *notificationCenter = [notification object];
     [notificationCenter postNotificationName:@"displayNamesFromApp"
                                     userInfo:@{GetFriendDisplayNames():
@@ -287,9 +302,11 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 %hook Snap
 
 -(void)didSend{
-    // make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
+    /* make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
+    */
     
-    // can call ResetNotifications, but this might be faster... keeping it for now
+    /* can call ResetNotifications, but this might be faster... keeping it for now
+    */
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -317,7 +334,8 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     [manager release];
     
     
-// hide the UILabels if they are not being used or refresh the table view (not sure if that will cause infinite recursion yet cause we don't know if we can assume that this is not being called during a refresh)
+/* hide the UILabels if they are not being used or refresh the table view (not sure if that will cause infinite recursion/ stack overflow yet cause we don't know if we can assume that this is not being called during a refresh)
+ */
     
     
     
@@ -335,15 +353,17 @@ static NSMutableArray *labels = nil;
 
 -(SCFeedTableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
-    // updating tableview and we want to make sure the labels are updated too, if not created if the feed is now being populated
+    /* updating tableview and we want to make sure the labels are updated too, if not created if the feed is now being populated
+     */
     
     SCFeedTableViewCell *cell = %orig(tableView,indexPath);
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        // want to do this on the main thread because all ui updates should be done on the main thread
-        // creates the labels
+        /* want to do this on the main thread because all ui updates should be done on the main thread
+         creates the labels
+         */
         
         if(!instances){
             instances = [[NSMutableArray alloc] init];
@@ -410,7 +430,7 @@ static NSMutableArray *labels = nil;
 
 
 -(void)didFinishReloadData{
-    // want to update notifications if something has changed after reloading data
+    /* want to update notifications if something has changed after reloading data */
     %orig();
     ResetNotifications();
     
@@ -440,8 +460,9 @@ static NSMutableArray *labels = nil;
 
 %ctor {
     
-    // constructor for the tweak, registers preferences stored in /var/mobile
-    // and uses iOS 9 preferences, might want to use Snapchat version instead but we'll see
+    /* constructor for the tweak, registers preferences stored in /var/mobile
+     and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
+     */
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,
                                     (CFNotificationCallback)LoadPreferences,
