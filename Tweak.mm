@@ -131,6 +131,7 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     }else if(second){
         return [NSString stringWithFormat:@"%ld s",(long)second];
     }else{
+    /* this shouldn't happen but to shut the compiler up this is needed */
         return @"Unknown";
     }
     
@@ -141,6 +142,7 @@ static void ScheduleNotification(NSDate *snapDate,
                                  float seconds,
                                  float minutes,
                                  float hours){
+    NSLog(@"Scheduling notification for %@",displayName);
     // schedules the notification and makes sure it isn't before the current time
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
@@ -159,6 +161,7 @@ static void ScheduleNotification(NSDate *snapDate,
 static void ResetNotifications(){
     /* ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
      */
+    
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
@@ -194,6 +197,8 @@ static void ResetNotifications(){
             }
         }
     }
+    
+    NSLog(@"Resetting notifications success");
 }
 
 %group iOS9
@@ -204,6 +209,9 @@ static void ResetNotifications(){
     
     /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
      */
+    
+    NSLog(@"No preferences found on file, letting user know");
+    
     %orig();
     if(!prefs) {
         UIAlertController *controller =
@@ -272,6 +280,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     [application registerUserNotificationSettings:mySettings];
     
+    NSLog(@"Just launched application successfully, resetting local notifications for streaks");
     
     ResetNotifications();
     
@@ -281,7 +290,14 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 -(void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
     // everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time
     %orig();
-    ResetNotifications();
+    
+    NSLog(@"Updated chats from a remote notification, can now reset local notifications after fetching updates from each chat");
+    Manager *manager = [%c(Manager) shared];
+    [manager fetchUpdatesWithCompletionHandler:^(BOOL success){
+        NSLog(@"Fetched updates from server, going to reset local notifications now.");
+        ResetNotifications();
+    }                           includeStories:NO
+                       didHappendWhenAppLaunch:NO];
 }
 
 %new
@@ -307,12 +323,15 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 
 %hook Snap
 
--(void)didSend{
+-(void)postSend{
     /* make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
     */
     
     /* can call ResetNotifications, but this might be faster... keeping it for now
     */
+    
+    NSLog(@"Snap has been sent, going to update notifications now");
+    
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -389,6 +408,7 @@ static NSMutableArray *labels = nil;
         if(![chat lastSnap]){
             return;
         }
+    
         
         NSString *lastSnapSender = [[chat lastSnap] sender];
         
