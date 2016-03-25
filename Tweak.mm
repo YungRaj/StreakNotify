@@ -240,6 +240,24 @@ static void ResetNotifications(){
 
 %hook AppDelegate
 
+-(BOOL)application:(UIApplication*)application willFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
+    
+    NSLog(@"Running server on the app (tweak)");
+    
+    CPDistributedNotificationCenter* notificationCenter;
+    notificationCenter = [CPDistributedNotificationCenter centerNamed:@"appToDaemon"];
+    [notificationCenter runServer];
+    [notificationCenter retain];
+    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self
+           selector:@selector(daemonDidStartListening:)
+               name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
+             object:notificationCenter];
+    
+    return %orig();
+
+}
+
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
@@ -253,27 +271,17 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     [UIUserNotificationSettings settingsForTypes:types categories:nil];
     
     [application registerUserNotificationSettings:mySettings];
-
-    [mySettings release];
+    
     
     ResetNotifications();
     
-    /* run the server on the app (tweak) so that when the preferences bundle becomes a client of the daemon's server, the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
-    */
-    
-    CPDistributedNotificationCenter* notificationCenter;
-    notificationCenter = [CPDistributedNotificationCenter centerNamed:@"com.YungRaj.streaknotify"];
-    [notificationCenter runServer];
-    [notificationCenter retain];
-    
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self
-           selector:@selector(clientDidStartListening:)
-               name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
-             object:notificationCenter];
-    
-    
     return %orig();
+}
+
+-(void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
+    // everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time
+    %orig();
+    ResetNotifications();
 }
 
 %new
@@ -281,9 +289,12 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 /* also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later for ease of access to only show current active streaks in PSLinkList if the user only wants to see those
 */
 
--(void)clientDidStartListeningNotification:(NSNotification*)notification{
+-(void)daemonDidStartListening:(NSNotification*)notification{
     /* this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
     */
+    
+    NSLog(@"Client started listening to app (tweak), sending display names over");
+    
     CPDistributedNotificationCenter *notificationCenter = [notification object];
     [notificationCenter postNotificationName:@"displayNamesFromApp"
                                     userInfo:@{GetFriendDisplayNames():
@@ -291,11 +302,6 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 }
 
 
--(void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
-    // everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time
-    %orig();
-    ResetNotifications();
-}
 
 %end
 
@@ -330,8 +336,6 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
             [[UIApplication sharedApplication] cancelLocalNotification:localNotification];
         }
     }
-    
-    [manager release];
     
     
 /* hide the UILabels if they are not being used or refresh the table view (not sure if that will cause infinite recursion/ stack overflow yet cause we don't know if we can assume that this is not being called during a refresh)
@@ -421,8 +425,6 @@ static NSMutableArray *labels = nil;
             label.text = @"";
             label.hidden = YES;
         }
-        
-        [manager release];
     });
     
     return cell;
@@ -463,6 +465,10 @@ static NSMutableArray *labels = nil;
     /* constructor for the tweak, registers preferences stored in /var/mobile
      and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
      */
+    
+    /* run the server on the app (tweak) so that when the preferences bundle becomes a client of the daemon's server, the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
+     */
+    
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,
                                     (CFNotificationCallback)LoadPreferences,

@@ -9,7 +9,7 @@ StreakNotify_PRIVATE_FRAMEWORKS = AppSupport
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	install.exec "killall -9 Snapchat"
+	install.exec "killall -9 backboardd"
 SUBPROJECTS += streaknotify
 SUBPROJECTS += streaknotifyd
 include $(THEOS_MAKE_PATH)/aggregate.mk
