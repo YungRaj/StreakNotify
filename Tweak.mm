@@ -23,8 +23,9 @@ static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 NSString *kSnapDidSendNotification = @"snapDidSendNotification";
 
 static void LoadPreferences() {
-    prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
-    
+    if(!prefs){
+        prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
+    }
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
@@ -137,12 +138,19 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
 }
 
+static void CancelScheduledLocalNotifications(){
+    UIApplication *application = [UIApplication sharedApplication];
+    NSArray *scheduledLocalNotifications = [application scheduledLocalNotifications];
+    for(UILocalNotification *notification in scheduledLocalNotifications){
+        [application cancelLocalNotification:notification];
+    }
+}
+
 static void ScheduleNotification(NSDate *snapDate,
                                  NSString *displayName,
                                  float seconds,
                                  float minutes,
                                  float hours){
-    NSLog(@"Scheduling notification for %@",displayName);
     // schedules the notification and makes sure it isn't before the current time
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
@@ -155,6 +163,7 @@ static void ScheduleNotification(NSDate *snapDate,
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        NSLog(@"Scheduling notification for %@, firing at %@",displayName,[notification fireDate]);
     }
 }
 
@@ -162,7 +171,7 @@ static void ResetNotifications(){
     /* ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
      */
     
-    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    CancelScheduledLocalNotifications();
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -199,6 +208,16 @@ static void ResetNotifications(){
     }
     
     NSLog(@"Resetting notifications success");
+}
+
+void handleRemoteNotification(){
+    NSLog(@"Resetting local notifications");
+    [[%c(Manager) shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
+        NSLog(@"Finished fetching updates, resetting local notifications");
+        ResetNotifications();
+    }
+                                            includeStories:NO
+                                    didHappendWhenAppLaunch:YES];
 }
 
 %group iOS9
@@ -287,18 +306,12 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     return %orig();
 }
 
--(void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
-    // everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time
+-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+    /* everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time*/
+    handleRemoteNotification();
     %orig();
-    
-    NSLog(@"Updated chats from a remote notification, can now reset local notifications after fetching updates from each chat");
-    Manager *manager = [%c(Manager) shared];
-    [manager fetchUpdatesWithCompletionHandler:^(BOOL success){
-        NSLog(@"Fetched updates from server, going to reset local notifications now.");
-        ResetNotifications();
-    }                           includeStories:NO
-                       didHappendWhenAppLaunch:NO];
 }
+
 
 %new
        
@@ -329,6 +342,9 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     /* can call ResetNotifications, but this might be faster... keeping it for now
     */
+    
+    %orig();
+    
     
     NSLog(@"Snap has been sent, going to update notifications now");
     
