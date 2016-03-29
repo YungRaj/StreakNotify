@@ -8,6 +8,23 @@
 // I'm sorry this is a spam file, haven't gone through each definition of each class to figure out what methods are used and which ones are not... but these are just classes dumped by class-dump so that I can get this thing to compile
 // Remember: not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables/properties will be used
 
+@interface CPDistributedMessagingCenter : NSObject
+
++ (instancetype)centerNamed:(NSString *)name;
+
+- (void)runServer;
+- (void)runServerOnCurrentThread;
+- (void)stopServer;
+
+- (void)registerForMessageName:(NSString *)messageName target:(id)target selector:(SEL)selector;
+
+- (BOOL)sendMessageName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
+
+- (NSDictionary *)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
+- (NSDictionary *)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo error:(NSError **)error;
+
+@end
+
 @class NSLock, NSMutableDictionary, NSString;
 
 @interface CPDistributedNotificationCenter : NSObject {

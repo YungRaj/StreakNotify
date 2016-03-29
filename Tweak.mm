@@ -9,6 +9,7 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <substrate.h>
+#import <rocketbootstrap/rocketbootstrap.h>
 
 #import "Interfaces.h"
 
@@ -138,6 +139,7 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     
 }
 
+/* easier to read when viewing the code, can call [application cancelAllLocalNotfiications] though */
 static void CancelScheduledLocalNotifications(){
     UIApplication *application = [UIApplication sharedApplication];
     NSArray *scheduledLocalNotifications = [application scheduledLocalNotifications];
@@ -267,23 +269,6 @@ void handleRemoteNotification(){
 
 %hook AppDelegate
 
--(BOOL)application:(UIApplication*)application willFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
-    
-    NSLog(@"Running server on the app (tweak)");
-    
-    CPDistributedNotificationCenter* notificationCenter;
-    notificationCenter = [CPDistributedNotificationCenter centerNamed:@"appToDaemon"];
-    [notificationCenter runServer];
-    [notificationCenter retain];
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self
-           selector:@selector(daemonDidStartListening:)
-               name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
-             object:notificationCenter];
-    
-    return %orig();
-
-}
 
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
@@ -303,6 +288,18 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     ResetNotifications();
     
+    NSLog(@"Running the server on the app (tweak)");
+    
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
+    rocketbootstrap_unlock("com.YungRaj.streaknotify");
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c retain];
+    [c runServerOnCurrentThread];
+    [c registerForMessageName:@"daemon-tweak"
+                    target:self
+                     selector:@selector(daemonRequest:userInfo:)];
+    
+    
     return %orig();
 }
 
@@ -318,16 +315,17 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 /* also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later for ease of access to only show current active streaks in PSLinkList if the user only wants to see those
 */
 
--(void)daemonDidStartListening:(NSNotification*)notification{
+-(void)daemonRequest:(NSString*)name userInfo:(NSDictionary*)userInfo{
     /* this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
     */
     
     NSLog(@"Client started listening to app (tweak), sending display names over");
     
-    CPDistributedNotificationCenter *notificationCenter = [notification object];
-    [notificationCenter postNotificationName:@"displayNamesFromApp"
-                                    userInfo:@{GetFriendDisplayNames():
-                                                @"displayNames"}];
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c sendMessageName:@"app-daemon"
+              userInfo:@{@"displayNames":
+                         GetFriendDisplayNames()}];
 }
 
 

@@ -20,25 +20,25 @@
         NSLog(@"Preferences bundle requesting display names");
         
         CPDistributedNotificationCenter* notificationCenter;
-        notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferencesToDaemon"];
+        notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
         [notificationCenter startDeliveringNotificationsToMainThread];
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc addObserver:self
-               selector:@selector(displayNamesFromDaemon:)
-                   name:@"displayNamesFromDaemon"
+               selector:@selector(callBackToPreferences:)
+                   name:@"daemon-preferences"
                  object:nil];
 	}
 	return _specifiers;
 }
 
--(void)displayNamesFromDaemon:(NSNotification*)notification{
+-(void)callBackToPreferences:(NSNotification*)notification{
     
     /* notification is sent from daemon after requesting the displayNames from the application/tweak */
     /* finally sets the displayName property so that the PSLinkList can be populated and the user can finally choose which friends he/she wants to enable for custom notifications for certain friends */
     NSLog(@"Got notification from daemon, finally have display names in Preferences bundle");
     
-    if([[notification name] isEqual:@"displayNamesFromDaemon"]){
+    if([[notification name] isEqual:@"daemon-preferences"]){
         NSDictionary *userInfo = [notification userInfo];
         if([[userInfo objectForKey:@"displayNames"] isKindOfClass:[NSArray class]]){
             _displayNames = (NSArray*)[userInfo objectForKey:@"displayNames"];

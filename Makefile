@@ -5,6 +5,7 @@ ARCHS = armv7 arm64
 TWEAK_NAME = StreakNotify
 StreakNotify_FILES = Tweak.xm
 StreakNotify_PRIVATE_FRAMEWORKS = AppSupport
+StreakNotify_LIBRARIES = rocketbootstrap
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

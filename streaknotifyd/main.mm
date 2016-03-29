@@ -6,7 +6,24 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import <rocketbootstrap/rocketbootstrap.h>
 
+@interface CPDistributedMessagingCenter : NSObject
+
++ (instancetype)centerNamed:(NSString *)name;
+
+- (void)runServer;
+- (void)runServerOnCurrentThread;
+- (void)stopServer;
+
+- (void)registerForMessageName:(NSString *)messageName target:(id)target selector:(SEL)selector;
+
+- (BOOL)sendMessageName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
+
+- (NSDictionary*)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
+- (NSDictionary*)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo error:(NSError **)error;
+
+@end
 
 
 @class NSLock, NSMutableDictionary, NSString;
@@ -49,8 +66,10 @@ This is a daemon that handles requests to the Snapchat application and retrieves
         /* the daemon is a client and a server in this case, a client of the app (tweak) and a server to the preferences bundle */
         NSLog(@"Running server on the daemon");
     
+        rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
+        
         CPDistributedNotificationCenter* notificationCenter;
-        notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferencesToDaemon"];
+        notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
         [notificationCenter runServer];
         [notificationCenter retain];
         
@@ -64,39 +83,47 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     return self;
 }
 
+
 -(void)preferencesDidStartListening:(NSNotification*)notification{
     // NSDictionary* userInfo = [notification userInfo];
    // NSString *bundleIdentifier = [userInfo objectForKey:@"CPBundleIdentifier"];
     
     
     /* once the daemon's server has a client that means we can become a client of the app (tweak), so that the notification for getting the display names will be triggered */
+    
+    /* use CPDistributedMessagingCenter for communication between daemon and tweak to avoid sandboxing issues */
     NSLog(@"Preferences become a client, becoming a client of app (tweak) now");
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
+    rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c runServerOnCurrentThread];
+    [c retain];
+    [c registerForMessageName:@"tweak-daemon"
+                       target:self
+                     selector:@selector(callBackToDaemon:userInfo:)];
     
-    CPDistributedNotificationCenter *notificationCenter = [CPDistributedNotificationCenter centerNamed:@"appToDaemon"];
-    [notificationCenter startDeliveringNotificationsToMainThread];
+    c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c sendMessageName:@"daemon-tweak" userInfo:nil];
     
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self
-           selector:@selector(displayNamesFromApp:)
-               name:@"displayNamesFromApp"
-             object:nil];
+    
 }
 
--(void)displayNamesFromApp:(NSNotification*)notification{
-    if([[notification name] isEqual:@"displayNamesFromApp"]){
+-(void)callBackToDaemon:(NSString*)name userInfo:(NSDictionary*)userInfo{
+    if([name isEqual:@"tweak-daemon"]){
         
         /* once the app's server sends this notification after the client (the daemon [us]) starts listening that means we have the display names and we can safely hand them over to the preferences bundle */
         
         /* sets the displayNames ivar just in case requesting them from the app (tweak) is not needed, most likely a good idea in the future cause then we don't need to keep talking to the app (tweak) each time */
         
         NSLog(@"Got display names from the app (tweak)");
-        NSDictionary *userInfo = [notification userInfo];
-        CPDistributedNotificationCenter *notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferencesToDaemon"];
+        CPDistributedNotificationCenter *notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
         if([[userInfo objectForKey:@"displayNames"] isKindOfClass:[NSArray class]]){
             _displayNames = (NSArray*)[userInfo objectForKey:@"displayNames"];
-            [notificationCenter postNotificationName:@"displayNamesFromDaemon"
-                                            userInfo:@{_displayNames:
-                                                       @"displayNames"}];
+            [notificationCenter postNotificationName:@"daemon-preferences"
+                                            userInfo:@{@"displayNames":
+                                                        _displayNames
+                                                       }];
         }
     }
 }
@@ -112,7 +139,7 @@ int main(int argc, char **argv, char **envp) {
     [[NSRunLoop currentRunLoop] run];
     
     [daemon release];
-    [pool release];
+    [pool drain];
     
 	return 0;
 }
