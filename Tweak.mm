@@ -29,6 +29,57 @@ static void LoadPreferences() {
     }
 }
 
+static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbols(){
+    /* provide display names for each friend into an array */
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    for(Friend *f in [friends getAllFriends]){
+        NSString *displayName = [f display];
+        NSString *friendmoji = [f getFriendmojiForViewType:0];
+        if(displayName && ![displayName isEqual:@""]){
+            [dictionary setValue:friendmoji forKey:displayName];
+        }else{
+            NSString *name = [f name];
+            if(name && ![name isEqual:@""]){
+                [dictionary setValue:friendmoji forKey:name];
+            }
+        }
+        
+    }
+    return dictionary;
+}
+
+/* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
+ */
+/*static NSArray* GetFriendDisplayNamesWithStreaksOnly(){
+ // provide display names for friends with streaks only
+ 
+ NSMutableArray *names = [[NSMutableArray alloc] init];
+ Manager *manager = [%c(Manager) shared];
+ User *user = [manager user];
+ Friends *friends = [user friends];
+ for(Friend *f in [friends getAllFriends]){
+ if([f snapStreakCount]>2){
+ NSString *displayName = [f display];
+ [names addObject:displayName];
+ }
+ }
+ return names;
+ }*/
+
+static void SendRequestToDaemon(){
+    NSLog(@"Sending request to Daemon");
+    
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
+    rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c sendMessageName:@"tweak-daemon"
+              userInfo:GetFriendDisplayNamesAndFriendmojiSymbols()];
+}
+
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
     /* utility method to make sure that the label's size doesn't truncate the text that it is supposed to display */
     label.frame = labelRect;
@@ -54,39 +105,6 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
         
     } while (fontSize > minFontSize);
 }
-
-
-static NSArray* GetFriendDisplayNames(){
-    /* provide display names for each friend into an array */
-    
-    NSMutableArray *names = [[NSMutableArray alloc] init];
-    Manager *manager = [%c(Manager) shared];
-    User *user = [manager user];
-    Friends *friends = [user friends];
-    for(Friend *f in [friends getAllFriends]){
-        NSString *displayName = [f display];
-        [names addObject:displayName];
-    }
-    return names;
-}
-
-/* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
-*/
-/*static NSArray* GetFriendDisplayNamesWithStreaksOnly(){
-    // provide display names for friends with streaks only
-    
-    NSMutableArray *names = [[NSMutableArray alloc] init];
-    Manager *manager = [%c(Manager) shared];
-    User *user = [manager user];
-    Friends *friends = [user friends];
-    for(Friend *f in [friends getAllFriends]){
-        if([f snapStreakCount]>2){
-            NSString *displayName = [f display];
-            [names addObject:displayName];
-        }
-    }
-    return names;
-}*/
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c){
@@ -288,16 +306,11 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     ResetNotifications();
     
-    NSLog(@"Running the server on the app (tweak)");
-    
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
-    rocketbootstrap_unlock("com.YungRaj.streaknotify");
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_distributedmessagingcenter_apply(c);
-    [c retain];
-    [c runServerOnCurrentThread];
-    [c registerForMessageName:@"daemon-tweak"
-                    target:self
-                     selector:@selector(daemonRequest:userInfo:)];
+    [c sendMessageName:@"applicationLaunched" userInfo:nil];
+    
+    SendRequestToDaemon();
     
     
     return %orig();
@@ -309,23 +322,14 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     %orig();
 }
 
-
-%new
-       
-/* also one thing to consider, this is getting the display names from all friends regardless if there is a streak or not, which works cause some friends might become future streaks... Might make an option later for ease of access to only show current active streaks in PSLinkList if the user only wants to see those
-*/
-
--(void)daemonRequest:(NSString*)name userInfo:(NSDictionary*)userInfo{
-    /* this means that the daemon has become a client of our server and we can now send a notification to the daemon with the display names :)
-    */
+-(void)applicationWillTerminate:(UIApplication *)application {
+    NSLog(@"Snapchat application exiting, daemon will handle the exit of the application");
     
-    NSLog(@"Client started listening to app (tweak), sending display names over");
-    
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
     rocketbootstrap_distributedmessagingcenter_apply(c);
-    [c sendMessageName:@"app-daemon"
-              userInfo:@{@"displayNames":
-                         GetFriendDisplayNames()}];
+    [c sendMessageName:@"applicationTerminated"
+              userInfo:nil];
+    %orig();
 }
 
 

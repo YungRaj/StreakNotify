@@ -3,8 +3,13 @@
 
 
 @interface StreakNotifyListController () {
-    NSArray *_displayNames;
+    
 }
+
+@property (strong,nonatomic) NSDictionary *dictionary;
+@property (strong,nonatomic) NSArray *streaks;
+@property (strong,nonatomic) NSArray *displayNames;
+
 
 @end
 
@@ -13,7 +18,6 @@
 -(id)specifiers {
     if(!_specifiers) {
 		_specifiers = [[self loadSpecifiersFromPlistName:@"StreakNotify" target:self] retain];
-        [(SpringBoard*)[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.toyopagroup.picaboo" suspended:YES];
         
         /* become a client of the daemon's server so that it will trigger retrieval of the display names from the app */
         /* assuming that the daemon started correctly after a respring or reboot, we can assume that the server exists so go ahead and become a client */
@@ -32,6 +36,7 @@
 	return _specifiers;
 }
 
+
 -(void)callBackToPreferences:(NSNotification*)notification{
     
     /* notification is sent from daemon after requesting the displayNames from the application/tweak */
@@ -40,14 +45,9 @@
     
     if([[notification name] isEqual:@"daemon-preferences"]){
         NSDictionary *userInfo = [notification userInfo];
-        if([[userInfo objectForKey:@"displayNames"] isKindOfClass:[NSArray class]]){
-            _displayNames = (NSArray*)[userInfo objectForKey:@"displayNames"];
-            UIAlertController *controller =
-            [UIAlertController alertControllerWithTitle:@"StreakNotify"
-                                                message:[NSString stringWithFormat:@"%@",_displayNames]
-                                         preferredStyle:UIAlertControllerStyleAlert];
-            [self presentViewController:controller animated:YES completion:nil];
-        }
+        self.dictionary = userInfo;
+        self.streaks = [userInfo allValues];
+        self.displayNames = [userInfo allKeys];
     }
 }
 
@@ -72,6 +72,13 @@
 // check out my project on github
 -(void)github {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/ilhanraja/StreakNotify"]];
+}
+
+-(void)dealloc{
+    [super dealloc];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"daemon-preferences"
+                                                  object:nil];
 }
 
 @end
