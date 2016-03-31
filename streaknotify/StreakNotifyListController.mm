@@ -1,17 +1,15 @@
 #import "StreakNotifyListController.h"
 
 
-
 @interface StreakNotifyListController () {
     
 }
 
-@property (strong,nonatomic) NSDictionary *dictionary;
-@property (strong,nonatomic) NSArray *streaks;
-@property (strong,nonatomic) NSArray *displayNames;
-
+@property (strong,nonatomic) NSArray *names;
 
 @end
+
+
 
 @implementation StreakNotifyListController
 
@@ -21,34 +19,19 @@
         
         /* become a client of the daemon's server so that it will trigger retrieval of the display names from the app */
         /* assuming that the daemon started correctly after a respring or reboot, we can assume that the server exists so go ahead and become a client */
-        NSLog(@"Preferences bundle requesting display names");
-        
-        CPDistributedNotificationCenter* notificationCenter;
-        notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
-        [notificationCenter startDeliveringNotificationsToMainThread];
-        
-        NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-        [nc addObserver:self
-               selector:@selector(callBackToPreferences:)
-                   name:@"daemon-preferences"
-                 object:nil];
+        _names = [NSArray arrayWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
 	}
 	return _specifiers;
 }
 
+-(NSArray*)titles{
+    NSLog(@"Retrieving titles from file, daemon should have them saved");
+    return self.names;
+}
 
--(void)callBackToPreferences:(NSNotification*)notification{
-    
-    /* notification is sent from daemon after requesting the displayNames from the application/tweak */
-    /* finally sets the displayName property so that the PSLinkList can be populated and the user can finally choose which friends he/she wants to enable for custom notifications for certain friends */
-    NSLog(@"Got notification from daemon, finally have display names in Preferences bundle");
-    
-    if([[notification name] isEqual:@"daemon-preferences"]){
-        NSDictionary *userInfo = [notification userInfo];
-        self.dictionary = userInfo;
-        self.streaks = [userInfo allValues];
-        self.displayNames = [userInfo allKeys];
-    }
+-(NSArray*)values{
+    NSLog(@"Retrieving values from file, daemon should have saved");
+    return self.names;
 }
 
 -(void)respring{

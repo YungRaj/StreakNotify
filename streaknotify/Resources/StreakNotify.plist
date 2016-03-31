@@ -6,10 +6,6 @@
 	<array>
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
-		</dict>
-		<dict>
-			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
 			<false/>
@@ -60,7 +56,25 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
+			<string>Friends</string>
+		</dict>
+		<dict>
+			<key>id</key>
+			<string>Friends</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>key</key>
+			<string>kCustomFriends</string>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>label</key>
 			<string>Custom Friends</string>
+			<key>titlesDataSource</key>
+			<string>titles</string>
+			<key>valuesDataSource</key>
+			<string>values</string>
+			<key>PostNotification</key>
+			<string>com.YungRaj.streaknotify.preferences.changed</string>
 		</dict>
 		<dict>
 			<key>cell</key>

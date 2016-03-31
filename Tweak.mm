@@ -29,10 +29,10 @@ static void LoadPreferences() {
     }
 }
 
-static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbols(){
+static NSArray* GetFriendDisplayNamesAndFriendmojiSymbols(){
     /* provide display names for each friend into an array */
     
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    NSMutableArray *names = [[NSMutableArray alloc] init];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -40,16 +40,16 @@ static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbols(){
         NSString *displayName = [f display];
         NSString *friendmoji = [f getFriendmojiForViewType:0];
         if(displayName && ![displayName isEqual:@""]){
-            [dictionary setValue:friendmoji forKey:displayName];
+            [names addObject:[NSString stringWithFormat:@"%@ %@",displayName,friendmoji]];
         }else{
             NSString *name = [f name];
             if(name && ![name isEqual:@""]){
-                [dictionary setValue:friendmoji forKey:name];
+                [names addObject:[NSString stringWithFormat:@"%@ %@",name,friendmoji]];
             }
         }
         
     }
-    return dictionary;
+    return names;
 }
 
 /* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
@@ -77,7 +77,7 @@ static void SendRequestToDaemon(){
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"tweak-daemon"
-              userInfo:GetFriendDisplayNamesAndFriendmojiSymbols()];
+              userInfo:@{@"names":GetFriendDisplayNamesAndFriendmojiSymbols()}];
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){

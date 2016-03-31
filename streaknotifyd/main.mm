@@ -31,37 +31,11 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 @end
 
 
-@class NSLock, NSMutableDictionary, NSString;
-
-@interface CPDistributedNotificationCenter : NSObject {
-    NSString* _centerName;
-    NSLock* _lock;
-    CFRunLoopSourceRef _receiveNotificationSource;
-    BOOL _isServer;
-    NSMutableDictionary* _sendPorts;
-    unsigned _startCount;
-}
-+(CPDistributedNotificationCenter*)centerNamed:(NSString*)centerName;
--(id)_initWithServerName:(NSString*)serverName;
--(NSString*)name;
--(void)_createReceiveSourceForRunLoop:(CFRunLoopRef)runLoop;
--(void)_checkIn;
--(void)_checkOutAndRemoveSource;
--(void)_notificationServerWasRestarted;
--(void)runServer;
--(void)startDeliveringNotificationsToMainThread;
--(void)postNotificationName:(NSString*)name;
--(void)postNotificationName:(NSString*)name userInfo:(NSDictionary*)info;
--(BOOL)postNotificationName:(NSString*)name userInfo:(NSDictionary*)info toBundleIdentifier:(NSString*)bundleIdentifier;
-@end
-
 @interface SNDaemon : NSObject {
     BOOL _isApplicationOpen;
 }
 
-@property (strong,nonatomic) NSDictionary *dictionary;
-@property (strong,nonatomic) NSArray *streaks;
-@property (strong,nonatomic) NSArray *displayNames;
+@property (strong,nonatomic) NSArray *names;
 
 @end
 
@@ -83,25 +57,23 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     /* load the data from the application if it is saved to file, if not then open the snapchat application and wait for the message to be sent from the client */
     /* the daemon should have a copy of the data saved to file always unless the daemon is running on the device for the first time (if yes, then start the snapchat application so that we can retrieve them immediately after the SpringBoard starts) */
     
-    NSDictionary *dictionary;
+    NSArray *names;
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
-    dictionary = [NSDictionary dictionaryWithContentsOfFile:filePath];
+    names = [NSArray arrayWithContentsOfFile:filePath];
     
-    if(!dictionary){
+    if(!names){
         void *sbServices = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_LAZY);
         int (*SBSLaunchApplicationWithIdentifier)(CFStringRef identifier, Boolean suspended) = (int (*)(CFStringRef, Boolean))dlsym(sbServices, "SBSLaunchApplicationWithIdentifier");
         SBSLaunchApplicationWithIdentifier(
                             (CFStringRef)@"com.toyopagroup.picaboo",true);
         dlclose(sbServices);
     } else{
-        NSLog(@"File found at %@\n Contents:%@",filePath,dictionary);
-       self.dictionary = dictionary;
-        self.streaks = [dictionary objectForKey:@"streaks"];
-        self.displayNames = [dictionary objectForKey:@"displayNames"];
+        NSLog(@"File found at %@\n Contents:%@",filePath,names);
+        self.names = names;
     }
     
     
@@ -130,19 +102,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     /* start the server so that clients can start listening to us, and sends a notification to us if a client does in fact start listening, at this point none of the clients are created and the daemon is being initialized after a reboot/respring of the device */
     
     /* the daemon is only a server of both the app and the preferences bundle but not a client (could make the daemon a client of the app but can't as of now because of Sandboxing. RocketBootstrap's functionality is only to expose services to the sandboxed app and not vice versa [can't register sandboxed services]) */
-    CPDistributedNotificationCenter* notificationCenter;
-    notificationCenter = [CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
-    [notificationCenter runServer];
-    [notificationCenter retain];
     
-    
-    /* register to listen to when the preferences bundle becomes our client, we want to do so because then we can send the data from the app to the preferences bundle */
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self
-           selector:@selector(preferencesDidStartListening:)
-     
-               name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
-             object:nil];
 }
 
 
@@ -153,27 +113,12 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
-    NSLog(@"Writing dictionary to file");
+    NSLog(@"Writing names to file");
 
     
-    [self.dictionary writeToFile:filePath atomically:YES];
+    [self.names writeToFile:filePath atomically:YES];
 }
 
-
--(void)preferencesDidStartListening:(NSNotification*)notification{
-    /* we should have a dictionary saved here and since we do we will send it over to the preferences bundle without any issues 
-     if we don't have the dictionary this is a bug in our code */
-    
-    /* the dictionary should be saved to file immediately after the springboard launches if the daemon is running for the first time */
-    NSLog(@"Preferences became a client of daemon, getting display names");
-    if(self.dictionary){
-        CPDistributedNotificationCenter *notificationCenter =[CPDistributedNotificationCenter centerNamed:@"preferences-daemon"];
-        [notificationCenter postNotificationName:@"daemon-preferences"
-                                        userInfo:self.dictionary];
-    }else {
-        NSLog(@"Bug - we don't have the dictionary when the preferences bundle requests it");
-    }
-}
 
 -(void)applicationLaunched:(NSString*)name userInfo:(NSDictionary*)userInfo{
     _isApplicationOpen = YES;
@@ -189,10 +134,9 @@ This is a daemon that handles requests to the Snapchat application and retrieves
         /* the snapchat application has started and it has sent us this message so that we can grab a copy of the data that we need and save it to file. So that when the preferences bundle requests the display names, we will have them. We should have them already if the daemon is not running for the first time, but it could be an updated list when a friend has been added or the snap streak count has been updated for a friend. We can keep this data and have it stored in the daemon if the preferences bundle is open but still store it so that the next time it is open we can use it  */
         
         NSLog(@"Got dictionary from tweak, updating for preferences on next launch");
-        self.dictionary = userInfo;
+        self.names = [userInfo objectForKey:@"names"];
+        NSLog(@"%@",self.names);
         [self saveDataToPlist];
-        self.streaks = [userInfo allValues];
-        self.displayNames = [userInfo allKeys];
     }
 }
 

@@ -1,6 +1,6 @@
 
-#import <Preferences/Preferences.h>
-
+#import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 
 @class NSLock, NSMutableDictionary, NSString;
 
