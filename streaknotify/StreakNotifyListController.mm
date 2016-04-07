@@ -5,8 +5,6 @@
     
 }
 
-@property (strong,nonatomic) NSArray *names;
-
 @end
 
 
@@ -17,21 +15,10 @@
     if(!_specifiers) {
 		_specifiers = [[self loadSpecifiersFromPlistName:@"StreakNotify" target:self] retain];
         
-        /* become a client of the daemon's server so that it will trigger retrieval of the display names from the app */
-        /* assuming that the daemon started correctly after a respring or reboot, we can assume that the server exists so go ahead and become a client */
-        _names = [NSArray arrayWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
+        /* if everything is ok, we should have the list names saved to file */
+       
 	}
 	return _specifiers;
-}
-
--(NSArray*)titles{
-    NSLog(@"Retrieving titles from file, daemon should have them saved");
-    return self.names;
-}
-
--(NSArray*)values{
-    NSLog(@"Retrieving values from file, daemon should have saved");
-    return self.names;
 }
 
 -(void)respring{

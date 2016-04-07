@@ -32,7 +32,6 @@
 -(BOOL)launchApplicationWithIdentifier:(NSString*)identifier suspended:(BOOL)suspended;
 @end
 
-
 @interface StreakNotifyListController : PSListController
 
 -(void)respring;

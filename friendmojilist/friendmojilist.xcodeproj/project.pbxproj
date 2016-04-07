@@ -1,0 +1,148 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		A52038D11CB58B9E00C89B0C /* FriendmojiTableDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendmojiTableDataSource.h; sourceTree = "<group>"; };
+		A54E2FF91CB1F4E200C15C00 /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = file; path = .DS_Store; sourceTree = "<group>"; };
+		A54E2FFB1CB1F4E200C15C00 /* FriendmojiListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendmojiListController.h; sourceTree = "<group>"; };
+		A54E2FFC1CB1F4E200C15C00 /* FriendmojiListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiListController.m; sourceTree = "<group>"; };
+		A54E2FFD1CB1F4E200C15C00 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		A54E2FFE1CB1F4E200C15C00 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		A5D2734C1CB2EAB1003AF340 /* FriendmojiTableDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiTableDataSource.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A54E2FF31CB1F4E200C15C00 = {
+			isa = PBXGroup;
+			children = (
+				A54E2FF91CB1F4E200C15C00 /* .DS_Store */,
+				A52038D11CB58B9E00C89B0C /* FriendmojiTableDataSource.h */,
+				A5D2734C1CB2EAB1003AF340 /* FriendmojiTableDataSource.m */,
+				A54E2FFB1CB1F4E200C15C00 /* FriendmojiListController.h */,
+				A54E2FFC1CB1F4E200C15C00 /* FriendmojiListController.m */,
+				A54E2FFD1CB1F4E200C15C00 /* Makefile */,
+				A54E2FFE1CB1F4E200C15C00 /* Resources */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		A54E2FF81CB1F4E200C15C00 /* friendmojilist */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = A54E2FFF1CB1F4E200C15C00 /* Build configuration list for PBXLegacyTarget "friendmojilist" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/ilhan/Downloads/Files/GitHub/StreakNotify/friendmojilist;
+			dependencies = (
+			);
+			name = friendmojilist;
+			passBuildSettingsInEnvironment = 1;
+			productName = friendmojilist;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		A54E2FF41CB1F4E200C15C00 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = A54E2FF71CB1F4E200C15C00 /* Build configuration list for PBXProject "friendmojilist" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A54E2FF31CB1F4E200C15C00;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A54E2FF81CB1F4E200C15C00 /* friendmojilist */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		A54E2FF51CB1F4E200C15C00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		A54E2FF61CB1F4E200C15C00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		A54E30001CB1F4E200C15C00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = friendmojilist;
+			};
+			name = Debug;
+		};
+		A54E30011CB1F4E200C15C00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = friendmojilist;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A54E2FF71CB1F4E200C15C00 /* Build configuration list for PBXProject "friendmojilist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A54E2FF51CB1F4E200C15C00 /* Debug */,
+				A54E2FF61CB1F4E200C15C00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A54E2FFF1CB1F4E200C15C00 /* Build configuration list for PBXLegacyTarget "friendmojilist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A54E30001CB1F4E200C15C00 /* Debug */,
+				A54E30011CB1F4E200C15C00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A54E2FF41CB1F4E200C15C00 /* Project object */;
+}

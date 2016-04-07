@@ -1895,6 +1895,7 @@
 		A51989781C7EBFC1004BB62B /* tool.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = tool.nic.tar; sourceTree = "<group>"; };
 		A51989791C7EBFC1004BB62B /* tweak.nic.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = tweak.nic.tar; sourceTree = "<group>"; };
 		A519897A1C7EBFC1004BB62B /* Tweak.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tweak.mm; sourceTree = "<group>"; };
+		A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = friendmojilist.xcodeproj; path = friendmojilist/friendmojilist.xcodeproj; sourceTree = "<group>"; };
 		A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotifyd.xcodeproj; path = streaknotifyd/streaknotifyd.xcodeproj; sourceTree = "<group>"; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
@@ -1911,6 +1912,7 @@
 				A51981B61C7EBFB6004BB62B /* StreakNotify.plist */,
 				A51981B71C7EBFB6004BB62B /* theos */,
 				A519897A1C7EBFC1004BB62B /* Tweak.mm */,
+				A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */,
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 				A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */,
 			);
@@ -4624,6 +4626,13 @@
 			path = iphone;
 			sourceTree = "<group>";
 		};
+		A54E30031CB1F4E200C15C00 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A586A5F41CA065C4009D163B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -4679,6 +4688,10 @@
 			mainGroup = A502EA611C7EBF8B00C31DCF;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = A54E30031CB1F4E200C15C00 /* Products */;
+					ProjectRef = A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */;
+				},
 				{
 					ProductGroup = A5D2232A1C856859002B8AA1 /* Products */;
 					ProjectRef = A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */;

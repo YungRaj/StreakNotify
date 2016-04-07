@@ -18,14 +18,17 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
 
 
-static NSDictionary* prefs = nil;
+static NSDictionary *prefs = nil;
+static NSDictionary *friendmojis = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 NSString *kSnapDidSendNotification = @"snapDidSendNotification";
 
 static void LoadPreferences() {
     if(!prefs){
-        prefs = [NSMutableDictionary dictionaryWithContentsOfFile: @"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
+        prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
+    }if(!friendmojis){
+        friendmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
     }
 }
 
@@ -54,7 +57,7 @@ static NSArray* GetFriendDisplayNamesAndFriendmojiSymbols(){
 
 /* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
  */
-/*static NSArray* GetFriendDisplayNamesWithStreaksOnly(){
+/*static NSArray* GetFriendDisplayNamesAndFriendmojiSymbolsWithStreaksOnly(){
  // provide display names for friends with streaks only
  
  NSMutableArray *names = [[NSMutableArray alloc] init];
