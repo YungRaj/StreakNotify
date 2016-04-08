@@ -1,10 +1,10 @@
 include $(THEOS)/makefiles/common.mk
 
-BUNDLE_NAME = friendmojilist
-friendmojilist_FILES = FriendmojiListController.m FriendmojiTableDataSource.m
-friendmojilist_INSTALL_PATH = /System/Library/PreferenceBundles
-friendmojilist_FRAMEWORKS = UIKit
-friendmojilist_PRIVATE_FRAMEWORKS = Preferences
+BUNDLE_NAME = FriendmojiList
+FriendmojiList_FILES = FriendmojiListController.m FriendmojiTableDataSource.m
+FriendmojiList_INSTALL_PATH = /System/Library/PreferenceBundles
+FriendmojiList_FRAMEWORKS = UIKit
+FriendmojiList_PRIVATE_FRAMEWORKS = Preferences
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 

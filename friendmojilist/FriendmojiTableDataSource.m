@@ -5,10 +5,6 @@
     
 }
 
-@property (strong,nonatomic) NSString *name;
-@property (strong,nonatomic) NSString *friendmoji;
-
-
 @end
 
 @implementation FriendmojiCell
@@ -20,7 +16,7 @@
     
 }
 
-@property (strong,nonatomic) NSMutableDictionary *settings;
+@property (strong,nonatomic) NSDictionary *settings;
 @property (strong,nonatomic) NSArray *names;
 @property (strong,nonatomic) NSArray *friendmojis;
 
@@ -38,26 +34,32 @@
 {
     self = [super init];
     if (self) {
-        _settings = [[NSDictionary dictionaryWithContentsOfFile:@"var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"] mutableCopy];
+        self.settings = [NSMutableDictionary dictionaryWithContentsOfFile:@"var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         
         /* if the daemon loaded right during a springboard launch, then it's impossible to not have the file saved to disk */
         NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
         
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
         if(!friendNamesAndEmojis){
-            NSLog(@"Fatal error: the dictionary that the daemon should save doesn't exist");
+            NSLog(@"Fatal - the dictionary that the daemon should save doesn't exist");
             exit(0);
         }
-        _names = [friendNamesAndEmojis allKeys];
-        _friendmojis = [friendNamesAndEmojis allValues];
+        self.names = [friendNamesAndEmojis allKeys];
+        self.friendmojis = [friendNamesAndEmojis allValues];
+    
         
-        
+        NSLog(@"names and friendmojis loaded successfully %@",friendNamesAndEmojis);
         /* if settings don't exist on file, create settings */
-        if(!_settings){
-            _settings = [[NSMutableDictionary alloc] init];
-            for(NSString *name in _names){
-                [_settings setObject:@NO forKey:name];
+        if(!self.settings){
+            NSMutableDictionary *settings  = [[NSMutableDictionary alloc] init];
+            for(NSString *name in self.names){
+                [settings setObject:@NO forKey:name];
             }
+            
+            self.settings = settings;
+            
+            
+            NSLog(@"%@",self.settings);
         }
 
         
@@ -75,21 +77,27 @@
 
 -(UITableViewCell*)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSString *identifier = [NSString stringWithFormat:@"friendmojicell%ld",(long)indexPath.row];
+    NSLog(@"cellForRowAtIndexPath %ld",(long)indexPath.row);
+    NSString *identifier = @"friendmojiCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
     if(!cell){
-        cell = [[FriendmojiCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                     reuseIdentifier:identifier];
+        cell = [[[FriendmojiCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                     reuseIdentifier:identifier] autorelease];
         
     }
     if([cell isKindOfClass:[FriendmojiCell class]]){
+        
         FriendmojiCell *friendmojiCell = (FriendmojiCell*)cell;
         NSString *name = [self.names objectAtIndex:indexPath.row];
         NSString *friendmoji = [self.friendmojis objectAtIndex:indexPath.row];
-        friendmojiCell.name = name;
-        friendmojiCell.friendmoji = friendmoji;
-        friendmojiCell.textLabel.text = [NSString stringWithFormat:@"%@%@",name,friendmoji];
+        friendmojiCell.textLabel.text = [NSString stringWithFormat:@"%@ %@",name,friendmoji];
+        NSLog(@"Cell for index %ld name %@ %@",(long)indexPath.row,name,friendmoji);
+        if([self.settings[name] boolValue]){
+            friendmojiCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }else{
+            friendmojiCell.accessoryType = UITableViewCellAccessoryNone;
+        }
     }
     return cell;
 
@@ -101,32 +109,34 @@
 
 -(NSInteger)tableView:(UITableView *)tableView
 numberOfRowsInSection:(NSInteger)section{
-    return [_names count];
+    return [self.names count];
 }
 
--(NSIndexPath*)tableView:(UITableView *)tableView
-willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    FriendmojiCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    NSString *name = cell.name;
+-(void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSLog(@"%@",self.settings);
     
-    [_settings setObject:@YES forKey:name];
+    FriendmojiCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    NSString *name = [self.names objectAtIndex:indexPath.row];
+    
+    NSLog(@"Selected cell with name %@",name);
+    
+    [self.settings setValue:@YES forKey:name];
     
     
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    
-    return indexPath;
+ 
 }
 
--(NSIndexPath*)tableView:(UITableView *)tableView
-willDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
+-(void)tableView:(UITableView *)tableView
+didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
     FriendmojiCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    NSString *name = cell.name;
+    NSString *name = [self.names objectAtIndex:indexPath.row];
     
-    [_settings setObject:@NO forKey:name];
+    [self.settings setValue:@NO forKey:name];
     
     cell.accessoryType = UITableViewCellAccessoryNone;
-    
-    return indexPath;
+   
 }
 
 -(void)friendmojiPreferencesWillExit:(NSNotification*)notification{
