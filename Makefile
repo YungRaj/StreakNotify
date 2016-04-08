@@ -13,5 +13,5 @@ after-install::
 	install.exec "killall -9 backboardd"
 SUBPROJECTS += streaknotify
 SUBPROJECTS += streaknotifyd
-# SUBPROJECTS += friendmojilist
+SUBPROJECTS += friendmojilist
 include $(THEOS_MAKE_PATH)/aggregate.mk

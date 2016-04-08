@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>friendmojilist</string>
+	<string>FriendmojiList</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.YungRaj.friendmojilist</string>
 	<key>CFBundleInfoDictionaryVersion</key>

@@ -35,7 +35,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     BOOL _isApplicationOpen;
 }
 
-@property (strong,nonatomic) NSArray *names;
+@property (strong,nonatomic) NSDictionary *friendNamesAndEmojis;
 
 @end
 
@@ -57,23 +57,25 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     /* load the data from the application if it is saved to file, if not then open the snapchat application and wait for the message to be sent from the client */
     /* the daemon should have a copy of the data saved to file always unless the daemon is running on the device for the first time (if yes, then start the snapchat application so that we can retrieve them immediately after the SpringBoard starts) */
     
-    NSArray *names;
+    NSDictionary *friendNamesAndEmojis;
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
-    names = [NSArray arrayWithContentsOfFile:filePath];
+    friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:filePath];
     
-    if(!names){
+    
+
+    if(!friendNamesAndEmojis){
         void *sbServices = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_LAZY);
         int (*SBSLaunchApplicationWithIdentifier)(CFStringRef identifier, Boolean suspended) = (int (*)(CFStringRef, Boolean))dlsym(sbServices, "SBSLaunchApplicationWithIdentifier");
         SBSLaunchApplicationWithIdentifier(
                             (CFStringRef)@"com.toyopagroup.picaboo",true);
         dlclose(sbServices);
     } else{
-        NSLog(@"File found at %@\n Contents:%@",filePath,names);
-        self.names = names;
+        NSLog(@"File found at %@\n Contents:%@",filePath,friendNamesAndEmojis);
+        self.friendNamesAndEmojis = friendNamesAndEmojis;
     }
     
     
@@ -113,10 +115,11 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
-    NSLog(@"Writing names to file");
+    NSLog(@"Writing names and friendmojis to file");
 
     
-    [self.names writeToFile:filePath atomically:YES];
+    [self.friendNamesAndEmojis writeToFile:filePath atomically:YES];
+    
 }
 
 
@@ -131,11 +134,11 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 -(void)callBackToDaemon:(NSString*)name userInfo:(NSDictionary*)userInfo{
     if([name isEqual:@"tweak-daemon"]){
         
-        /* the snapchat application has started and it has sent us this message so that we can grab a copy of the data that we need and save it to file. So that when the preferences bundle requests the display names, we will have them. We should have them already if the daemon is not running for the first time, but it could be an updated list when a friend has been added or the snap streak count has been updated for a friend. We can keep this data and have it stored in the daemon if the preferences bundle is open but still store it so that the next time it is open we can use it  */
+        /* the snapchat application has started or friends have changed and it has sent us this message so that we can grab a copy of the data that we need and save it to file. So that when the preferences bundle requests the display names, we will have them. We should have them already if the daemon is not running for the first time, but it could be an updated list when a friend has been added or the snap streak count has been updated for a friend. We can keep this data and have it stored in the daemon if the preferences bundle is open but still store it so that the next time it is open we can use it  */
         
         NSLog(@"Got dictionary from tweak, updating for preferences on next launch");
-        self.names = [userInfo objectForKey:@"names"];
-        NSLog(@"%@",self.names);
+        self.friendNamesAndEmojis = userInfo;
+        NSLog(@"%@",userInfo);
         [self saveDataToPlist];
     }
 }

@@ -59,22 +59,18 @@
 			<string>Friends</string>
 		</dict>
 		<dict>
-			<key>id</key>
-			<string>Friends</string>
-			<key>detail</key>
-			<string>PSListItemsController</string>
-			<key>key</key>
-			<string>kCustomFriends</string>
-			<key>cell</key>
-			<string>PSLinkListCell</string>
 			<key>label</key>
 			<string>Custom Friends</string>
-			<key>titlesDataSource</key>
-			<string>titles</string>
-			<key>valuesDataSource</key>
-			<string>values</string>
-			<key>PostNotification</key>
-			<string>com.YungRaj.streaknotify.preferences.changed</string>
+			<key>id</key>
+			<string>Friends</string>
+			<key>bundle</key>
+			<string>FriendmojiList</string>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>internal</key>
+			<false/>
+			<key>isController</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>cell</key>

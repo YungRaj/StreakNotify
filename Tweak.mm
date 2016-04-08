@@ -32,10 +32,10 @@ static void LoadPreferences() {
     }
 }
 
-static NSArray* GetFriendDisplayNamesAndFriendmojiSymbols(){
-    /* provide display names for each friend into an array */
+static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbols(){
+    /* provide display names and friendmoji for each friend into an dictionary */
     
-    NSMutableArray *names = [[NSMutableArray alloc] init];
+    NSMutableDictionary *names = [[NSMutableDictionary alloc] init];
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -43,11 +43,11 @@ static NSArray* GetFriendDisplayNamesAndFriendmojiSymbols(){
         NSString *displayName = [f display];
         NSString *friendmoji = [f getFriendmojiForViewType:0];
         if(displayName && ![displayName isEqual:@""]){
-            [names addObject:[NSString stringWithFormat:@"%@ %@",displayName,friendmoji]];
+            [names setObject:friendmoji forKey:displayName];
         }else{
             NSString *name = [f name];
             if(name && ![name isEqual:@""]){
-                [names addObject:[NSString stringWithFormat:@"%@ %@",name,friendmoji]];
+                [names setObject:friendmoji forKey:name];
             }
         }
         
@@ -57,10 +57,10 @@ static NSArray* GetFriendDisplayNamesAndFriendmojiSymbols(){
 
 /* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
  */
-/*static NSArray* GetFriendDisplayNamesAndFriendmojiSymbolsWithStreaksOnly(){
+/*static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbolsWithStreaksOnly(){
  // provide display names for friends with streaks only
  
- NSMutableArray *names = [[NSMutableArray alloc] init];
+ NSMutableDictionary *names = [[NSMutableArray alloc] init];
  Manager *manager = [%c(Manager) shared];
  User *user = [manager user];
  Friends *friends = [user friends];
@@ -80,7 +80,7 @@ static void SendRequestToDaemon(){
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"tweak-daemon"
-              userInfo:@{@"names":GetFriendDisplayNamesAndFriendmojiSymbols()}];
+              userInfo:GetFriendDisplayNamesAndFriendmojiSymbols()];
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
