@@ -121,23 +121,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     NSLog(@"Selected cell with name %@",name);
     
-    [self.settings setValue:@YES forKey:name];
+    [self.settings setValue:[NSNumber numberWithInteger:![self.settings[name] boolValue]]
+                     forKey:name];
     
     
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    if(cell.accessoryType==UITableViewCellAccessoryCheckmark){
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }else if(cell.accessoryType==UITableViewCellAccessoryNone){
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
  
 }
 
--(void)tableView:(UITableView *)tableView
-didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
-    FriendmojiCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    NSString *name = [self.names objectAtIndex:indexPath.row];
-    
-    [self.settings setValue:@NO forKey:name];
-    
-    cell.accessoryType = UITableViewCellAccessoryNone;
-   
-}
 
 -(void)friendmojiPreferencesWillExit:(NSNotification*)notification{
     NSDictionary *settings = self.settings;
