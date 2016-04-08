@@ -32,46 +32,47 @@ static void LoadPreferences() {
     }
 }
 
-static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbols(){
-    /* provide display names and friendmoji for each friend into an dictionary */
+
+
+static NSDictionary* GetFriendmojis(){
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
-    NSMutableDictionary *names = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *friendsWithStreaks = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *friendsWithoutStreaks = [[NSMutableDictionary alloc] init];
+ 
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
     for(Friend *f in [friends getAllFriends]){
+        
         NSString *displayName = [f display];
         NSString *friendmoji = [f getFriendmojiForViewType:0];
+        
         if(displayName && ![displayName isEqual:@""]){
-            [names setObject:friendmoji forKey:displayName];
+            if([f snapStreakCount] > 2){
+                [friendsWithStreaks setObject:friendmoji forKey:displayName];
+            }else {
+                [friendsWithoutStreaks setObject:friendmoji forKey:displayName];
+            }
         }else{
-            NSString *name = [f name];
-            if(name && ![name isEqual:@""]){
-                [names setObject:friendmoji forKey:name];
+            NSString *username = [f name];
+            if(username && ![username isEqual:@""]){
+                if([f snapStreakCount] > 2){
+                    [friendsWithStreaks setObject:friendmoji forKey:username];
+                }else {
+                    [friendsWithoutStreaks setObject:friendmoji forKey:username];
+                }
             }
         }
-        
+ 
     }
-    return names;
+    
+    [dictionary setObject:friendsWithStreaks forKey:@"friendsWithStreaks"];
+    [dictionary setObject:friendsWithoutStreaks forKey:@"friendsWithoutStreaks"];
+    
+    return dictionary;
 }
 
-/* will be used later if I decide to give the user the option to only show friends with streaks on PSLinkList
- */
-/*static NSDictionary* GetFriendDisplayNamesAndFriendmojiSymbolsWithStreaksOnly(){
- // provide display names for friends with streaks only
- 
- NSMutableDictionary *names = [[NSMutableArray alloc] init];
- Manager *manager = [%c(Manager) shared];
- User *user = [manager user];
- Friends *friends = [user friends];
- for(Friend *f in [friends getAllFriends]){
- if([f snapStreakCount]>2){
- NSString *displayName = [f display];
- [names addObject:displayName];
- }
- }
- return names;
- }*/
 
 static void SendRequestToDaemon(){
     NSLog(@"Sending request to Daemon");
@@ -80,7 +81,7 @@ static void SendRequestToDaemon(){
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"tweak-daemon"
-              userInfo:GetFriendDisplayNamesAndFriendmojiSymbols()];
+              userInfo:GetFriendmojis()];
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
