@@ -59,18 +59,24 @@
 			<string>Friends</string>
 		</dict>
 		<dict>
-			<key>label</key>
-			<string>Custom Friends</string>
-			<key>id</key>
-			<string>Friends</string>
-			<key>bundle</key>
-			<string>FriendmojiList</string>
 			<key>cell</key>
 			<string>PSLinkCell</string>
+			<key>id</key>
+			<false/>
+			<key>bundle</key>
+			<string>FriendmojiList</string>
 			<key>internal</key>
 			<false/>
 			<key>isController</key>
-			<true/>
+			<string>true</string>
+			<key>label</key>
+			<string>Custom Friends</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>If any friends are selected, notifications will only be enabled for them. Deselect all friends if you want to get notifications from all friends.</string>
 		</dict>
 		<dict>
 			<key>cell</key>

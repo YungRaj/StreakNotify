@@ -15,11 +15,11 @@
     if(!_specifiers) {
 		_specifiers = [[self loadSpecifiersFromPlistName:@"StreakNotify" target:self] retain];
         
-        /* if everything is ok, we should have the list names saved to file */
        
 	}
 	return _specifiers;
 }
+
 
 -(void)respring{
     /* use the springboard's relaunchSpringBoardNow function to respring */

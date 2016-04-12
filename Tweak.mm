@@ -19,19 +19,41 @@ This tweak notifies a user when a snapchat streak with another friend is running
 
 
 static NSDictionary *prefs = nil;
-static NSDictionary *friendmojis = nil;
+static NSMutableArray *customFriends = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 NSString *kSnapDidSendNotification = @"snapDidSendNotification";
 
+
+
 static void LoadPreferences() {
     if(!prefs){
         prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
-    }if(!friendmojis){
-        friendmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
+    }if(!customFriends){
+        NSDictionary *friendmojiList = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
+        customFriends = [[NSMutableArray alloc] init];
+        
+        for(NSString *name in [friendmojiList allKeys]){
+            if([friendmojiList[name] boolValue]){
+                [customFriends addObject:name];
+            }
+        }
     }
 }
 
+/*
+ static NSString* UsernameForDisplay(NSString *display){
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    for(Friend *f in [friends getAllFriends]){
+        if([display isEqual:f.display]){
+            return f.name;
+        }
+    }
+    /* this shouldn't happen if the display variable is coming from the friendmojilist settings plist
+    return nil;
+} */
 
 
 static NSDictionary* GetFriendmojis(){
@@ -176,6 +198,10 @@ static void ScheduleNotification(NSDate *snapDate,
                                  float minutes,
                                  float hours){
     // schedules the notification and makes sure it isn't before the current time
+    if([customFriends count] && ![customFriends containsObject:displayName]){
+        NSLog(@"Not scheduling notification for %@, not enabled in custom friends!",displayName);
+        return;
+    }
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *notificationDate =
@@ -336,6 +362,11 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     %orig();
 }
 
+-(void)applicationDidBecomeActive:(UIApplication*)application
+{
+    ResetNotifications();
+    %orig();
+}
 
 
 %end
@@ -433,21 +464,19 @@ static NSMutableArray *labels = nil;
     
         
         NSString *lastSnapSender = [[chat lastSnap] sender];
-        
         NSString *friendName = [f name];
-        
         UILabel *label;
         
         
         if(![instances containsObject:cell]){
             
             CGSize size = cell.frame.size;
-            CGRect rect = CGRectMake(size.width*.7,
-                                     size.height*.65,
-                                     size.width/4,
+            CGRect rect = CGRectMake(size.width*.83,
+                                     size.height*.7,
+                                     size.width/8,
                                      size.height/4);
+            
             label = [[UILabel alloc] initWithFrame:rect];
-    
             
             [instances addObject:cell];
             [labels addObject:label];
@@ -460,7 +489,7 @@ static NSMutableArray *labels = nil;
         }
         
         if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
-            label.text = [NSString stringWithFormat:@"Time remaining: %@",GetTimeRemaining(f,chat)];
+            label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat)];
             SizeLabelToRect(label,label.frame);
             label.hidden = NO;
         }else {

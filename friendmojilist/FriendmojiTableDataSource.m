@@ -203,7 +203,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     NSLog(@"Selected cell with name %@",name);
     
-    [self.settings setValue:[NSNumber numberWithInteger:![self.settings[name] boolValue]]
+    [self.settings setValue:[NSNumber numberWithBool:![self.settings[name] boolValue]]
                      forKey:name];
     
     
