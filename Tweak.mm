@@ -26,6 +26,7 @@ NSString *kSnapDidSendNotification = @"snapDidSendNotification";
 
 
 
+
 static void LoadPreferences() {
     if(!prefs){
         prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
@@ -41,8 +42,51 @@ static void LoadPreferences() {
     }
 }
 
+Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
+    NSArray *snaps = [chat allSnapsArray];
+    
+    if(!snaps || ![snaps count]){
+        return nil;
+    }
+        
+    snaps = [snaps sortedArrayUsingComparator:^(id obj1, id obj2){
+        if ([obj1 isKindOfClass:%c(Snap)] && [obj2 isKindOfClass:%c(Snap)]) {
+            Snap *s1 = obj1;
+            Snap *s2 = obj2;
+                
+            if([s1.timestamp laterDate:s2.timestamp]) {
+                return (NSComparisonResult)NSOrderedAscending;
+            } else if ([s2.timestamp laterDate:s1.timestamp]) {
+                return (NSComparisonResult)NSOrderedDescending;
+            }
+        }
+            
+            // TODO: default is the same?
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    
+    NSLog(@"%@ snaps",snaps);
+        
+    Snap *earliestUnrepliedSnap;
+    
+    for(id obj in snaps){
+        if([obj isKindOfClass:%c(Snap)]){
+            Snap *snap = obj;
+            NSString *sender = [snap sender];
+            if(!sender){
+                earliestUnrepliedSnap = nil;
+            }else if(!earliestUnrepliedSnap && sender){
+                earliestUnrepliedSnap = snap;
+            }
+        }
+    }
+        
+
+    return earliestUnrepliedSnap;
+}
+
 /*
- static NSString* UsernameForDisplay(NSString *display){
+static NSString* UsernameForDisplay(NSString *display){
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     Friends *friends = [user friends];
@@ -53,8 +97,8 @@ static void LoadPreferences() {
     }
     /* this shouldn't happen if the display variable is coming from the friendmojilist settings plist
     return nil;
-} */
-
+}
+*/
 
 static NSDictionary* GetFriendmojis(){
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
@@ -133,7 +177,7 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 }
 
 
-static NSString* GetTimeRemaining(Friend *f, SCChat *c){
+static NSString* GetTimeRemaining(Friend *f, SCChat *c, Snap *earliestUnrepliedSnap){
     /* good utility method to figure out the time remaining for the streak, might want to add a few fixes, because we are only assuming that the time remaining is 24 hours after the last sent snap when it could be different. We don't really know how the snap streaks start and end at the server level because it does all the work for figuring that out. As far as I've seen by reverse engineering the app, the app can only request to the server to up or even change the snap streak count...
      */
     if(!f || !c){
@@ -141,13 +185,9 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c){
     }
     
     NSDate *date = [NSDate date];
-    Snap *lastSnap = [c lastSnap];
     
-    if(!lastSnap){
-        return @"";
-    }
     
-    NSDate *latestSnapDate = [lastSnap timestamp];
+    NSDate *latestSnapDate = [earliestUnrepliedSnap timestamp];
     int daysToAdd = 1;
     NSDate *latestSnapDateDayAfter = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
     NSCalendar *gregorianCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -228,12 +268,14 @@ static void ResetNotifications(){
     SCChats *chats = [user chats];
     
     for(SCChat *chat in [chats allChats]){
-        NSDate *snapDate = [[chat lastSnap] timestamp];
-        Friend *f = [friends friendForName:[chat recipient]];
-        NSString *lastSnapSender = [[chat lastSnap] sender];
-        NSString *friendName = [f name];
         
-        if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
+        Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
+        NSDate *snapDate = [earliestUnrepliedSnap timestamp];
+        Friend *f = [friends friendForName:[chat recipient]];
+        
+        NSLog(@"%@ snapDate for %@",snapDate,[chat recipient]);
+        
+        if([f snapStreakCount]>2 && earliestUnrepliedSnap){
             NSString *displayName = [friends displayNameForUsername:[chat recipient]];
             if([prefs[@"kTwelveHours"] boolValue]){
                 ScheduleNotification(snapDate,displayName,0,0,12);
@@ -371,68 +413,38 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 
 %end
 
+
+static NSMutableArray *instances = nil;
+static NSMutableArray *labels = nil;
+
 %hook Snap
+
 
 -(void)postSend{
     /* make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
     */
     
-    /* can call ResetNotifications, but this might be faster... keeping it for now
-    */
-    
     %orig();
     
+    ResetNotifications();
     
-    NSLog(@"Snap has been sent, going to update notifications now");
-    
-    Manager *manager = [%c(Manager) shared];
-    User *user = [manager user];
-    Friends *friends = [user friends];
-    SCChats *chats = [user chats];
-    
-    
-    NSString *recipient = [self recipient];
-    
-    
-    SCChat *chat = [chats chatForUsername:recipient];
-    Friend *f = [friends friendForName:recipient];
-    
-    %log(chat,f);
-    
-    NSString *displayName = [friends displayNameForUsername:recipient];
-    
-    NSArray *localNotifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
-    
-    for(UILocalNotification *localNotification in localNotifications){
-        if([localNotification.alertBody containsString:displayName]){
-            [[UIApplication sharedApplication] cancelLocalNotification:localNotification];
-        }
-    }
-    
-    
-/* hide the UILabels if they are not being used or refresh the table view (not sure if that will cause infinite recursion/ stack overflow yet cause we don't know if we can assume that this is not being called during a refresh)
- */
-    
-    
+
     
 }
 
 %end
 
 
-static NSMutableArray *instances = nil;
-static NSMutableArray *labels = nil;
-
-
 %hook SCFeedViewController
 
 
--(SCFeedTableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath{
+-(UITableViewCell*)tableView:(UITableView*)tableView
+           cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
     /* updating tableview and we want to make sure the labels are updated too, if not created if the feed is now being populated
      */
     
-    SCFeedTableViewCell *cell = %orig(tableView,indexPath);
+    UITableViewCell *cell = %orig(tableView,indexPath);
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -441,60 +453,55 @@ static NSMutableArray *labels = nil;
          creates the labels
          */
         
-        if(!instances){
-            instances = [[NSMutableArray alloc] init];
-        } if(!labels){
-            labels = [[NSMutableArray alloc] init];
-        }
-        
-        Manager *manager = [%c(Manager) shared];
-        User *user = [manager user];
-        Friends *friends = [user friends];
-        
-        SCChatViewModelForFeed *feedItem = cell.feedItem;
-        SCChat *chat = [feedItem chat];
-        
-        NSString *recipient = [chat recipient];
-        
-        Friend *f = [friends friendForName:recipient];
-        
-        if(![chat lastSnap]){
-            return;
-        }
-    
-        
-        NSString *lastSnapSender = [[chat lastSnap] sender];
-        NSString *friendName = [f name];
-        UILabel *label;
-        
-        
-        if(![instances containsObject:cell]){
+        if([cell isKindOfClass:%c(SCFeedTableViewCell)]){
+            SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
             
-            CGSize size = cell.frame.size;
-            CGRect rect = CGRectMake(size.width*.83,
-                                     size.height*.7,
-                                     size.width/8,
-                                     size.height/4);
+            if(!instances){
+                instances = [[NSMutableArray alloc] init];
+            } if(!labels){
+                labels = [[NSMutableArray alloc] init];
+            }
             
-            label = [[UILabel alloc] initWithFrame:rect];
-            
-            [instances addObject:cell];
-            [labels addObject:label];
-            
-            [cell.containerView addSubview:label];
+            SCChatViewModelForFeed *feedItem = feedCell.feedItem;
+            SCChat *chat = [feedItem chat];
+            Friend *f = [feedItem friendForFeedItem];
             
             
-        }else {
-            label = [labels objectAtIndex:[instances indexOfObject:cell]];
-        }
-        
-        if([f snapStreakCount]>2 && [lastSnapSender isEqual:friendName]){
-            label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat)];
-            SizeLabelToRect(label,label.frame);
-            label.hidden = NO;
-        }else {
-            label.text = @"";
-            label.hidden = YES;
+            Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
+            
+            NSLog(@"%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+            
+            UILabel *label;
+            
+            
+            if(![instances containsObject:cell]){
+                
+                CGSize size = cell.frame.size;
+                CGRect rect = CGRectMake(size.width*.83,
+                                         size.height*.7,
+                                         size.width/8,
+                                         size.height/4);
+                
+                label = [[UILabel alloc] initWithFrame:rect];
+                
+                [instances addObject:cell];
+                [labels addObject:label];
+                
+                [feedCell.containerView addSubview:label];
+                
+                
+            }else {
+                label = [labels objectAtIndex:[instances indexOfObject:cell]];
+            }
+            
+            if([f snapStreakCount]>2 && earliestUnrepliedSnap){
+                label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,earliestUnrepliedSnap)];
+                SizeLabelToRect(label,label.frame);
+                label.hidden = NO;
+            }else {
+                label.text = @"";
+                label.hidden = YES;
+            }
         }
     });
     
