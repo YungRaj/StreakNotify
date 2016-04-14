@@ -417,23 +417,22 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 static NSMutableArray *instances = nil;
 static NSMutableArray *labels = nil;
 
+
 %hook Snap
 
-
--(void)postSend{
-    /* make sure the table view and notifications are updated after sending a snap to a user, we don't know who the user is so let's just update
-    */
-    
+-(void)doSend{
     %orig();
     
-    ResetNotifications();
-    
-
-    
+    NSLog(@"Post send snap");
+          
+    Manager *manager = [%c(Manager) shared];
+    User *user = [manager user];
+    SCChats *chats = [user chats];
+    [chats chatsDidChange];
 }
 
-%end
 
+%end
 
 %hook SCFeedViewController
 
