@@ -26,6 +26,8 @@ NSString *kSnapDidSendNotification = @"snapDidSendNotification";
 
 
 
+/* load preferences and the custom friends that we must apply notifications to */
+/* load the true values from the customFriends plist into an array so that they can be searched quicker */
 
 static void LoadPreferences() {
     if(!prefs){
@@ -41,6 +43,8 @@ static void LoadPreferences() {
         }
     }
 }
+
+/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours */
 
 Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     NSArray *snaps = [chat allSnapsArray];
@@ -60,14 +64,10 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
                 return (NSComparisonResult)NSOrderedDescending;
             }
         }
-            
-            // TODO: default is the same?
         return (NSComparisonResult)NSOrderedSame;
     }];
     
-    NSLog(@"%@ snaps",snaps);
-        
-    Snap *earliestUnrepliedSnap;
+    Snap *earliestUnrepliedSnap = nil;
     
     for(id obj in snaps){
         if([obj isKindOfClass:%c(Snap)]){
@@ -81,11 +81,12 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
         }
     }
         
-
+    NSLog(@"%@ is the earliest unreplied snap",earliestUnrepliedSnap);
     return earliestUnrepliedSnap;
 }
 
 /*
+this might be useful later in the future
 static NSString* UsernameForDisplay(NSString *display){
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
@@ -139,7 +140,8 @@ static NSDictionary* GetFriendmojis(){
     return dictionary;
 }
 
-
+/* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
+/* triggered when the application is open, coming from the background, or when the friends values change */
 static void SendRequestToDaemon(){
     NSLog(@"Sending request to Daemon");
     
@@ -178,7 +180,13 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
 
 
 static NSString* GetTimeRemaining(Friend *f, SCChat *c, Snap *earliestUnrepliedSnap){
-    /* good utility method to figure out the time remaining for the streak, might want to add a few fixes, because we are only assuming that the time remaining is 24 hours after the last sent snap when it could be different. We don't really know how the snap streaks start and end at the server level because it does all the work for figuring that out. As far as I've seen by reverse engineering the app, the app can only request to the server to up or even change the snap streak count...
+    /* good utility method to figure out the time remaining for the streak
+     
+     in the new chat 2.0 update to snapchat, the SOJUFriend and SOJUFriendBuilder class now sets a property called snapStreakExpiration/snapStreakExpiryTime which is basically a long long value that describes the time in seconds since 1970 of when the snap streak should end when that expiration date arrives.
+     
+     if I decide to support only the newest revisions of Snapchat, then I will implement it this way. however even though in the last revisions of Snapchat that API wasn't there it could be possible that it was private and thus not available on headers dumped via class-dump.
+     
+     for now I am just using 24 hours past the earliest snap sent that wasn't replied to
      */
     if(!f || !c){
         return @"";
@@ -205,6 +213,7 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c, Snap *earliestUnrepliedS
         return @"Limited";
         /*this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
          again this could happen because we don't know how the streaks start and end because as far as I've know the server does all the work for that... might have to ask someone more intelligent to figure out a way around this
+         if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
          */
     }
     
@@ -237,7 +246,8 @@ static void ScheduleNotification(NSDate *snapDate,
                                  float seconds,
                                  float minutes,
                                  float hours){
-    // schedules the notification and makes sure it isn't before the current time
+    /* schedules the notification and makes sure it isn't before the current time */
+    /* I could be doing this with snapStreakExpiryTime and not have to check for this condition */
     if([customFriends count] && ![customFriends containsObject:displayName]){
         NSLog(@"Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
@@ -302,6 +312,9 @@ static void ResetNotifications(){
     NSLog(@"Resetting notifications success");
 }
 
+/* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
+/* we need to fetch updates so that the new snap can be found */
+/* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 void handleRemoteNotification(){
     NSLog(@"Resetting local notifications");
     [[%c(Manager) shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
@@ -388,7 +401,9 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     return %orig();
 }
 
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+-(void)application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     /* everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time*/
     handleRemoteNotification();
     %orig();
@@ -407,6 +422,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 -(void)applicationDidBecomeActive:(UIApplication*)application
 {
     ResetNotifications();
+    SendRequestToDaemon();
     %orig();
 }
 
@@ -418,7 +434,15 @@ static NSMutableArray *instances = nil;
 static NSMutableArray *labels = nil;
 
 
+
 %hook Snap
+
+/* the number has changed for the friend and now we must let the daemon know of the changes so that they can be saved to file */
+-(void)setSnapStreakCount:(long long)snapStreakCount{
+    %orig(snapStreakCount);
+    
+    SendRequestToDaemon();
+}
 
 -(void)doSend{
     %orig();
@@ -438,7 +462,7 @@ static NSMutableArray *labels = nil;
 
 
 -(UITableViewCell*)tableView:(UITableView*)tableView
-           cellForRowAtIndexPath:(NSIndexPath*)indexPath{
+       cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
     /* updating tableview and we want to make sure the labels are updated too, if not created if the feed is now being populated
      */
@@ -449,7 +473,7 @@ static NSMutableArray *labels = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         /* want to do this on the main thread because all ui updates should be done on the main thread
-         creates the labels
+         this should already be on the main thread but we should make sure of this
          */
         
         if([cell isKindOfClass:%c(SCFeedTableViewCell)]){
@@ -543,8 +567,7 @@ static NSMutableArray *labels = nil;
      and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
      */
     
-    /* run the server on the app (tweak) so that when the preferences bundle becomes a client of the daemon's server, the daemon can request the display names and then the daemon can hand them over to the preferences bundle through the use of CPDistributedNotificationCenter
-     */
+    
     
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,

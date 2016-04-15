@@ -228,7 +228,7 @@
 
 @class AVPlayerItem, NSArray, NSDate, NSMutableDictionary, NSNumber, NSString, NSURL, SnapTrophyMetrics;
 
-@interface Snap 
+@interface Snap : NSObject
 {
     _Bool _canBeReplayed;
     _Bool _clearedBySender;
