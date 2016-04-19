@@ -44,7 +44,7 @@ static void LoadPreferences() {
     }
 }
 
-/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours */
+/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours. basically forces you to respond if you just keep opening messages */
 
 Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     NSArray *snaps = [chat allSnapsArray];
@@ -80,8 +80,6 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
             }
         }
     }
-        
-    NSLog(@"%@ is the earliest unreplied snap",earliestUnrepliedSnap);
     return earliestUnrepliedSnap;
 }
 
@@ -142,6 +140,7 @@ static NSDictionary* GetFriendmojis(){
 
 /* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
 /* triggered when the application is open, coming from the background, or when the friends values change */
+
 static void SendRequestToDaemon(){
     NSLog(@"Sending request to Daemon");
     
@@ -212,7 +211,7 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c, Snap *earliestUnrepliedS
     if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
         /*this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
-         again this could happen because we don't know how the streaks start and end because as far as I've know the server does all the work for that... might have to ask someone more intelligent to figure out a way around this
+         in the new chat 2.0 update the new properties introduced into the public API for the SOJUFriend and SOJUFriendBuilder class allow us to know when the server will end the streak
          if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
          */
     }
@@ -309,12 +308,13 @@ static void ResetNotifications(){
         }
     }
     
-    NSLog(@"Resetting notifications success");
+    NSLog(@"Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
 }
 
 /* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
 /* we need to fetch updates so that the new snap can be found */
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
+
 void handleRemoteNotification(){
     NSLog(@"Resetting local notifications");
     [[%c(Manager) shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
@@ -325,13 +325,22 @@ void handleRemoteNotification(){
                                     didHappendWhenAppLaunch:YES];
 }
 
+#ifdef THEOS
+
 %group iOS9
 
+#endif
+
+#ifdef THEOS
+
 %hook MainViewController
+
+#endif
 
 -(void)viewDidLoad{
     
     /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
+      it's ok if the custom friends hasn't been configured because it's ok for none to be selected
      */
     
     NSLog(@"No preferences found on file, letting user know");
@@ -368,10 +377,17 @@ void handleRemoteNotification(){
     }
 }
 
+#ifdef THEOS
+
 %end
+
+#endif
+
+#ifdef THEOS
 
 %hook AppDelegate
 
+#endif
 
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
@@ -426,16 +442,22 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     %orig();
 }
 
+#ifdef THEOS
 
 %end
+
+#endif
 
 
 static NSMutableArray *instances = nil;
 static NSMutableArray *labels = nil;
 
 
+#ifdef THEOS
 
 %hook Snap
+
+#endif
 
 /* the number has changed for the friend and now we must let the daemon know of the changes so that they can be saved to file */
 -(void)setSnapStreakCount:(long long)snapStreakCount{
@@ -455,10 +477,17 @@ static NSMutableArray *labels = nil;
     [chats chatsDidChange];
 }
 
+#ifdef THEOS
 
 %end
 
+#endif
+
+#ifdef THEOS
+
 %hook SCFeedViewController
+
+#endif
 
 
 -(UITableViewCell*)tableView:(UITableView*)tableView
@@ -547,27 +576,49 @@ static NSMutableArray *labels = nil;
 }
 
 
+#ifdef THEOS
 
 %end
 
+#endif
+
+#ifdef THEOS
+
 %end
+
+#endif
+
+#ifdef THEOS 
 
 %group iOS8
 
+#endif
+
+#ifdef THEOS
+
 %end
+
+#endif
+
+#ifdef THEOS
 
 %group iOS7
 
+#endif 
+
+#ifdef THEOS
+
 %end
 
+#endif
+
+#ifdef THEOS
 
 %ctor {
     
     /* constructor for the tweak, registers preferences stored in /var/mobile
      and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
      */
-    
-    
     
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL,
@@ -582,3 +633,5 @@ static NSMutableArray *labels = nil;
     if (kiOS9)
         %init(iOS9);
 }
+
+#endif

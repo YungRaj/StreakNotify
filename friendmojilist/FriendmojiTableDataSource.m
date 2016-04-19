@@ -111,7 +111,7 @@
     return 2;
 }
 
--(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+-(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     NSString *sectionName;
     switch (section)
@@ -146,7 +146,6 @@ numberOfRowsInSection:(NSInteger)section{
 
 -(UITableViewCell*)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"cellForRowAtIndexPath %ld",(long)indexPath.row);
     NSString *identifier = @"friendmojiCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
@@ -190,8 +189,6 @@ numberOfRowsInSection:(NSInteger)section{
 
 -(void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"%@",self.settings);
-    
     FriendmojiCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     NSString *name = [NSString string];
     
@@ -200,8 +197,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     } else if(indexPath.section == 1){
         name = [self.friendsWithoutStreaksNames objectAtIndex:indexPath.row];
     }
-    
-    NSLog(@"Selected cell with name %@",name);
     
     [self.settings setValue:[NSNumber numberWithBool:![self.settings[name] boolValue]]
                      forKey:name];

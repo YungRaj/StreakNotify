@@ -6,8 +6,10 @@ TWEAK_NAME = StreakNotify
 StreakNotify_FILES = Tweak.xm
 StreakNotify_PRIVATE_FRAMEWORKS = AppSupport
 StreakNotify_LIBRARIES = rocketbootstrap
+StreakNotify_CFLAGS = -DTHEOS
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
 
 after-install::
 	install.exec "killall -9 backboardd"

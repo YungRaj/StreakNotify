@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Dummy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 		<key>StreakNotify.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -13,6 +18,26 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>A502EA661C7EBF8B00C31DCF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A5E994551CC5EEC600543E5C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A5E9946E1CC5EEC700543E5C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A5E994791CC5EEC700543E5C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A5E9948F1CC5EFD900543E5C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -6,6 +6,23 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A5E994A71CC5F03600543E5C /* Tweak.mm in Sources */ = {isa = PBXBuildFile; fileRef = A519897A1C7EBFC1004BB62B /* Tweak.mm */; };
+		A5E994A81CC5F03E00543E5C /* Interfaces.h in Sources */ = {isa = PBXBuildFile; fileRef = A5B4BFA51C7F63330056EC0E /* Interfaces.h */; };
+		A5E994A91CC5F17600543E5C /* substrate.h in Sources */ = {isa = PBXBuildFile; fileRef = A51988D91C7EBFC1004BB62B /* substrate.h */; };
+		A5E994AB1CC5F1D600543E5C /* librocketbootstrap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */; };
+		A5E994AE1CC5F28400543E5C /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5E994AD1CC5F28400543E5C /* main.mm */; };
+		A5E994B11CC5F2BD00543E5C /* StreakNotifyListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994AF1CC5F2BD00543E5C /* StreakNotifyListController.h */; };
+		A5E994B21CC5F2BD00543E5C /* StreakNotifyListController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B01CC5F2BD00543E5C /* StreakNotifyListController.mm */; };
+		A5E994B31CC5F32B00543E5C /* PSSpecifier.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983351C7EBFB6004BB62B /* PSSpecifier.h */; };
+		A5E994B41CC5F35B00543E5C /* PSViewController.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983371C7EBFB6004BB62B /* PSViewController.h */; };
+		A5E994B51CC5F37C00543E5C /* PSListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983311C7EBFB6004BB62B /* PSListController.h */; };
+		A5E994BA1CC5F3A500543E5C /* FriendmojiListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B61CC5F3A500543E5C /* FriendmojiListController.h */; };
+		A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */; };
+		A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */; };
+		A5E994BD1CC5F3A500543E5C /* FriendmojiTableDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A51981B41C7EBFB6004BB62B /* control */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
 		A51981B51C7EBFB6004BB62B /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -1829,7 +1846,6 @@
 		A51989271C7EBFC1004BB62B /* .keep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .keep; sourceTree = "<group>"; };
 		A51989281C7EBFC1004BB62B /* libsubstrate.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsubstrate.0.dylib; sourceTree = "<group>"; };
 		A51989291C7EBFC1004BB62B /* libsubstrate.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsubstrate.dylib; sourceTree = "<group>"; };
-		A519892A1C7EBFC1004BB62B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A519892C1C7EBFC1004BB62B /* aggregate.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = aggregate.mk; sourceTree = "<group>"; };
 		A519892D1C7EBFC1004BB62B /* application.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = application.mk; sourceTree = "<group>"; };
 		A519892E1C7EBFC1004BB62B /* bundle.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bundle.mk; sourceTree = "<group>"; };
@@ -1897,10 +1913,31 @@
 		A519897A1C7EBFC1004BB62B /* Tweak.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tweak.mm; sourceTree = "<group>"; };
 		A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = friendmojilist.xcodeproj; path = friendmojilist/friendmojilist.xcodeproj; sourceTree = "<group>"; };
 		A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotifyd.xcodeproj; path = streaknotifyd/streaknotifyd.xcodeproj; sourceTree = "<group>"; };
+		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
-		A5DA79D61CA1B15E00DDD762 /* Tweak.xm */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tweak.xm; sourceTree = "<group>"; };
+		A5E994931CC5EFD900543E5C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A5E994A31CC5EFD900543E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librocketbootstrap.dylib; path = /opt/theos/lib/librocketbootstrap.dylib; sourceTree = "<absolute>"; };
+		A5E994AD1CC5F28400543E5C /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = ../streaknotifyd/main.mm; sourceTree = "<group>"; };
+		A5E994AF1CC5F2BD00543E5C /* StreakNotifyListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StreakNotifyListController.h; path = ../streaknotify/StreakNotifyListController.h; sourceTree = "<group>"; };
+		A5E994B01CC5F2BD00543E5C /* StreakNotifyListController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = StreakNotifyListController.mm; path = ../streaknotify/StreakNotifyListController.mm; sourceTree = "<group>"; };
+		A5E994B61CC5F3A500543E5C /* FriendmojiListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FriendmojiListController.h; path = ../friendmojilist/FriendmojiListController.h; sourceTree = "<group>"; };
+		A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FriendmojiListController.m; path = ../friendmojilist/FriendmojiListController.m; sourceTree = "<group>"; };
+		A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FriendmojiTableDataSource.h; path = ../friendmojilist/FriendmojiTableDataSource.h; sourceTree = "<group>"; };
+		A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FriendmojiTableDataSource.m; path = ../friendmojilist/FriendmojiTableDataSource.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A5E9948D1CC5EFD900543E5C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5E994AB1CC5F1D600543E5C /* librocketbootstrap.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		A502EA611C7EBF8B00C31DCF = {
@@ -1915,19 +1952,19 @@
 				A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */,
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 				A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */,
+				A5E994911CC5EFD900543E5C /* Dummy */,
+				A5A753CB1CC6B2EC00E26892 /* Dummy.app */,
 			);
 			sourceTree = "<group>";
 		};
 		A51981B71C7EBFB6004BB62B /* theos */ = {
 			isa = PBXGroup;
 			children = (
-				A5DA79D61CA1B15E00DDD762 /* Tweak.xm */,
 				A51981B81C7EBFB6004BB62B /* bin */,
 				A51982071C7EBFB6004BB62B /* documentation */,
 				A519820A1C7EBFB6004BB62B /* extras */,
 				A51982131C7EBFB6004BB62B /* include */,
 				A51989261C7EBFC1004BB62B /* lib */,
-				A519892A1C7EBFC1004BB62B /* LICENSE */,
 				A519892B1C7EBFC1004BB62B /* makefiles */,
 				A51989701C7EBFC1004BB62B /* mod */,
 				A51989721C7EBFC1004BB62B /* Prefix.pch */,
@@ -4647,6 +4684,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A5E994911CC5EFD900543E5C /* Dummy */ = {
+			isa = PBXGroup;
+			children = (
+				A5E994A31CC5EFD900543E5C /* Info.plist */,
+				A5E994921CC5EFD900543E5C /* Supporting Files */,
+			);
+			path = Dummy;
+			sourceTree = "<group>";
+		};
+		A5E994921CC5EFD900543E5C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A5E994B61CC5F3A500543E5C /* FriendmojiListController.h */,
+				A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */,
+				A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */,
+				A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */,
+				A5E994AF1CC5F2BD00543E5C /* StreakNotifyListController.h */,
+				A5E994B01CC5F2BD00543E5C /* StreakNotifyListController.mm */,
+				A5E994AD1CC5F28400543E5C /* main.mm */,
+				A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */,
+				A5E994931CC5EFD900543E5C /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
@@ -4666,6 +4728,26 @@
 		};
 /* End PBXLegacyTarget section */
 
+/* Begin PBXNativeTarget section */
+		A5E9948F1CC5EFD900543E5C /* Dummy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5E994A41CC5EFD900543E5C /* Build configuration list for PBXNativeTarget "Dummy" */;
+			buildPhases = (
+				A5E9948C1CC5EFD900543E5C /* Sources */,
+				A5E9948D1CC5EFD900543E5C /* Frameworks */,
+				A5E9948E1CC5EFD900543E5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Dummy;
+			productName = Dummy;
+			productReference = A5A753CB1CC6B2EC00E26892 /* Dummy.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
 /* Begin PBXProject section */
 		A502EA621C7EBF8B00C31DCF /* Project object */ = {
 			isa = PBXProject;
@@ -4676,6 +4758,9 @@
 					A502EA661C7EBF8B00C31DCF = {
 						CreatedOnToolsVersion = 7.2;
 					};
+					A5E9948F1CC5EFD900543E5C = {
+						CreatedOnToolsVersion = 7.2;
+					};
 				};
 			};
 			buildConfigurationList = A502EA651C7EBF8B00C31DCF /* Build configuration list for PBXProject "StreakNotify" */;
@@ -4684,8 +4769,10 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = A502EA611C7EBF8B00C31DCF;
+			productRefGroup = A502EA611C7EBF8B00C31DCF;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -4704,9 +4791,43 @@
 			projectRoot = "";
 			targets = (
 				A502EA661C7EBF8B00C31DCF /* StreakNotify */,
+				A5E9948F1CC5EFD900543E5C /* Dummy */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A5E9948E1CC5EFD900543E5C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A5E9948C1CC5EFD900543E5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5E994BA1CC5F3A500543E5C /* FriendmojiListController.h in Sources */,
+				A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */,
+				A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */,
+				A5E994BD1CC5F3A500543E5C /* FriendmojiTableDataSource.m in Sources */,
+				A5E994B51CC5F37C00543E5C /* PSListController.h in Sources */,
+				A5E994B41CC5F35B00543E5C /* PSViewController.h in Sources */,
+				A5E994B31CC5F32B00543E5C /* PSSpecifier.h in Sources */,
+				A5E994B11CC5F2BD00543E5C /* StreakNotifyListController.h in Sources */,
+				A5E994B21CC5F2BD00543E5C /* StreakNotifyListController.mm in Sources */,
+				A5E994AE1CC5F28400543E5C /* main.mm in Sources */,
+				A5E994A91CC5F17600543E5C /* substrate.h in Sources */,
+				A5E994A81CC5F03E00543E5C /* Interfaces.h in Sources */,
+				A5E994A71CC5F03600543E5C /* Tweak.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		A502EA671C7EBF8B00C31DCF /* Debug */ = {
@@ -4792,6 +4913,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				THEOS = /opt/theos;
 			};
 			name = Debug;
 		};
@@ -4802,6 +4924,50 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				THEOS = /opt/theos;
+			};
+			name = Release;
+		};
+		A5E994A51CC5EFD900543E5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				HEADER_SEARCH_PATHS = /opt/theos/include;
+				INFOPLIST_FILE = Dummy/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/theos/lib,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = YungRaj.Dummy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A5E994A61CC5EFD900543E5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				HEADER_SEARCH_PATHS = /opt/theos/include;
+				INFOPLIST_FILE = Dummy/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/theos/lib,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = YungRaj.Dummy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -4822,6 +4988,15 @@
 			buildConfigurations = (
 				A502EA6A1C7EBF8B00C31DCF /* Debug */,
 				A502EA6B1C7EBF8B00C31DCF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A5E994A41CC5EFD900543E5C /* Build configuration list for PBXNativeTarget "Dummy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5E994A51CC5EFD900543E5C /* Debug */,
+				A5E994A61CC5EFD900543E5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

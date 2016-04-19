@@ -15,7 +15,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "112"
             endingLineNumber = "112"
-            landmarkName = "GetTimeRemaining(Friend *f, SCChat *c)"
+            landmarkName = "GetFriendmojis()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -49,6 +49,20 @@
             endingLineNumber = "223"
             landmarkName = "-updateWithFriend:andLineHeight:andViewType:"
             landmarkType = "4">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Tweak.xm"
+            timestampString = "482732197.075354"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "421"
+            endingLineNumber = "421">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
