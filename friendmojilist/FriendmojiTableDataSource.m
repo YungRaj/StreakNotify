@@ -209,7 +209,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
- 
 }
 
 

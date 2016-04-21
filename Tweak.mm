@@ -325,26 +325,20 @@ void handleRemoteNotification(){
                                     didHappendWhenAppLaunch:YES];
 }
 
-#ifdef THEOS
 
+#ifdef THEOS
 %group iOS9
-
-#endif
-
-#ifdef THEOS
-
 %hook MainViewController
-
+#else
+@implementation myHooks
 #endif
 
 -(void)viewDidLoad{
-    
     /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
       it's ok if the custom friends hasn't been configured because it's ok for none to be selected
      */
     
     NSLog(@"No preferences found on file, letting user know");
-    
     %orig();
     if(!prefs) {
         UIAlertController *controller =
@@ -378,22 +372,18 @@ void handleRemoteNotification(){
 }
 
 #ifdef THEOS
-
 %end
-
 #endif
 
 #ifdef THEOS
-
 %hook AppDelegate
-
 #endif
 
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     /* just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
-     */
+    */
     
     UIUserNotificationType types = UIUserNotificationTypeBadge |
     UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -443,9 +433,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
 }
 
 #ifdef THEOS
-
 %end
-
 #endif
 
 
@@ -454,9 +442,7 @@ static NSMutableArray *labels = nil;
 
 
 #ifdef THEOS
-
 %hook Snap
-
 #endif
 
 /* the number has changed for the friend and now we must let the daemon know of the changes so that they can be saved to file */
@@ -478,15 +464,11 @@ static NSMutableArray *labels = nil;
 }
 
 #ifdef THEOS
-
 %end
-
 #endif
 
 #ifdef THEOS
-
 %hook SCFeedViewController
-
 #endif
 
 
@@ -505,7 +487,7 @@ static NSMutableArray *labels = nil;
          this should already be on the main thread but we should make sure of this
          */
         
-        if([cell isKindOfClass:%c(SCFeedTableViewCell)]){
+        if([cell isKindOfClass:objc_getClass("SCFeedTableViewCell")]){
             SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
             
             if(!instances){
@@ -524,7 +506,6 @@ static NSMutableArray *labels = nil;
             NSLog(@"%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
             
             UILabel *label;
-            
             
             if(![instances containsObject:cell]){
                 
@@ -577,44 +558,34 @@ static NSMutableArray *labels = nil;
 
 
 #ifdef THEOS
-
 %end
-
+%end
+#else
+@end
 #endif
 
 #ifdef THEOS
-
-%end
-
-#endif
-
-#ifdef THEOS 
-
 %group iOS8
-
 #endif
 
 #ifdef THEOS
-
 %end
-
 #endif
 
 #ifdef THEOS
-
 %group iOS7
-
 #endif 
 
 #ifdef THEOS
-
 %end
-
 #endif
 
 #ifdef THEOS
-
-%ctor {
+%ctor
+#else 
+void constructor()
+#endif 
+{
     
     /* constructor for the tweak, registers preferences stored in /var/mobile
      and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
@@ -633,5 +604,3 @@ static NSMutableArray *labels = nil;
     if (kiOS9)
         %init(iOS9);
 }
-
-#endif

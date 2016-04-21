@@ -62,7 +62,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "421"
-            endingLineNumber = "421">
+            endingLineNumber = "421"
+            landmarkName = "-applicationWillTerminate:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
