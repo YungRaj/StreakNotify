@@ -13,7 +13,7 @@
 		A5D223231C856858002B8AA1 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 		A5D223251C856858002B8AA1 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		A5D2232D1C856889002B8AA1 /* StreakNotifyListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreakNotifyListController.h; sourceTree = "<group>"; };
-		A5D2232E1C856889002B8AA1 /* StreakNotifyListController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StreakNotifyListController.mm; sourceTree = "<group>"; };
+		A5F50E3A1CC9AF040081ECDE /* StreakNotifyListController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = StreakNotifyListController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -24,7 +24,7 @@
 				A5D223211C856858002B8AA1 /* entry.plist */,
 				A5D223221C856858002B8AA1 /* Makefile */,
 				A5D2232D1C856889002B8AA1 /* StreakNotifyListController.h */,
-				A5D2232E1C856889002B8AA1 /* StreakNotifyListController.mm */,
+				A5F50E3A1CC9AF040081ECDE /* StreakNotifyListController.mm */,
 				A5D223231C856858002B8AA1 /* Resources */,
 				A5D223251C856858002B8AA1 /* theos */,
 			);

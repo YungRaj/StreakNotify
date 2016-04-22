@@ -3,7 +3,6 @@ This tweak notifies a user when a snapchat streak with another friend is running
  
 */
 
-
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

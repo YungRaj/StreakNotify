@@ -21,6 +21,7 @@
 		A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */; };
 		A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */; };
 		A5E994BD1CC5F3A500543E5C /* FriendmojiTableDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */; };
+		A5F50E3F1CC9AF5C0081ECDE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A5F50E3E1CC9AF5C0081ECDE /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1916,7 +1917,6 @@
 		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
-		A5E994931CC5EFD900543E5C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A5E994A31CC5EFD900543E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librocketbootstrap.dylib; path = /opt/theos/lib/librocketbootstrap.dylib; sourceTree = "<absolute>"; };
 		A5E994AD1CC5F28400543E5C /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = ../streaknotifyd/main.mm; sourceTree = "<group>"; };
@@ -1926,6 +1926,7 @@
 		A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FriendmojiListController.m; path = ../friendmojilist/FriendmojiListController.m; sourceTree = "<group>"; };
 		A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FriendmojiTableDataSource.h; path = ../friendmojilist/FriendmojiTableDataSource.h; sourceTree = "<group>"; };
 		A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FriendmojiTableDataSource.m; path = ../friendmojilist/FriendmojiTableDataSource.m; sourceTree = "<group>"; };
+		A5F50E3E1CC9AF5C0081ECDE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -4702,9 +4703,9 @@
 				A5E994B91CC5F3A500543E5C /* FriendmojiTableDataSource.m */,
 				A5E994AF1CC5F2BD00543E5C /* StreakNotifyListController.h */,
 				A5E994B01CC5F2BD00543E5C /* StreakNotifyListController.mm */,
+				A5F50E3E1CC9AF5C0081ECDE /* main.m */,
 				A5E994AD1CC5F28400543E5C /* main.mm */,
 				A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */,
-				A5E994931CC5EFD900543E5C /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -4820,6 +4821,7 @@
 				A5E994B31CC5F32B00543E5C /* PSSpecifier.h in Sources */,
 				A5E994B11CC5F2BD00543E5C /* StreakNotifyListController.h in Sources */,
 				A5E994B21CC5F2BD00543E5C /* StreakNotifyListController.mm in Sources */,
+				A5F50E3F1CC9AF5C0081ECDE /* main.m in Sources */,
 				A5E994AE1CC5F28400543E5C /* main.mm in Sources */,
 				A5E994A91CC5F17600543E5C /* substrate.h in Sources */,
 				A5E994A81CC5F03E00543E5C /* Interfaces.h in Sources */,

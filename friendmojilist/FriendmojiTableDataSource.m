@@ -38,7 +38,10 @@
     if (self) {
         self.settings = [NSMutableDictionary dictionaryWithContentsOfFile:@"var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         
+    
+        
         /* if the daemon loaded right during a springboard launch, then it's impossible to not have the file saved to disk */
+        
         NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
         
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
