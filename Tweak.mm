@@ -21,9 +21,6 @@ static NSDictionary *prefs = nil;
 static NSMutableArray *customFriends = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
-NSString *kSnapDidSendNotification = @"snapDidSendNotification";
-
-
 
 /* load preferences and the custom friends that we must apply notifications to */
 /* load the true values from the customFriends plist into an array so that they can be searched quicker */
@@ -53,7 +50,8 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     }
         
     snaps = [snaps sortedArrayUsingComparator:^(id obj1, id obj2){
-        if ([obj1 isKindOfClass:%c(Snap)] && [obj2 isKindOfClass:%c(Snap)]) {
+        if ([obj1 isKindOfClass:objc_getClass("Snap")] &&
+            [obj2 isKindOfClass:objc_getClass("Snap")]) {
             Snap *s1 = obj1;
             Snap *s2 = obj2;
                 
@@ -69,7 +67,7 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     Snap *earliestUnrepliedSnap = nil;
     
     for(id obj in snaps){
-        if([obj isKindOfClass:%c(Snap)]){
+        if([obj isKindOfClass:objc_getClass("Snap")]){
             Snap *snap = obj;
             NSString *sender = [snap sender];
             if(!sender){
@@ -326,10 +324,10 @@ void handleRemoteNotification(){
 
 
 #ifdef THEOS
-%group iOS9
+%group SnapchatHooks
 %hook MainViewController
 #else
-@implementation myHooks
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -563,25 +561,10 @@ static NSMutableArray *labels = nil;
 @end
 #endif
 
-#ifdef THEOS
-%group iOS8
-#endif
-
-#ifdef THEOS
-%end
-#endif
-
-#ifdef THEOS
-%group iOS7
-#endif 
-
-#ifdef THEOS
-%end
-#endif
 
 #ifdef THEOS
 %ctor
-#else 
+#else
 void constructor()
 #endif 
 {
@@ -600,6 +583,5 @@ void constructor()
     
 
     
-    if (kiOS9)
-        %init(iOS9);
+    %init(SnapchatHooks);
 }
