@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ $1 = "remove" ]; then
+	/bin/rm /var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist
+	/bin/rm /var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist
+	/bin/rm /var/root/Documents/streaknotifyd
+fi
+exit 0

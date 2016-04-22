@@ -1,3 +1,5 @@
+#!/bin/sh
+echo “Loading daemon”
 chown root:wheel /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
 launchctl unload /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
 launchctl load /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
