@@ -326,8 +326,6 @@ void handleRemoteNotification(){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-#else
-@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -338,33 +336,62 @@ void handleRemoteNotification(){
     NSLog(@"No preferences found on file, letting user know");
     %orig();
     if(!prefs) {
-        UIAlertController *controller =
-        [UIAlertController alertControllerWithTitle:@"StreakNotify"
-                                            message:@"You haven't selected any preferences yet in Settings, use defaults?"
-                                     preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:@"Cancel"
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction* action){
-                                   exit(0);
-                               }];
-        UIAlertAction *ok =
-        [UIAlertAction actionWithTitle:@"Ok"
-                                 style:UIAlertActionStyleCancel
-                               handler:^(UIAlertAction* action){
-                                   prefs = @{@"kTwelveHours" : @NO,
-                                             @"kFiveHours" : @NO,
-                                             @"kOneHour" : @NO,
-                                             @"kTenMinutes" : @NO,
-                                             @"kCustomHours" : @"0",
-                                             @"kCustomMinutes" : @"0",
-                                             @"kCustomSeconds" : @"0"};
-                               }];
-        [controller addAction:cancel];
-        [controller addAction:ok];
-        [self presentViewController:controller animated:NO completion:nil];
+        if([UIAlertController class]){
+            UIAlertController *controller =
+            [UIAlertController alertControllerWithTitle:@"StreakNotify"
+                                                message:@"You haven't selected any preferences yet in Settings, use defaults?"
+                                         preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *cancel =
+            [UIAlertAction actionWithTitle:@"Cancel"
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction* action){
+                                       exit(0);
+                                   }];
+            UIAlertAction *ok =
+            [UIAlertAction actionWithTitle:@"Ok"
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction* action){
+                                       prefs = @{@"kTwelveHours" : @NO,
+                                                 @"kFiveHours" : @NO,
+                                                 @"kOneHour" : @NO,
+                                                 @"kTenMinutes" : @NO,
+                                                 @"kCustomHours" : @"0",
+                                                 @"kCustomMinutes" : @"0",
+                                                 @"kCustomSeconds" : @"0"};
+                                   }];
+            [controller addAction:cancel];
+            [controller addAction:ok];
+            [self presentViewController:controller animated:NO completion:nil];
+        } else{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"StreakNotify"
+                                                              message:@"You haven't selected any preferences yet in Settings, use defaults?"
+                                                             delegate:self
+                                                    cancelButtonTitle:nil
+                                                    otherButtonTitles:@"Ok", @"Cancel", nil];
+            [alert show];
+            [alert release];
+        }
         
         
+    }
+}
+
+#ifdef THEOS
+%new
+#endif
+
+-(void)alertView:(UIAlertView *)alertView
+clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex==0){
+        prefs = @{@"kTwelveHours" : @NO,
+                  @"kFiveHours" : @NO,
+                  @"kOneHour" : @NO,
+                  @"kTenMinutes" : @NO,
+                  @"kCustomHours" : @"0",
+                  @"kCustomMinutes" : @"0",
+                  @"kCustomSeconds" : @"0"};
+    }else {
+        exit(0);
     }
 }
 
@@ -382,13 +409,12 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     /* just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
     */
     
-    UIUserNotificationType types = UIUserNotificationTypeBadge |
-    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
-    
-    UIUserNotificationSettings *mySettings =
-    [UIUserNotificationSettings settingsForTypes:types categories:nil];
-    
-    [application registerUserNotificationSettings:mySettings];
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    } else {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes: (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    }
     
     NSLog(@"Just launched application successfully, resetting local notifications for streaks");
     
@@ -557,15 +583,12 @@ static NSMutableArray *labels = nil;
 #ifdef THEOS
 %end
 %end
-#else
-@end
 #endif
 
 
 #ifdef THEOS
 %ctor
-#else
-void constructor()
+#
 #endif 
 {
     

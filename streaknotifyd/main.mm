@@ -113,9 +113,15 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     /* this is a workaround so that we don't have to request to the snapchat application every time the preferences bundle wants information it */
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:documentsDirectory]){
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:documentsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+    }
+    
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
-    NSLog(@"Writing names and friendmojis to file");
+    NSLog(@"Writing names and friendmojis to file %@",filePath);
 
     
     [self.friendNamesAndEmojis writeToFile:filePath atomically:YES];
