@@ -79,8 +79,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "558"
             endingLineNumber = "558"
-            landmarkName = "-tableView:cellForRowAtIndexPath:"
-            landmarkType = "5">
+            landmarkName = "dispatch_async(dispatch_get_main_queue(), ^{ /* want to do this on the main thread because all ui updates should be done on the main thread this should already be on the main thread but we should make sure of this */ if([cell isKindOfClass:objc_getClass(&quot;SCFeedTableViewCell&quot;)]){ SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell; if(!instances){ instances = [[NSMutableArray alloc] init]; } if(!labels){ labels = [[NSMutableArray alloc] init]; } SCChatViewModelForFeed *feedItem = feedCell.feedItem; SCChat *chat = [feedItem chat]; Friend *f = [feedItem friendForFeedItem]; Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat); NSLog(@&quot;%@ is earliest unreplied snap %@&quot;,earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]); UILabel *label; if(![instances containsObject:cell]){ CGSize size = cell.frame.size; CGRect rect = CGRectMake(size.width*.83, size.height*.7, size.width/8, size.height/4); label = [[UILabel alloc] initWithFrame:rect]; [instances addObject:cell]; [labels addObject:label]; [feedCell.containerView addSubview:label]; }else { label = [labels objectAtIndex:[instances indexOfObject:cell]]; } if([f snapStreakCount]&gt;2 &amp;&amp; earliestUnrepliedSnap){ label.text = [NSString stringWithFormat:@&quot;&#x23f0; %@&quot;,GetTimeRemaining(f,chat,earliestUnrepliedSnap)]; SizeLabelToRect(label,label.frame); label.hidden = NO; }else { label.text = @&quot;&quot;; label.hidden = YES; } } })"
+            landmarkType = "6">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
