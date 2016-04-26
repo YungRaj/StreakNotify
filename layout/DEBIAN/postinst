@@ -1,6 +1,10 @@
 #!/bin/sh
-echo “Loading daemon”
+echo Changing permissions on daemon
 chown root:wheel /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
+echo Unloading daemon
 launchctl unload /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
+echo Loading daemon
 launchctl load /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
+echo Daemon loaded successfully
+echo Thank you for installing StreakNotify, follow me on Twitter and add me on Snapchat @ilhanraja
 exit 0

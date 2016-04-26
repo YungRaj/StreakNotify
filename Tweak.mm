@@ -28,10 +28,10 @@ static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 static void LoadPreferences() {
     if(!prefs){
         prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
-    }if(!customFriends){
+    }
+    if(!customFriends){
         NSDictionary *friendmojiList = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         customFriends = [[NSMutableArray alloc] init];
-        
         for(NSString *name in [friendmojiList allKeys]){
             if([friendmojiList[name] boolValue]){
                 [customFriends addObject:name];
@@ -243,7 +243,6 @@ static void ScheduleNotification(NSDate *snapDate,
                                  float minutes,
                                  float hours){
     /* schedules the notification and makes sure it isn't before the current time */
-    /* I could be doing this with snapStreakExpiryTime and not have to check for this condition */
     if([customFriends count] && ![customFriends containsObject:displayName]){
         NSLog(@"Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
@@ -312,9 +311,9 @@ static void ResetNotifications(){
 /* we need to fetch updates so that the new snap can be found */
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 
-void handleRemoteNotification(){
+void HandleRemoteNotification(){
     NSLog(@"Resetting local notifications");
-    [[%c(Manager) shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
+    [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
         NSLog(@"Finished fetching updates, resetting local notifications");
         ResetNotifications();
     }
@@ -322,15 +321,16 @@ void handleRemoteNotification(){
                                     didHappendWhenAppLaunch:YES];
 }
 
-
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
     /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
-      it's ok if the custom friends hasn't been configured because it's ok for none to be selected
+     it's ok if the custom friends hasn't been configured because it's ok for none to be selected
      */
     
     NSLog(@"No preferences found on file, letting user know");
@@ -364,15 +364,13 @@ void handleRemoteNotification(){
             [self presentViewController:controller animated:NO completion:nil];
         } else{
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"StreakNotify"
-                                                              message:@"You haven't selected any preferences yet in Settings, use defaults?"
-                                                             delegate:self
-                                                    cancelButtonTitle:nil
-                                                    otherButtonTitles:@"Ok", @"Cancel", nil];
+                                                            message:@"You haven't selected any preferences yet in Settings, use defaults?"
+                                                           delegate:self
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"Ok", @"Cancel", nil];
             [alert show];
             [alert release];
         }
-        
-        
     }
 }
 
@@ -407,7 +405,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex{
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     /* just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
-    */
+     */
     
     if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
@@ -434,7 +432,8 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     /* everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time*/
-    handleRemoteNotification();
+    LoadPreferences();
+    HandleRemoteNotification();
     %orig();
 }
 
@@ -450,6 +449,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
 
 -(void)applicationDidBecomeActive:(UIApplication*)application
 {
+    LoadPreferences();
     ResetNotifications();
     SendRequestToDaemon();
     %orig();
@@ -479,7 +479,7 @@ static NSMutableArray *labels = nil;
     %orig();
     
     NSLog(@"Post send snap");
-          
+    
     Manager *manager = [%c(Manager) shared];
     User *user = [manager user];
     SCChats *chats = [user chats];
@@ -583,12 +583,14 @@ static NSMutableArray *labels = nil;
 #ifdef THEOS
 %end
 %end
+#else
+@end
 #endif
-
 
 #ifdef THEOS
 %ctor
-#
+#else
+void constructor()
 #endif 
 {
     
@@ -596,15 +598,6 @@ static NSMutableArray *labels = nil;
      and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
      */
     
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
-                                    NULL,
-                                    (CFNotificationCallback)LoadPreferences,
-                                    CFSTR("YungRajStreakNotifyPreferencesChangedNotification"),
-                                    NULL,
-                                    CFNotificationSuspensionBehaviorDeliverImmediately);
     LoadPreferences();
-    
-
-    
     %init(SnapchatHooks);
 }
