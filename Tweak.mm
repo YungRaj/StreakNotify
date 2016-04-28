@@ -1,5 +1,5 @@
 /*
-This tweak notifies a user when a snapchat streak with another friend is running down in time. It also tells a user how much time is remanining in their feed. Customizable with a bunch of settings, custom time, custom friends, and even preset values that you can enable with a switch in preferences 
+This tweak notifies a user when a snapchat streak with another friend is running down in time. It also tells a user how much time is remanining in their feed. Customizable with a bunch of settings, custom time, custom friends, and even preset values that you can enable with a switch in preferences. Auto-send snap will be implemented soon so that the streak is kept with a person
  
 */
 
@@ -23,7 +23,9 @@ static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 
 /* load preferences and the custom friends that we must apply notifications to */
-/* load the true values from the customFriends plist into an array so that they can be searched quicker */
+/* load the true values from the customFriends plist into an array so that they can be searched quicker
+    make sure the custom friends and the prefs objects are memory managed properly otherwise we will have a memory leak or a dangling pointer
+ */
 
 static void LoadPreferences() {
     if(!prefs){
@@ -40,7 +42,9 @@ static void LoadPreferences() {
     }
 }
 
-/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours. basically forces you to respond if you just keep opening messages */
+/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours. basically forces you to respond if you just keep opening messages 
+   this is a better solution than the private SnapStreakData class that the app uses in the new chat 2.0 update
+ */
 
 Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     NSArray *snaps = [chat allSnapsArray];
@@ -48,7 +52,7 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     if(!snaps || ![snaps count]){
         return nil;
     }
-        
+    
     snaps = [snaps sortedArrayUsingComparator:^(id obj1, id obj2){
         if ([obj1 isKindOfClass:objc_getClass("Snap")] &&
             [obj2 isKindOfClass:objc_getClass("Snap")]) {
@@ -210,6 +214,7 @@ static NSString* GetTimeRemaining(Friend *f, SCChat *c, Snap *earliestUnrepliedS
         /*this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
          in the new chat 2.0 update the new properties introduced into the public API for the SOJUFriend and SOJUFriendBuilder class allow us to know when the server will end the streak
          if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
+         this API isn't available (or public) so for previous versions of Snapchat this would not work
          */
     }
     
@@ -474,6 +479,8 @@ static NSMutableArray *labels = nil;
     
     SendRequestToDaemon();
 }
+
+/* call the chatsDidMethod on the chats object so that the SCFeedViewController tableview can reload safely without graphics bugs */
 
 -(void)doSend{
     %orig();

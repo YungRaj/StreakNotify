@@ -47,6 +47,10 @@
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
         if(!friendNamesAndEmojis){
             NSLog(@"Fatal - the dictionary that the daemon should save doesn't exist");
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1.5];
+            notification.alertBody = @"Error: streaknotifyd hasn't sent us friendmojis from Snapchat.... Exiting";
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
             exit(0);
         }
         NSDictionary *friendsWithStreaks = friendNamesAndEmojis[@"friendsWithStreaks"];
