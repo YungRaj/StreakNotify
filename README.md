@@ -18,10 +18,10 @@ Note: you won’t be able to receive updates unless you check out the project I 
 
 
 # Known issues
-Daemon not loading because of permissions issues (FIXED)
-FriendmojiList custom friends crashing (FIXED)
-/var/root/Documents folder missing on some devices (FIXED)
-Crashes before saving preferences and launching the app
+Daemon not loading because of permissions issues (FIXED) <br />
+FriendmojiList custom friends crashing (FIXED) <br />
+/var/root/Documents folder missing on some devices (FIXED) <br />
+Crashes before saving preferences and launching the app <br />
 Random but not frequent crashes on cellForRowAtIndexPath:
 
 
