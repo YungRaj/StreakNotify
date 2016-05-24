@@ -20,6 +20,32 @@
 	return _specifiers;
 }
 
+-(void)chooseAutoReplySnapStreakImage{
+    UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
+    pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    pickerLibrary.delegate = self;
+    [self presentModalViewController:pickerLibrary animated:YES];
+}
+
+-(void)imagePickerController:(UIImagePickerController*)picker
+       didFinishPickingImage:(UIImage*)image
+                 editingInfo:(NSDictionary*)editingInfo
+{
+    NSData *autoReplySnapStreak = UIImageJPEGRepresentation(image,0.7);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:documentsDirectory]){
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:documentsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+    }
+    
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"autoreply_sn.jpeg"];
+    
+    
+    [autoReplySnapStreak writeToFile:filePath atomically:YES];
+    
+}
 
 -(void)respring{
     /* use the springboard's relaunchSpringBoardNow function to respring */

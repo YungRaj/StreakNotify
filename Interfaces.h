@@ -226,9 +226,222 @@
 
 @end
 
+
+@class CLLocation, Media, NSArray, NSData, NSDate, NSMutableArray, NSMutableDictionary, NSString, SCSnapCommonLoggingParameters, SnapVideoFilter;
+@class AVPlayerItem, AVURLAsset, NSData, NSNumber, NSString;
+
+@interface Media : NSObject <NSCoding>
+{
+    _Bool _isLoading;
+    _Bool _overlayPresent;
+    _Bool _isThumbnail;
+    _Bool _finishedPlaying;
+    NSData *_mediaDataToUpload;
+    NSNumber *_captionScreenPosition;
+    NSNumber *_captionOrientation;
+    NSString *_captionText;
+    NSData *_overlayDataToUpload;
+    AVPlayerItem *_playerItem;
+    NSString *_key;
+    NSString *_iv;
+    AVURLAsset *_videoAsset;
+}
+
++ (id)overlayPathWithMediaId:(id)arg1;
++ (id)videoPathWithMediaId:(id)arg1;
++ (void)removeFromDiskWithMediaId:(id)arg1;
++ (id)fastCodingKeys;
+@property(nonatomic) _Bool finishedPlaying;
+@property(retain, nonatomic) AVURLAsset *videoAsset;
+@property(retain, nonatomic) NSString *iv;
+@property(retain, nonatomic) NSString *key;
+@property(nonatomic) _Bool isThumbnail;
+@property(nonatomic) long long loadContext;
+@property(retain, nonatomic) AVPlayerItem *playerItem;
+@property(retain, nonatomic) NSData *overlayDataToUpload;
+@property(nonatomic) _Bool overlayPresent;
+@property(nonatomic) _Bool isLoading;
+@property(retain, nonatomic) NSString *captionText;
+@property(retain, nonatomic) NSNumber *captionOrientation;
+@property(retain, nonatomic) NSNumber *captionScreenPosition;
+@property(retain, nonatomic) NSData *mediaDataToUpload;
+- (_Bool)isImage;
+- (_Bool)isVideoWithSound;
+- (_Bool)isVideo;
+- (void)fetchMediaWithCompletion:(id)arg1;
+- (void)fetchMediaUserInitiated:(_Bool)arg1 completion:(id)arg2;
+- (id)requestKey;
+- (void)bqUploadWithDataAndParameters:(id)arg1 parameters:(id)arg2;
+- (void)uploadWithDataAndParameters:(id)arg1 parameters:(id)arg2;
+- (void)upload;
+- (void)imageProcessingDone;
+- (void)baseNoteMediaProcessingDone;
+- (void)gifFromCacheWithCompletion:(id)arg1;
+- (void)imageFromCacheWithCompletion:(id)arg1;
+- (id)overlayPath;
+- (void)fetchOverlayDataWithCompletion:(id)arg1;
+- (id)videoPath;
+- (void)initPlayerItemWithCompletion:(id)arg1;
+- (void)writeVideoToURL:(id)arg1 completion:(id)arg2;
+- (void)saveDataToCache:(id)arg1 alreadyEncrypted:(_Bool)arg2 useClientEncryption:(_Bool)arg3 successBlock:(id)arg4 failureBlock:(id)arg5;
+- (void)saveDataToCache:(id)arg1 useClientEncryption:(_Bool)arg2;
+- (void)saveDataToCache:(id)arg1;
+- (void)mediaFromCacheWithCompletionHandler:(id)arg1;
+- (void)blobFromCacheWithCompletionHandler:(id)arg1;
+- (void)archiveSnapData:(id)arg1 overlayData:(id)arg2 completion:(id)arg3;
+- (void)unarchiveSnapAndOverlayFromData:(id)arg1 completionHandler:(id)arg2;
+- (void)copyDataFromMedia:(id)arg1;
+- (void)setArchivedDataToUpload:(id)arg1;
+- (void)dataToUploadWithCompletion:(id)arg1;
+- (id)dataToUpload;
+- (_Bool)isBroadcast;
+- (id)mediaId;
+- (_Bool)isLoaded;
+- (void)removeFromDisk;
+- (void)removeFromCache;
+- (_Bool)hasSeparateCaption;
+- (void)setNilValueForKey:(id)arg1;
+- (void)setValue:(id)arg1 forUndefinedKey:(id)arg2;
+- (_Bool)preferFastCoding;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)initWithJSONDictionary:(id)arg1;
+
+@end
+
+
+@class CLLocation, Media, NSArray, NSData, NSDate, NSMutableArray, NSMutableDictionary, NSString, SCSnapCommonLoggingParameters, SnapVideoFilter;
+
+@interface EphemeralMedia : NSObject 
+{
+    _Bool _cameraFrontFacing;
+    _Bool _shouldIncludeLocationData;
+    Media *_media;
+    NSString *__id;
+    NSString *_captionText;
+    NSString *_clientId;
+    EphemeralMedia *_doublePostParent;
+    long long _ephemeralMediaState;
+    NSDate *_firstPostDate;
+    NSString *_geoFilterId;
+    NSArray *_allGeoFilterIds;
+    NSString *_storyFilterId;
+    NSString *_storyLensId;
+    long long _geoFilterImpressions;
+    CLLocation *_location;
+    unsigned long long _numberOfTimesReloaded;
+    Media *_thumbnailMedia;
+    double _time;
+    double _timeLeft;
+    double _timeStartedViewing;
+    long long _type;
+    SnapVideoFilter *_videoFilter;
+    double _videoTimeSoFar;
+    NSDate *_viewedTimestamp;
+    long long _orientation;
+    SCSnapCommonLoggingParameters *_commonLoggingParameters;
+    NSData *_rawThumbnailData;
+    NSMutableDictionary *_secretShareLoggingParams;
+    NSMutableDictionary *_shareLoggingParams;
+    NSMutableDictionary *_eventLoggingParams;
+    NSMutableArray *_targets;
+    NSMutableArray *_viewingTimestamps;
+}
+
++ (id)fastCodingKeys;
+@property(retain, nonatomic) NSMutableArray *viewingTimestamps;
+@property(retain, nonatomic) NSMutableArray *targets;
+@property(retain, nonatomic) NSMutableDictionary *eventLoggingParams;
+@property(retain, nonatomic) NSMutableDictionary *shareLoggingParams;
+@property(retain, nonatomic) NSMutableDictionary *secretShareLoggingParams;
+@property(nonatomic) _Bool shouldIncludeLocationData;
+@property(copy, nonatomic) NSData *rawThumbnailData;
+@property(copy, nonatomic) SCSnapCommonLoggingParameters *commonLoggingParameters;
+@property(nonatomic) long long orientation;
+@property(nonatomic) _Bool cameraFrontFacing;
+@property(retain, nonatomic) NSDate *viewedTimestamp;
+@property(nonatomic) double videoTimeSoFar;
+@property(retain, nonatomic) SnapVideoFilter *videoFilter;
+@property(nonatomic) long long type;
+@property(nonatomic) double timeStartedViewing;
+@property(nonatomic) double timeLeft;
+@property(nonatomic) double time;
+@property(retain, nonatomic) Media *thumbnailMedia;
+@property(nonatomic) unsigned long long numberOfTimesReloaded;
+@property(retain, nonatomic) CLLocation *location;
+@property(nonatomic) long long geoFilterImpressions;
+@property(retain, nonatomic) NSString *storyLensId;
+@property(retain, nonatomic) NSString *storyFilterId;
+@property(retain, nonatomic) NSArray *allGeoFilterIds;
+@property(retain, nonatomic) NSString *geoFilterId;
+@property(retain, nonatomic) NSDate *firstPostDate;
+@property(nonatomic) long long ephemeralMediaState;
+@property(retain, nonatomic) EphemeralMedia *doublePostParent;
+@property(retain, nonatomic) NSString *clientId;
+@property(retain, nonatomic) NSString *captionText;
+@property(retain, nonatomic) NSString *_id;
+- (void)markViewingTimestamp;
+- (id)logId;
+- (void)reprocessVideo;
+- (_Bool)timeToSendHasExpired;
+- (id)uploadFailureBlock;
+- (id)uploadSuccessBlock;
+- (id)uploadParametersWithData:(_Bool)arg1;
+- (void)setUploading;
+- (void)doublePost;
+- (void)addTarget:(id)arg1;
+- (void)imageProcessingDidSucceedForMedia:(id)arg1;
+- (void)uploadMedia;
+- (id)username;
+- (void)mediaUploadDidFailForMedia:(id)arg1;
+- (void)mediaUploadDidSucceedForMedia:(id)arg1;
+- (long long)uploadMediaTypeForMedia:(id)arg1;
+- (id)uploadMediaIdForMedia:(id)arg1;
+- (_Bool)isImage;
+- (_Bool)isVideoWithSound;
+- (_Bool)isVideoWithNoSound;
+- (_Bool)isVideo;
+- (id)requestContexts;
+- (_Bool)needsAuthToFetch;
+- (_Bool)encrypt;
+- (_Bool)persist;
+- (id)encryptionDictionaryForMedia:(id)arg1;
+- (id)decryptData:(id)arg1 forMedia:(id)arg2;
+- (id)mediaIdForMedia:(id)arg1;
+- (id)endpointParamsForMedia:(id)arg1;
+- (id)endpointForMedia:(id)arg1;
+- (void)targetSetVideoFilter:(id)arg1;
+- (void)targetSetMedia:(id)arg1;
+- (void)resetMedia;
+@property(retain, nonatomic) Media *media; // @synthesize media=_media;
+- (void)copyDataFromEphemeralMedia:(id)arg1;
+- (void)setupThumbnailMedia;
+- (void)didDecodeObject;
+- (void)setNilValueForKey:(id)arg1;
+- (void)setValue:(id)arg1 forUndefinedKey:(id)arg2;
+- (_Bool)preferFastCoding;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)loggingParametersForEvent:(id)arg1;
+- (void)setLoggingParameters:(id)arg1 forEvent:(id)arg2;
+- (void)logEvent:(id)arg1;
+- (void)addEventLoggingParameters:(id)arg1;
+- (id)eventLoggingParameters;
+- (id)secretShareLoggingParameters;
+- (void)addSecretShareLoggingParameters:(id)arg1;
+- (id)shareLoggingParameters;
+- (void)addShareLoggingParameters:(id)arg1;
+- (id)typeParams;
+- (id)initWithJSONDictionary:(id)arg1;
+- (id)initWithClientId;
+- (id)init;
+@end
+
+
+
 @class AVPlayerItem, NSArray, NSDate, NSMutableDictionary, NSNumber, NSString, NSURL, SnapTrophyMetrics;
 
-@interface Snap : NSObject
+@interface Snap : EphemeralMedia
 {
     _Bool _canBeReplayed;
     _Bool _clearedBySender;
