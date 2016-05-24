@@ -16,6 +16,8 @@ Note: you won’t be able to receive updates unless you check out the project I 
 5. Information on your feed on whether custom friends is enabled for a specific person on your friends list.
 6. Better integration with other view controllers such as ContactsViewController and FriendsViewController
 
+# Note:
+beta-testing branch is for beta testing new features to tweak
 
 # Known issues
 Daemon not loading because of permissions issues (FIXED) <br />
