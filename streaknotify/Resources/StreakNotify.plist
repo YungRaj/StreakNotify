@@ -83,6 +83,8 @@
 			<string>PSSwitchCell</string>
 			<key>label</key>
 			<string>Auto Reply to Keep Streak?</string>
+			<key>key</key>
+			<string>kAutoReplySnapstreak</string>
 		</dict>
 		<dict>
 			<key>cell</key>
