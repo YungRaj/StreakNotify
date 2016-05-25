@@ -19,6 +19,7 @@ This tweak notifies a user when a snapchat streak with another friend is running
 
 static NSDictionary *prefs = nil;
 static NSMutableArray *customFriends = nil;
+static UIImage *autoReplySnapstreakImage = nil;
 static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
 
@@ -26,6 +27,7 @@ static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 /* load the true values from the customFriends plist into an array so that they can be searched quicker
     make sure the custom friends and the prefs objects are memory managed properly otherwise we will have a memory leak or a dangling pointer
  */
+/* load the image that the user wants to auto reply to a streak to */
 
 static void LoadPreferences() {
     if(!prefs){
@@ -38,6 +40,14 @@ static void LoadPreferences() {
             if([friendmojiList[name] boolValue]){
                 [customFriends addObject:name];
             }
+        }
+    }
+    if(!autoReplySnapstreakImage){
+        NSString *filePath = @"/var/mobile/Documents/streaknotify_autoreply.png";
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        BOOL fileExists = [fileManager fileExistsAtPath:filePath];
+        if(fileExists){
+            autoReplySnapstreakImage = [[UIImage alloc] initWithContentsOfFile:filePath];
         }
     }
 }
@@ -248,8 +258,8 @@ static void ScheduleNotification(NSDate *snapDate,
                                  float minutes,
                                  float hours){
     /* schedules the notification and makes sure it isn't before the current time */
-    NSString *username = [f name];
-    NSString *displayName = [f display];
+    NSString *displayName = f.display;
+    NSString *username = f.name;
     if([customFriends count] && ![customFriends containsObject:displayName]){
         NSLog(@"Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
@@ -262,7 +272,7 @@ static void ScheduleNotification(NSDate *snapDate,
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.fireDate = notificationDate;
     notification.alertBody = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
-    notification.userInfo = @{@"username":username};
+    notification.userInfo = @{@"Username" : username};
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
@@ -281,11 +291,15 @@ static void ResetNotifications(){
     SCChats *chats = [user chats];
     
     for(SCChat *chat in [chats allChats]){
-        Friend *f = [friends friendForName:[chat recipient]];
+        
         Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
         NSDate *snapDate = [earliestUnrepliedSnap timestamp];
+        Friend *f = [friends friendForName:[chat recipient]];
+        
+        NSLog(@"%@ snapDate for %@",snapDate,[chat recipient]);
         
         if([f snapStreakCount]>2 && earliestUnrepliedSnap){
+            NSString *displayName = [friends displayNameForUsername:[chat recipient]];
             if([prefs[@"kTwelveHours"] boolValue]){
                 ScheduleNotification(snapDate,f,0,0,12);
                 
@@ -301,7 +315,7 @@ static void ResetNotifications(){
             
             float seconds = [prefs[@"kCustomSeconds"] floatValue];
             float minutes = [prefs[@"kCustomMinutes"] floatValue];
-            float hours = [prefs[@"kCustomHours"] floatValue];
+            float hours = [prefs[@"kCustomHours"] floatValue] ;
             if(hours || minutes || seconds){
                 ScheduleNotification(snapDate,f,seconds,minutes,hours);
             }
@@ -311,15 +325,17 @@ static void ResetNotifications(){
     NSLog(@"Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
 }
 
-void AutoReplySnapStreak(NSString *username){
-    Snap *snap = [[objc_getClass("Snap") alloc] init];
+void SendAutoReplySnapToUser(NSString *username){
+    Snap *snap = [[Snap alloc] init];
+    UIImage *image = [UIImage imageWithContentsOfFile:@"/var/mobile/Documents/streaknotify_autoreply.jpeg"];
+    snap.media.mediaDataToUpload = UIImageJPEGRepresentation(image,0.7);
+    snap.media.captionText = prefs[@"kAutoReplySnapstreakCaption"];
     snap.recipient = username;
-    snap.media.captionText = @"Streak";
-    snap.media.mediaDataToUpload = [NSData dataWithContentsOfFile:@"/var/mobile/Documents/autoreply_sn.png"];
     
-    
+    /* todo gotta figure out how to configure the snap that I want to send before it can be sent, right now we have the recipient and the image that we want to send but there are more routines to be done before it can be sent successfully */
     
     [snap send];
+    
 }
 
 /* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
@@ -337,7 +353,13 @@ void HandleRemoteNotification(){
 }
 
 void HandleLocalNotification(NSString *username){
-    AutoReplySnapStreak(username);
+    NSLog(@"Handling local notification, sending auto reply snap to %@",username);
+    /* handle local notification and send auto reply message for a streak */
+    /* let's say that someone hasn't enabled custom friends and receives a notification, that means that we can send the auto reply snap regardless... if custom friends is enabled for the friend the notification wouldn't have been scheduled in the first place without it being enabled in custom friends */
+    if(prefs[@"kAutoReplySnapstreak"]){
+        SendAutoReplySnapToUser(username);
+    }
+    
 }
 
 #ifdef THEOS
@@ -456,10 +478,11 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     %orig();
 }
 
--(void)application:(UIApplication*)application
+-(void)application:(UIApplication *)application
 didReceiveLocalNotification:(UILocalNotification *)notification{
+    %orig();
     LoadPreferences();
-    HandleLocalNotification(notification.userInfo[@"username"]);
+    HandleLocalNotification(notification.userInfo[@"Username"]);
 }
 
 -(void)applicationWillTerminate:(UIApplication *)application {
