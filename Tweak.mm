@@ -243,11 +243,13 @@ static void CancelScheduledLocalNotifications(){
 }
 
 static void ScheduleNotification(NSDate *snapDate,
-                                 NSString *displayName,
+                                 Friend *f,
                                  float seconds,
                                  float minutes,
                                  float hours){
     /* schedules the notification and makes sure it isn't before the current time */
+    NSString *username = [f name];
+    NSString *displayName = [f display];
     if([customFriends count] && ![customFriends containsObject:displayName]){
         NSLog(@"Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
@@ -260,6 +262,7 @@ static void ScheduleNotification(NSDate *snapDate,
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.fireDate = notificationDate;
     notification.alertBody = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
+    notification.userInfo = @{@"username":username};
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
@@ -278,38 +281,45 @@ static void ResetNotifications(){
     SCChats *chats = [user chats];
     
     for(SCChat *chat in [chats allChats]){
-        
+        Friend *f = [friends friendForName:[chat recipient]];
         Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
         NSDate *snapDate = [earliestUnrepliedSnap timestamp];
-        Friend *f = [friends friendForName:[chat recipient]];
-        
-        NSLog(@"%@ snapDate for %@",snapDate,[chat recipient]);
         
         if([f snapStreakCount]>2 && earliestUnrepliedSnap){
-            NSString *displayName = [friends displayNameForUsername:[chat recipient]];
             if([prefs[@"kTwelveHours"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,12);
+                ScheduleNotification(snapDate,f,0,0,12);
                 
             } if([prefs[@"kFiveHours"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,5);
+                ScheduleNotification(snapDate,f,0,0,5);
                 
             } if([prefs[@"kOneHour"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,0,1);
+                ScheduleNotification(snapDate,f,0,0,1);
                 
             } if([prefs[@"kTenMinutes"] boolValue]){
-                ScheduleNotification(snapDate,displayName,0,10,0);
+                ScheduleNotification(snapDate,f,0,10,0);
             }
             
             float seconds = [prefs[@"kCustomSeconds"] floatValue];
             float minutes = [prefs[@"kCustomMinutes"] floatValue];
-            float hours = [prefs[@"kCustomHours"] floatValue] ;
+            float hours = [prefs[@"kCustomHours"] floatValue];
             if(hours || minutes || seconds){
-                ScheduleNotification(snapDate,displayName,seconds,minutes,hours);
+                ScheduleNotification(snapDate,f,seconds,minutes,hours);
             }
         }
     }
     
     NSLog(@"Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
+}
+
+void AutoReplySnapStreak(NSString *username){
+    Snap *snap = [[objc_getClass("Snap") alloc] init];
+    snap.recipient = username;
+    snap.media.captionText = @"Streak";
+    snap.media.mediaDataToUpload = [NSData dataWithContentsOfFile:@"/var/mobile/Documents/autoreply_sn.png"];
+    
+    
+    
+    [snap send];
 }
 
 /* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
@@ -324,6 +334,10 @@ void HandleRemoteNotification(){
     }
                                             includeStories:NO
                                     didHappendWhenAppLaunch:YES];
+}
+
+void HandleLocalNotification(NSString *username){
+    AutoReplySnapStreak(username);
 }
 
 #ifdef THEOS
@@ -440,6 +454,12 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     LoadPreferences();
     HandleRemoteNotification();
     %orig();
+}
+
+-(void)application:(UIApplication*)application
+didReceiveLocalNotification:(UILocalNotification *)notification{
+    LoadPreferences();
+    HandleLocalNotification(notification.userInfo[@"username"]);
 }
 
 -(void)applicationWillTerminate:(UIApplication *)application {
