@@ -46,10 +46,10 @@
         
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
         if(!friendNamesAndEmojis){
-            NSLog(@"Fatal - the dictionary that the daemon should save doesn't exist");
+            NSLog(@"friendmojilist:: Fatal - the dictionary that the daemon should save doesn't exist");
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1.5];
-            notification.alertBody = @"Error: streaknotifyd hasn't sent us friendmojis from Snapchat.... Exiting";
+            notification.alertBody = @"friendmojilist error: streaknotifyd hasn't sent us friendmojis from Snapchat (this is not a crash).... Exiting";
             [[UIApplication sharedApplication] scheduleLocalNotification:notification];
             exit(0);
         }
@@ -76,8 +76,8 @@
             [friendmojisWithoutStreaks addObject:friendmoji];
         }
         
-        NSLog(@"Friends with streaks %@ %@",friendsWithStreaksNames,friendmojisWithStreaks);
-        NSLog(@"Friends without streaks %@ %@",friendsWithoutStreaksNames,friendmojisWithoutStreaks);
+        NSLog(@"friendmojilist:: Friends with streaks %@ %@",friendsWithStreaksNames,friendmojisWithStreaks);
+        NSLog(@"friendmojilist:: Friends without streaks %@ %@",friendsWithoutStreaksNames,friendmojisWithoutStreaks);
         
         self.friendsWithStreaksNames = friendsWithStreaksNames;
         self.friendmojisWithStreaks = friendmojisWithStreaks;
@@ -85,7 +85,7 @@
         self.friendsWithoutStreaksNames = friendsWithoutStreaksNames;
         self.friendmojisWithoutStreaks = friendmojisWithoutStreaks;
         
-        NSLog(@"names and friendmojis loaded successfully %@",friendNamesAndEmojis);
+        NSLog(@"friendmojilist:: Names and friendmojis loaded successfully %@",friendNamesAndEmojis);
         /* if settings don't exist on file, create settings */
         if(!self.settings){
             NSMutableDictionary *settings  = [[NSMutableDictionary alloc] init];
@@ -100,7 +100,7 @@
             self.settings = settings;
             
             
-            NSLog(@"%@",self.settings);
+            NSLog(@"friendmojilist:: %@",self.settings);
         }
 
         
@@ -168,7 +168,7 @@ numberOfRowsInSection:(NSInteger)section{
             NSString *name = [self.friendsWithStreaksNames objectAtIndex:indexPath.row];
             NSString *friendmoji = [self.friendmojisWithStreaks objectAtIndex:indexPath.row];
             friendmojiCell.textLabel.text = [NSString stringWithFormat:@"%@ %@",name,friendmoji];
-            NSLog(@"Cell for index %ld name %@ %@",(long)indexPath.row,name,friendmoji);
+            NSLog(@"friendmojilist::Cell for index %ld name %@ %@",(long)indexPath.row,name,friendmoji);
             if([self.settings[name] boolValue]){
                 friendmojiCell.accessoryType = UITableViewCellAccessoryCheckmark;
             }else{
@@ -182,7 +182,7 @@ numberOfRowsInSection:(NSInteger)section{
             NSString *name = [self.friendsWithoutStreaksNames objectAtIndex:indexPath.row];
             NSString *friendmoji = [self.friendmojisWithoutStreaks objectAtIndex:indexPath.row];
             friendmojiCell.textLabel.text = [NSString stringWithFormat:@"%@ %@",name,friendmoji];
-            NSLog(@"Cell for index %ld name %@ %@",(long)indexPath.row,name,friendmoji);
+            NSLog(@"friendmojilist:: Cell for index %ld name %@ %@",(long)indexPath.row,name,friendmoji);
             if([self.settings[name] boolValue]){
                 friendmojiCell.accessoryType = UITableViewCellAccessoryCheckmark;
             }else{
@@ -223,9 +223,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSDictionary *settings = self.settings;
     [settings writeToFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"
                atomically:YES];
-    NSLog(@"Saved settings");
+    NSLog(@"friendmojilist::Saved settings");
     
 }
 
+-(void)dealloc{
+    [super dealloc];
+    [self.settings release];
+    [self.friendsWithStreaksNames release];
+    [self.friendsWithoutStreaksNames release];
+    [self.friendmojisWithStreaks release];
+    [self.friendmojisWithoutStreaks release];
+    _settings = nil;
+    _friendsWithStreaksNames = nil;
+    _friendsWithoutStreaksNames = nil;
+    _friendmojisWithStreaks = nil;
+    _friendmojisWithoutStreaks = nil;
+}
 
 @end

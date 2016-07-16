@@ -4,7 +4,7 @@
 
 @class NSLock, NSMutableDictionary, NSString;
 
-@interface CPDistributedNotificationCenter : NSObject {
+@interface CPDistributedNotificationCenter : NSObject  {
     NSString* _centerName;
     NSLock* _lock;
     CFRunLoopSourceRef _receiveNotificationSource;
@@ -32,7 +32,7 @@
 -(BOOL)launchApplicationWithIdentifier:(NSString*)identifier suspended:(BOOL)suspended;
 @end
 
-@interface StreakNotifyListController : PSListController
+@interface StreakNotifyListController : PSListController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 -(void)respring;
 

@@ -52,7 +52,7 @@
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     if([self isMovingFromParentViewController]){
-        NSLog(@"Exiting friendmoji prefs, saving settings");
+        NSLog(@"friendmojilist::Exiting friendmoji prefs, saving settings");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"friendmojiPreferencesWillExit"
                                                             object:nil];
     }

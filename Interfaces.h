@@ -111,96 +111,6 @@
 @end
 
 
-
-@protocol SCMediaOwnerProtocol, SCUserProtocol;
-
-@class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
-
-@interface SCFeedTableViewCell : UITableViewCell
-{
-    _Bool _highlightEnabled;
-    _Bool _isAnimatingSubLabel;
-    _Bool _shouldHideSubLabel;
-    _Bool _isPulling;
-    _Bool _isScrolling;
-    _Bool _deceleratingToZero;
-    id _delegate;
-    SCChatViewModelForFeed *_feedItem;
-    UIScrollView *_scrollView;
-    UIView *_containerView;
-    UIImageView *_feedIconView;
-    UILabel *_iconLabel;
-    UILabel *_mainLabel;
-    UILabel *_subLabel;
-    UIView *_cellSwipeBackgroundView;
-    UIImageView *_iconForCellSwipeBackground;
-    UIActivityIndicatorView *_activityIndicator;
-    SCAnimatingReplaySnapView *_animatingReplaySnapView;
-    UILabel *_timestamp;
-    SCFriendmojiView *_friendMojiView;
-    double _decelerationDistanceRatio;
-    NSTimer *_expirationTimer;
-    double _displayedMessageExpiration;
-}
-
-@property(nonatomic) double displayedMessageExpiration;
-@property(retain, nonatomic) NSTimer *expirationTimer;
-@property(nonatomic) double decelerationDistanceRatio;
-@property(nonatomic) _Bool deceleratingToZero;
-@property(nonatomic) _Bool isScrolling;
-@property(nonatomic) _Bool isPulling;
-@property(nonatomic) _Bool shouldHideSubLabel;
-@property(nonatomic) _Bool isAnimatingSubLabel;
-@property(retain, nonatomic) SCFriendmojiView *friendMojiView;
-@property(retain, nonatomic) UILabel *timestamp;
-@property(retain, nonatomic) SCAnimatingReplaySnapView *animatingReplaySnapView;
-@property(retain, nonatomic) UIActivityIndicatorView *activityIndicator;
-@property(retain, nonatomic) UIImageView *iconForCellSwipeBackground;
-@property(retain, nonatomic) UIView *cellSwipeBackgroundView;
-@property(retain, nonatomic) UILabel *subLabel;
-@property(retain, nonatomic) UILabel *mainLabel;
-@property(retain, nonatomic) UILabel *iconLabel;
-@property(retain, nonatomic) UIImageView *feedIconView;
-@property(retain, nonatomic) UIView *containerView;
-@property(retain, nonatomic) UIScrollView *scrollView;
-@property(retain, nonatomic) id feedItem;
-@property(assign, nonatomic) _Bool highlightEnabled;
-@property(weak, nonatomic) __weak id delegate;
-- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
-- (void)setBackgroundColorForTouch;
-- (void)scrollingEnded;
-- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
-- (void)scrollViewWillBeginDragging:(id)arg1;
-- (void)scrollViewDidEndDecelerating:(id)arg1;
-- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
-- (void)scrollViewDidScroll:(id)arg1;
-- (void)updateFriendMojiView;
-- (void)updateFriendMojiViewWithFriend:(id)arg1;
-- (void)updateMainLabelPositionForSubLabel;
-- (void)centerIconLabelForTime:(unsigned long long)arg1;
-- (void)stopExpirationTimer;
-- (void)expirationTimerFired;
-- (void)updateDisplayWithFeedItem:(id)arg1 updateFriendMojiView:(_Bool)arg2;
-- (void)updateDisplayWithFeedItem:(id)arg1;
-- (void)updateDisplay;
-- (void)animateReplayWithSnapIfNecessary:(id)arg1;
-- (void)bounceWithMagnitude:(long long)arg1 completion:(id)arg2;
-- (double)bounceXOffsetWithMagnitude:(long long)arg1;
-- (void)bounceWithCompletion:(id)arg1;
-- (void)bounce;
-- (void)bounceRepeatedlyAfterDelays:(id)arg1;
-- (void)bounceRepeatedly;
-- (_Bool)shouldShowReplyLabelBriefly;
-- (void)showSubLabelBriefly:(id)arg1;
-- (void)showSubLabelBrieflyIfNecessary;
-- (void)initCellSwipeBackgroundView;
-- (void)initLabels;
-- (void)initContainerView;
-- (void)initScrollView;
-
-
-@end
-
 @class NSString, UILabel;
 
 @interface SCFriendmojiView : UIView
@@ -2121,6 +2031,462 @@
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
+@protocol SCMediaOwnerProtocol, SCUserProtocol;
+
+@class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
+
+@interface SCFeedTableViewCell : UITableViewCell
+{
+    _Bool _highlightEnabled;
+    _Bool _isAnimatingSubLabel;
+    _Bool _shouldHideSubLabel;
+    _Bool _isPulling;
+    _Bool _isScrolling;
+    _Bool _deceleratingToZero;
+    id _delegate;
+    SCChatViewModelForFeed *_feedItem;
+    UIScrollView *_scrollView;
+    UIView *_containerView;
+    UIImageView *_feedIconView;
+    UILabel *_iconLabel;
+    UILabel *_mainLabel;
+    UILabel *_subLabel;
+    UIView *_cellSwipeBackgroundView;
+    UIImageView *_iconForCellSwipeBackground;
+    UIActivityIndicatorView *_activityIndicator;
+    SCAnimatingReplaySnapView *_animatingReplaySnapView;
+    UILabel *_timestamp;
+    SCFriendmojiView *_friendMojiView;
+    double _decelerationDistanceRatio;
+    NSTimer *_expirationTimer;
+    double _displayedMessageExpiration;
+}
+
+@property(nonatomic) double displayedMessageExpiration;
+@property(retain, nonatomic) NSTimer *expirationTimer;
+@property(nonatomic) double decelerationDistanceRatio;
+@property(nonatomic) _Bool deceleratingToZero;
+@property(nonatomic) _Bool isScrolling;
+@property(nonatomic) _Bool isPulling;
+@property(nonatomic) _Bool shouldHideSubLabel;
+@property(nonatomic) _Bool isAnimatingSubLabel;
+@property(retain, nonatomic) SCFriendmojiView *friendMojiView;
+@property(retain, nonatomic) UILabel *timestamp;
+@property(retain, nonatomic) SCAnimatingReplaySnapView *animatingReplaySnapView;
+@property(retain, nonatomic) UIActivityIndicatorView *activityIndicator;
+@property(retain, nonatomic) UIImageView *iconForCellSwipeBackground;
+@property(retain, nonatomic) UIView *cellSwipeBackgroundView;
+@property(retain, nonatomic) UILabel *subLabel;
+@property(retain, nonatomic) UILabel *mainLabel;
+@property(retain, nonatomic) UILabel *iconLabel;
+@property(retain, nonatomic) UIImageView *feedIconView;
+@property(retain, nonatomic) UIView *containerView;
+@property(retain, nonatomic) UIScrollView *scrollView;
+@property(retain, nonatomic) id feedItem;
+@property(assign, nonatomic) _Bool highlightEnabled;
+@property(weak, nonatomic) __weak id delegate;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)setBackgroundColorForTouch;
+- (void)scrollingEnded;
+- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)scrollViewDidEndDecelerating:(id)arg1;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)updateFriendMojiView;
+- (void)updateFriendMojiViewWithFriend:(id)arg1;
+- (void)updateMainLabelPositionForSubLabel;
+- (void)centerIconLabelForTime:(unsigned long long)arg1;
+- (void)stopExpirationTimer;
+- (void)expirationTimerFired;
+- (void)updateDisplayWithFeedItem:(id)arg1 updateFriendMojiView:(_Bool)arg2;
+- (void)updateDisplayWithFeedItem:(id)arg1;
+- (void)updateDisplay;
+- (void)animateReplayWithSnapIfNecessary:(id)arg1;
+- (void)bounceWithMagnitude:(long long)arg1 completion:(id)arg2;
+- (double)bounceXOffsetWithMagnitude:(long long)arg1;
+- (void)bounceWithCompletion:(id)arg1;
+- (void)bounce;
+- (void)bounceRepeatedlyAfterDelays:(id)arg1;
+- (void)bounceRepeatedly;
+- (_Bool)shouldShowReplyLabelBriefly;
+- (void)showSubLabelBriefly:(id)arg1;
+- (void)showSubLabelBrieflyIfNecessary;
+- (void)initCellSwipeBackgroundView;
+- (void)initLabels;
+- (void)initContainerView;
+- (void)initScrollView;
+
+
+@end
+
+
+
+
+@class AddedFriend, Friend, NSString, SCAddFriendButtonV2, SCProfilePictureThumbnail, UILabel;
+
+@interface SCMyFriendCellView : UIView {
+    _Bool _alreadyAdded;
+    _Bool _selected;
+    _Bool _animating;
+    id _delegate;
+    long long _myFriendCellType;
+    Friend *_friend;
+    AddedFriend *_addedFriend;
+    long long _sectionType;
+    unsigned long long _numberOfTaps;
+    UIView *_profileImagesContainer;
+    SCProfilePictureThumbnail *_profilePictureView;
+    UILabel *_nameLabel;
+    UILabel *_subLabel;
+    SCAddFriendButtonV2 *_addFriendButton;
+}
+
+@property(retain, nonatomic) SCAddFriendButtonV2 *addFriendButton; // @synthesize addFriendButton=_addFriendButton;
+@property(retain, nonatomic) UILabel *subLabel; // @synthesize subLabel=_subLabel;
+@property(retain, nonatomic) UILabel *nameLabel; // @synthesize nameLabel=_nameLabel;
+@property(retain, nonatomic) SCProfilePictureThumbnail *profilePictureView; // @synthesize profilePictureView=_profilePictureView;
+@property(retain, nonatomic) UIView *profileImagesContainer; // @synthesize profileImagesContainer=_profileImagesContainer;
+@property(nonatomic) unsigned long long numberOfTaps; // @synthesize numberOfTaps=_numberOfTaps;
+@property _Bool animating; // @synthesize animating=_animating;
+@property(nonatomic) _Bool selected; // @synthesize selected=_selected;
+@property(nonatomic) _Bool alreadyAdded; // @synthesize alreadyAdded=_alreadyAdded;
+@property(nonatomic) long long sectionType; // @synthesize sectionType=_sectionType;
+@property(retain, nonatomic) AddedFriend *addedFriend; // @synthesize addedFriend=_addedFriend; // @synthesize friend=_friend;
+@property(nonatomic) long long myFriendCellType; // @synthesize myFriendCellType=_myFriendCellType;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (Friend*)friend;
+- (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
+- (_Bool)pointInsideAddFriendButton:(struct CGPoint)arg1;
+- (void)touchesEnded:(id)arg1 withEvent:(id)arg2;
+- (void)toggleRightOffset:(_Bool)arg1;
+- (void)setHighlightedState:(_Bool)arg1;
+- (void)setProfilePictureViewWithFriend:(id)arg1;
+- (void)hideSubLabelAnimated:(_Bool)arg1;
+- (void)showSubLabelAnimated:(_Bool)arg1;
+- (void)updateWithSubLabelText:(id)arg1 animated:(_Bool)arg2;
+- (void)updateWithNameLabeText:(id)arg1;
+- (void)setAddFriendButtonOn:(_Bool)arg1;
+- (void)setNameLabelText:(id)arg1 subLabelText:(id)arg2 Friend:(id)arg3 buttonState:(long long)arg4 alreadyAdded:(_Bool)arg5 myFriendCellType:(long long)arg6 selected:(_Bool)arg7;
+- (id)initWithStyleKey:(id)arg1 page:(id)arg2;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
+@class SCMyFriendCellView;
+
+@interface SCMyFriendCell : UITableViewCell
+{
+    SCMyFriendCellView *_myFriendCellView;
+}
+
+@property(retain, nonatomic) SCMyFriendCellView *myFriendCellView; // @synthesize myFriendCellView=_myFriendCellView;
+- (_Bool)gestureRecognizer:(id)arg1 shouldRecognizeSimultaneouslyWithGestureRecognizer:(id)arg2;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2 key:(id)arg3 page:(id)arg4;
+
+@end
+
+@class NSArray, NSDate, NSString, NSURL, SCSimilarSnaps, SCStoryAdStreamInfo, SCTile, Story;
+
+@interface FriendStories : NSObject
+{
+    SCSimilarSnaps *_similarSnaps;
+    NSString *_viewJITText;
+    _Bool _local;
+    _Bool _shared;
+    _Bool _hasCustomDescriptionForLiveStory;
+    _Bool _allowStoryExplorer;
+    _Bool _isManifestStory;
+    _Bool _showViewingJIT;
+    _Bool _hasUserStartedViewingUnviewedStories;
+    _Bool _hasUserStartedViewingStories;
+    long long _unviewedSingleIconMediaState;
+    NSURL *_unviewedSingleIconURL;
+    long long _fullyViewedSingleIconMediaState;
+    NSURL *_fullyViewedSingleIconURL;
+    SCStoryAdStreamInfo *_adStreamInfo;
+    long long _batchState;
+    long long _unviewedBatchState;
+    long long _thumbnailState;
+    NSString *_sharedId;
+    NSString *_mostRecentStoryId;
+    NSDate *_mostRecentStoryTimestamp;
+    FriendStories *_parentStory;
+    NSString *_snapId;
+    NSString *_rootSnapId;
+    NSArray *_stories;
+    NSString *_username;
+    NSString *_kvoUsername;
+    NSString *_displayName;
+    Story *_currentStoryForViewingTypeAll;
+    long long _loadContext;
+    long long _unviewedLoadContext;
+    SCTile *_tile;
+    unsigned long long _explorerLevel;
+    Story *_storyWithActiveThumbnail;
+    long long _thumbnailsBatchState;
+    long long _unviewedThumbnailsBatchState;
+    unsigned long long _numberOfSnapsViewedAfterAd;
+    unsigned long long _numberOfUnviewedSnapsViewedAfterAd;
+    unsigned long long _numberOfSnapsViewedSinceLastAdOpportunity;
+    long long _nextAdOpportunityPosition;
+    NSString *_profileDescription;
+    NSString *_deepLinkURL;
+}
+
++ (long long)uniqueCellDataIdForUsername:(id)arg1 section:(long long)arg2;
++ (long long)uniqueCellDataIdForUsername:(id)arg1;
++ (unsigned long long)numberOfSharedStoriesToBatchAutoload;
++ (unsigned long long)numberOfFriendStoriesToBatchAutoload;
++ (unsigned long long)numberOfLoadedSnapsNeededAfterViewing;
++ (unsigned long long)numberOfSnapsToLoadWhileViewingStory;
++ (unsigned long long)numberOfNextLevelSnapsToLoad;
++ (_Bool)isFullyViewedWithStories:(id)arg1;
++ (id)friendStoriesForUsername:(id)arg1;
++ (id)storiesFromDictionary:(id)arg1;
++ (id)friendStoriesFromDictionary:(id)arg1;
+@property(copy, nonatomic) NSString *deepLinkURL; // @synthesize deepLinkURL=_deepLinkURL;
+@property(copy, nonatomic) NSString *profileDescription; // @synthesize profileDescription=_profileDescription;
+@property(nonatomic) long long nextAdOpportunityPosition; // @synthesize nextAdOpportunityPosition=_nextAdOpportunityPosition;
+@property(nonatomic) unsigned long long numberOfSnapsViewedSinceLastAdOpportunity; // @synthesize numberOfSnapsViewedSinceLastAdOpportunity=_numberOfSnapsViewedSinceLastAdOpportunity;
+@property(nonatomic) unsigned long long numberOfUnviewedSnapsViewedAfterAd; // @synthesize numberOfUnviewedSnapsViewedAfterAd=_numberOfUnviewedSnapsViewedAfterAd;
+@property(nonatomic) unsigned long long numberOfSnapsViewedAfterAd; // @synthesize numberOfSnapsViewedAfterAd=_numberOfSnapsViewedAfterAd;
+@property(nonatomic) _Bool hasUserStartedViewingStories; // @synthesize hasUserStartedViewingStories=_hasUserStartedViewingStories;
+@property(nonatomic) _Bool hasUserStartedViewingUnviewedStories; // @synthesize hasUserStartedViewingUnviewedStories=_hasUserStartedViewingUnviewedStories;
+@property(nonatomic) _Bool showViewingJIT; // @synthesize showViewingJIT=_showViewingJIT;
+@property(nonatomic) long long unviewedThumbnailsBatchState; // @synthesize unviewedThumbnailsBatchState=_unviewedThumbnailsBatchState;
+@property(nonatomic) long long thumbnailsBatchState; // @synthesize thumbnailsBatchState=_thumbnailsBatchState;
+@property(retain, nonatomic) Story *storyWithActiveThumbnail; // @synthesize storyWithActiveThumbnail=_storyWithActiveThumbnail;
+@property(nonatomic) _Bool isManifestStory; // @synthesize isManifestStory=_isManifestStory;
+@property(nonatomic) unsigned long long explorerLevel; // @synthesize explorerLevel=_explorerLevel;
+@property(retain, nonatomic) SCTile *tile; // @synthesize tile=_tile;
+@property(nonatomic) long long unviewedLoadContext; // @synthesize unviewedLoadContext=_unviewedLoadContext;
+@property(nonatomic) long long loadContext; // @synthesize loadContext=_loadContext;
+@property(retain, nonatomic) Story *currentStoryForViewingTypeAll; // @synthesize currentStoryForViewingTypeAll=_currentStoryForViewingTypeAll;
+@property(retain, nonatomic) NSString *displayName; // @synthesize displayName=_displayName;
+@property(retain, nonatomic) NSString *kvoUsername; // @synthesize kvoUsername=_kvoUsername;
+@property(retain, nonatomic) NSString *username; // @synthesize username=_username;
+@property(retain, nonatomic) NSArray *stories; // @synthesize stories=_stories;
+@property(copy, nonatomic) NSString *rootSnapId; // @synthesize rootSnapId=_rootSnapId;
+@property(copy, nonatomic) NSString *snapId; // @synthesize snapId=_snapId;
+@property(nonatomic) __weak FriendStories *parentStory; // @synthesize parentStory=_parentStory;
+@property(retain, nonatomic) NSDate *mostRecentStoryTimestamp; // @synthesize mostRecentStoryTimestamp=_mostRecentStoryTimestamp;
+@property(retain, nonatomic) NSString *mostRecentStoryId; // @synthesize mostRecentStoryId=_mostRecentStoryId;
+@property(nonatomic) _Bool allowStoryExplorer; // @synthesize allowStoryExplorer=_allowStoryExplorer;
+@property(nonatomic) _Bool hasCustomDescriptionForLiveStory; // @synthesize hasCustomDescriptionForLiveStory=_hasCustomDescriptionForLiveStory;
+@property(nonatomic, getter=isShared) _Bool shared; // @synthesize shared=_shared;
+@property(copy, nonatomic) NSString *sharedId; // @synthesize sharedId=_sharedId;
+@property(nonatomic, getter=isLocal) _Bool local; // @synthesize local=_local;
+@property(nonatomic) long long thumbnailState; // @synthesize thumbnailState=_thumbnailState;
+@property(nonatomic) long long unviewedBatchState; // @synthesize unviewedBatchState=_unviewedBatchState;
+@property(nonatomic) long long batchState; // @synthesize batchState=_batchState;
+@property(retain, nonatomic) SCStoryAdStreamInfo *adStreamInfo; // @synthesize adStreamInfo=_adStreamInfo;
+@property(retain, nonatomic) NSURL *fullyViewedSingleIconURL; // @synthesize fullyViewedSingleIconURL=_fullyViewedSingleIconURL;
+@property(nonatomic) long long fullyViewedSingleIconMediaState; // @synthesize fullyViewedSingleIconMediaState=_fullyViewedSingleIconMediaState;
+@property(retain, nonatomic) NSURL *unviewedSingleIconURL; // @synthesize unviewedSingleIconURL=_unviewedSingleIconURL;
+@property(nonatomic) long long unviewedSingleIconMediaState; // @synthesize unviewedSingleIconMediaState=_unviewedSingleIconMediaState;
+- (unsigned long long)viewLocationPositionForLiveStories;
+- (void)clearSimilarSnapsForSnapId:(id)arg1;
+- (void)clearSimilarSnaps;
+- (void)similarSnapsForSnapWithId:(id)arg1 level:(unsigned long long)arg2 completion:(id)arg3;
+- (id)mediaFileNames;
+- (id)cacheMediaIds;
+- (void)setIconMediaState:(long long)arg1 iconType:(unsigned long long)arg2;
+- (_Bool)unviewedIconMediaIsLoaded;
+- (_Bool)singleIconMediaIsLoaded;
+- (void)fetchMediaIfNecessaryForIconType:(unsigned long long)arg1 userInitiated:(_Bool)arg2;
+- (void)fetchSingleIconMediaIfNecessaryUserInitiated:(_Bool)arg1;
+- (void)fetchSingleIconMediaIfNecessary;
+- (void)iconWithType:(unsigned long long)arg1 completion:(id)arg2;
+- (id)cacheKeyForIconType:(unsigned long long)arg1;
+- (long long)uniqueCellDataIdWithSection:(long long)arg1;
+- (long long)uniqueCellDataId;
+- (unsigned long long)numberOfLoadedSnapsNeededBeforeViewingForViewingType:(long long)arg1;
+- (unsigned long long)numberOfSnapsToLoadInStoryBeforeViewingForViewingType:(long long)arg1;
+- (unsigned long long)numberOfLoadedStoryMediaNeededForUnviewedLoadedState;
+- (unsigned long long)numberOfLoadedStoryMediaNeededForLoadedState;
+- (id)fullyViewedStateKVOKeyPath;
+- (_Bool)isFullyViewed;
+- (id)iconLoadStateKVOKeyPath;
+- (void)fetchPublicContentMiniProfileIcon;
+- (void)publicContentMiniProfileImageWithCompletion:(id)arg1;
+- (id)publicContentMiniProfileButtonText;
+- (id)publicContentMiniProfileDeeplinkURL;
+- (void)_setJITText;
+- (id)publicContentMiniProfileDescription;
+- (id)publicContentMiniProfileTitle;
+- (id)friendStoriesCollection;
+- (_Bool)matchesByDisplayName:(id)arg1;
+@property(readonly, copy) NSString *description;
+- (void)resetFriendsStoryThumbnailsState;
+- (void)resetFriendsStoryState;
+- (id)oldestStoryToView;
+- (void)removeStoriesWithIds:(id)arg1;
+- (void)removeStoriesWithClientIds:(id)arg1;
+- (id)unviewedStories;
+- (_Bool)hasSingleIcon;
+- (_Bool)containsSharedStory;
+- (_Bool)onlyContainsUnviewedStories;
+- (_Bool)isViewingLastUnviewedSnap;
+- (_Bool)hasUnviewedStories;
+- (_Bool)hasStories;
+- (_Bool)readyToPlayForViewingType:(long long)arg1;
+- (void)fetchThumbnailMedia:(id)arg1;
+- (void)fetchMedia:(id)arg1 userInitiated:(_Bool)arg2;
+- (void)verifyMediaState:(long long)arg1 forMedia:(id)arg2 type:(id)arg3 storyId:(id)arg4;
+- (void)fetchThumbnailMedia;
+- (id)storyWithThumbnailToDisplay;
+- (unsigned long long)numberOfSnapsRemainingForViewingType:(long long)arg1;
+- (long long)indexOfViewingStory;
+- (long long)indexOfFirstUnviewedStory;
+- (id)nextVideoStoryForViewingType:(long long)arg1;
+- (id)nextStoryForViewingType:(long long)arg1;
+- (id)storyForViewingType:(long long)arg1;
+- (void)fetchMediaForBatch:(unsigned long long)arg1 viewingType:(long long)arg2 startAtIndex:(long long)arg3 loadContext:(long long)arg4 userInitated:(_Bool)arg5 fetchNextLevelSnaps:(_Bool)arg6 onLaunch:(_Bool)arg7;
+- (void)fetchMediaForBatch:(unsigned long long)arg1 viewingType:(long long)arg2 loadContext:(long long)arg3 userInitiated:(_Bool)arg4 fetchNextLevelSnaps:(_Bool)arg5 onLaunch:(_Bool)arg6;
+- (void)fetchMediaForBatch:(unsigned long long)arg1 viewingType:(long long)arg2 loadContext:(long long)arg3 userInitiated:(_Bool)arg4 onLaunch:(_Bool)arg5;
+- (void)resetMostRecentStoryInfo;
+- (void)updateWithViewedStoryIds:(id)arg1;
+- (void)updateWithStories:(id)arg1 isDelta:(_Bool)arg2;
+- (void)updateWithFriendStories:(id)arg1 isDelta:(_Bool)arg2;
+- (void)handleKeyChange:(id)arg1 toStory:(id)arg2;
+- (void)handleChangetoStories:(id)arg1;
+- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (double)totalTimeLeftForViewingType:(long long)arg1;
+- (double)totalTimeForViewingType:(long long)arg1;
+- (void)removeIndividualStoriesObservers:(id)arg1;
+- (void)removeStoriesObservers;
+- (void)addIndividualStoriesObservers:(id)arg1;
+- (void)addStoriesObservers;
+- (void)didDecodeObject;
+- (void)dealloc;
+- (void)encodeWithCoder:(id)arg1;
+- (void)resetDiskLoadingState;
+- (id)initWithCoder:(id)arg1;
+- (_Bool)isNormalFriendStories;
+- (id)initWithParentStory:(id)arg1 snapId:(id)arg2 similarSnaps:(id)arg3;
+- (id)init;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
+@class FriendStories, SCExpandedButton, SCFriendmojiView, SCLoadingIndicatorView, SCMyStories, SCPieSliceView, SCProgressSaveButton, SCSingleIconConfigurer, SCSingleIconViewBase, UIButton, UIImageView, UILabel, UIView;
+
+@interface StoriesCell : UITableViewCell
+{
+    _Bool _needsTopBorder;
+    _Bool _needsBottomBorder;
+    _Bool _needsRightEdgeInset;
+    _Bool _animatingShowSubView;
+    _Bool _animatingHideSubView;
+    _Bool _myStoriesExpanded;
+    id _delegate;
+    SCSingleIconViewBase *_singleIconView;
+    SCLoadingIndicatorView *_loadingIndicator;
+    long long _cellType;
+    long long _previousCellType;
+    SCMyStories *_myStories;
+    FriendStories *_friendStories;
+    FriendStories *_previousStories;
+    UILabel *_nameLabel;
+    SCExpandedButton *_expandMyStoryButton;
+    UIButton *_replySnapButton;
+    SCFriendmojiView *_friendMojiView;
+    SCProgressSaveButton *_saveButton;
+    UIButton *_mySharedStoryInfoButton;
+    UILabel *_subLabel;
+    UIView *_topBorder;
+    UIView *_bottomBorder;
+    SCSingleIconConfigurer *_singleIconConfigurer;
+    SCPieSliceView *_pieSliceView;
+    UIView *_subView;
+    UIImageView *_cameraReplyIcon;
+}
+
++ (void)updateLabel:(id)arg1 withStatusText:(id)arg2 date:(id)arg3 showTimestamp:(_Bool)arg4 timestampBeforeStatusText:(_Bool)arg5 isRefresh:(_Bool)arg6;
+@property(retain, nonatomic) UIImageView *cameraReplyIcon; // @synthesize cameraReplyIcon=_cameraReplyIcon;
+@property(retain, nonatomic) UIView *subView; // @synthesize subView=_subView;
+@property(retain, nonatomic) SCPieSliceView *pieSliceView; // @synthesize pieSliceView=_pieSliceView;
+@property(retain, nonatomic) SCSingleIconConfigurer *singleIconConfigurer; // @synthesize singleIconConfigurer=_singleIconConfigurer;
+@property(retain, nonatomic) UIView *bottomBorder; // @synthesize bottomBorder=_bottomBorder;
+@property(retain, nonatomic) UIView *topBorder; // @synthesize topBorder=_topBorder;
+@property(nonatomic) _Bool myStoriesExpanded; // @synthesize myStoriesExpanded=_myStoriesExpanded;
+@property(retain, nonatomic) UILabel *subLabel; // @synthesize subLabel=_subLabel;
+@property(retain, nonatomic) UIButton *mySharedStoryInfoButton; // @synthesize mySharedStoryInfoButton=_mySharedStoryInfoButton;
+@property(retain, nonatomic) SCProgressSaveButton *saveButton; // @synthesize saveButton=_saveButton;
+@property(retain, nonatomic) SCFriendmojiView *friendMojiView; // @synthesize friendMojiView=_friendMojiView;
+@property(retain, nonatomic) UIButton *replySnapButton; // @synthesize replySnapButton=_replySnapButton;
+@property(retain, nonatomic) SCExpandedButton *expandMyStoryButton; // @synthesize expandMyStoryButton=_expandMyStoryButton;
+@property(retain, nonatomic) UILabel *nameLabel; // @synthesize nameLabel=_nameLabel;
+@property(retain, nonatomic) FriendStories *previousStories; // @synthesize previousStories=_previousStories;
+@property(retain, nonatomic) FriendStories *friendStories; // @synthesize friendStories=_friendStories;
+@property(retain, nonatomic) SCMyStories *myStories; // @synthesize myStories=_myStories;
+@property(nonatomic) long long previousCellType; // @synthesize previousCellType=_previousCellType;
+@property(nonatomic) long long cellType; // @synthesize cellType=_cellType;
+@property(nonatomic) _Bool animatingHideSubView; // @synthesize animatingHideSubView=_animatingHideSubView;
+@property(nonatomic) _Bool animatingShowSubView; // @synthesize animatingShowSubView=_animatingShowSubView;
+@property(retain, nonatomic) SCLoadingIndicatorView *loadingIndicator; // @synthesize loadingIndicator=_loadingIndicator;
+@property(retain, nonatomic) SCSingleIconViewBase *singleIconView; // @synthesize singleIconView=_singleIconView;
+@property(nonatomic) _Bool needsRightEdgeInset; // @synthesize needsRightEdgeInset=_needsRightEdgeInset;
+@property(nonatomic) _Bool needsBottomBorder; // @synthesize needsBottomBorder=_needsBottomBorder;
+@property(nonatomic) _Bool needsTopBorder; // @synthesize needsTopBorder=_needsTopBorder;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (long long)loadStateForFriendStories:(id)arg1 cellType:(long long)arg2;
+- (id)thumbnailLayer;
+- (id)thumbnailIcon;
+- (void)mySharedStoryInfoPressed;
+- (void)savePressed;
+- (void)expandMyStoryButtonPressed;
+- (void)replySnapButtonPressed;
+- (void)saveStorySucceeded:(_Bool)arg1;
+- (_Bool)shouldShowTapToReplyForFriendStories:(id)arg1 cellType:(long long)arg2;
+- (void)updateSaveStoryProgress:(double)arg1;
+- (void)updateStatusTextForFriendStoriesCellWithFriendStories:(id)arg1 forViewingType:(long long)arg2;
+- (void)layoutRowsWithHasThumbnail:(_Bool)arg1 hasRightButton:(_Bool)arg2;
+- (id)timestampForDate:(id)arg1;
+- (void)toggleRightOffset:(_Bool)arg1;
+- (void)updateWithFriend:(id)arg1;
+- (void)updateSubLabelWithStatusText:(id)arg1 date:(id)arg2 showTimestamp:(_Bool)arg3 timestampBeforeStatusText:(_Bool)arg4;
+- (void)updateSubLabelWithStatusText:(id)arg1 date:(id)arg2 showTimestamp:(_Bool)arg3;
+- (_Bool)cellIsBeingRefreshed;
+- (void)updateSubLabelWithMyStories:(id)arg1;
+- (void)updateWithMyStories:(id)arg1 expanded:(_Bool)arg2 isContributionStory:(_Bool)arg3;
+- (void)hideSaveButtonHelper:(_Bool)arg1;
+- (void)setFriendmojiViewForFriend:(id)arg1;
+- (void)addFriendmojiViewForFriend:(id)arg1;
+- (void)showPieSliceView:(_Bool)arg1 forFriendStories:(id)arg2;
+- (void)updateWithCellType:(long long)arg1 friendStories:(id)arg2;
+- (void)updateWithFriendStories:(id)arg1;
+- (void)updateWithUnviewedFriendStories:(id)arg1;
+- (void)updateWithDiscoverChannel:(id)arg1;
+- (void)showTapToReply:(_Bool)arg1;
+- (void)hideSubViewWithoutAnimation;
+- (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1 duration:(double)arg2 delay:(double)arg3 completion:(id)arg4;
+- (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1 duration:(double)arg2;
+- (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1;
+- (void)showSubViewWithoutAnimation;
+- (void)showSubViewIfNecessaryAnimated:(_Bool)arg1;
+- (void)setDisplayNameForDiscoverChannel:(id)arg1;
+- (void)setDisplayNameForFriendStories:(id)arg1;
+- (void)layoutSubviewsForFriend;
+- (void)layoutSubviewsForStoryOrDiscover;
+- (id)leftButtonConstraintMakerWithView:(id)arg1 referenceView:(id)arg2 resizable:(_Bool)arg3;
+- (id)rightButtonConstraintMakerWithView:(id)arg1 resizable:(_Bool)arg2;
+- (struct CGRect)thumbnailRect;
+- (id)defaultBackgroundColor;
+- (void)prepareForReuse;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+
+@end
 
 
 

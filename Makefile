@@ -1,12 +1,15 @@
 include theos/makefiles/common.mk
 
 ARCHS = armv7 arm64
+export SDKVERSION = 9.0
+
 
 TWEAK_NAME = StreakNotify
 StreakNotify_FILES = Tweak.xm
 StreakNotify_PRIVATE_FRAMEWORKS = AppSupport
 StreakNotify_LIBRARIES = rocketbootstrap
-StreakNotify_CFLAGS = -DTHEOS
+StreakNotify_CFLAGS = -DTHEOS -Wno-deprecated-declarations
+
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

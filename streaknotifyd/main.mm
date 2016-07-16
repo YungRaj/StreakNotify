@@ -164,6 +164,10 @@ int main(int argc, char **argv, char **envp) {
     [daemon release];
     [pool drain];
     
+    // should never reach this point
+    
+    NSLog(@"Unexpectedly returned from CFRunLoop, service is closing");
+    
 	return 0;
 }
 

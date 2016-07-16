@@ -1,5 +1,6 @@
 #import "StreakNotifyListController.h"
-
+#include <spawn.h>
+#include <signal.h>
 
 @interface StreakNotifyListController () {
     
@@ -22,18 +23,20 @@
 
 -(void)respring{
     /* use the springboard's relaunchSpringBoardNow function to respring */
-    [[UIApplication sharedApplication] performSelector:@selector(suspend)];
-    usleep(51500);
-    
-    [(SpringBoard*)[UIApplication sharedApplication] _relaunchSpringBoardNow];
+    pid_t pid;
+    int status;
+    const char *argv[] = {"killall", "SpringBoard", NULL};
+    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+    waitpid(pid, &status, WEXITED);
 
 }
 
  -(void)choosePhotoForAutoReplySnapstreak{
+     NSLog(@"streaknotify:: prompting user to select auto reply snapstreak image");
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
     pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     pickerLibrary.delegate = self;
-    [self presentModalViewController:pickerLibrary animated:YES];
+     [self presentViewController:pickerLibrary animated:YES completion:nil];
  }
  
  -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
@@ -50,7 +53,7 @@
  
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotify_autoreply.jpeg"];
  
-    NSLog(@"Writing autoreply image to file %@",filePath);
+    NSLog(@"streaknotify:: Writing autoreply image to file %@",filePath);
  
     [imageData writeToFile:filePath atomically:YES];
     [picker dismissViewControllerAnimated:YES completion:nil];
@@ -71,12 +74,6 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/ilhanraja/StreakNotify"]];
 }
 
--(void)dealloc{
-    [super dealloc];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:@"daemon-preferences"
-                                                  object:nil];
-}
 
 @end
 

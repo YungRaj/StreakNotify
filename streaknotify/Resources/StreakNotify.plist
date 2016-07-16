@@ -8,7 +8,7 @@
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
-			<false/>
+			<true/>
 			<key>defaults</key>
 			<string>com.YungRaj.streaknotify</string>
 			<key>key</key>
@@ -81,8 +81,10 @@
 		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
 			<key>label</key>
-			<string>Auto Reply to Keep Streak?</string>
+			<string>Auto Reply to Keep Streak? (Not working yet)</string>
 			<key>key</key>
 			<string>kAutoReplySnapstreak</string>
 		</dict>
