@@ -75,8 +75,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "734"
             endingLineNumber = "734"
-            landmarkName = "-tableView:cellForRowAtIndexPath:"
-            landmarkType = "5">
+            landmarkName = "dispatch_async(dispatch_get_main_queue(), ^{ /* want to do this on the main thread because all ui updates should be done on the main thread this should already be on the main thread but we should make sure of this */ if([cell isKindOfClass:objc_getClass(&quot;StoriesCell&quot;)]){ StoriesCell *storiesCell = (StoriesCell*)cell; if(!storyCells){ storyCells = [[NSMutableArray alloc] init]; } if(!storyCellLabels){ storyCellLabels = [[NSMutableArray alloc] init]; } FriendStories *stories = storiesCell.friendStories; NSString *username = stories.username; Manager *manager = [objc_getClass(&quot;Manager&quot;) shared]; User *user = [manager user]; SCChats *chats = [user chats]; Friends *friends = [user friends]; SCChat *chat = [chats chatForUsername:username]; Friend *f = [friends friendForName:username]; // Friend *f = [feedItem friendForFeedItem]; /* deprecated/removed in Snapchat 9.34.0 */ Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat); NSLog(@&quot;StreakNotify::%@ is earliest unreplied snap %@&quot;,earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]); ConfigureCell(cell, storyCells, storyCellLabels, f, chat, earliestUnrepliedSnap); } })"
+            landmarkType = "6">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

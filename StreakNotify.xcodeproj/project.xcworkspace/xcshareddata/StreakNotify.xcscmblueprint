@@ -1,30 +1,100 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3",
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3" : 0,
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : 0
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : 0,
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : 0,
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : 0,
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : 0,
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : 0,
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++3A25364" : 0,
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9F19FBD9-EA16-42D8-BAA7-BADEE29510A5",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3" : "StreakNotify\/",
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : "..\/..\/..\/..\/..\/opt\/theos"
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : "..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : "..\/..\/..\/opt\/theos\/vendor\/include",
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : "StreakNotify\/",
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : "..\/..\/..\/opt\/theos",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : "..\/..\/..\/..\/..\/opt\/theos",
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : "StreakNotify-beta-testing\/",
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : "..\/..\/..\/opt\/theos\/vendor\/lib",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++3A25364" : "..\/..\/..\/opt\/theos\/vendor\/include\/LightMessaging",
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34" : "..\/..\/..\/opt\/theos\/vendor\/include\/libactivator",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "StreakNotify",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
   "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "StreakNotify.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
     {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/rocketbootstrap.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/lib.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/headers.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/libactivator.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34"
+    },
+    {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/github.com\/ilhanraja\/StreakNotify",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ilhanraja\/StreakNotify",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/DHowett\/theos.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/DHowett\/theos.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/LightMessaging.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++3A25364"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/rpetrich\/LightMessaging.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/LightMessaging.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/CaptainHook.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A"
     }
   ]
 }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		A5080DDE1CA1B8970001FBDD /* control */ = {isa = PBXFileReference; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
 		A5080DDF1CA1B8970001FBDD /* entitlements.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = entitlements.xml; sourceTree = "<group>"; };
 		A586A5EF1CA065C3009D163B /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A5F50E311CC9AEC40081ECDE /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
@@ -18,7 +17,6 @@
 			isa = PBXGroup;
 			children = (
 				A5F50E311CC9AEC40081ECDE /* main.mm */,
-				A5080DDE1CA1B8970001FBDD /* control */,
 				A5080DDF1CA1B8970001FBDD /* entitlements.xml */,
 				A586A5EF1CA065C3009D163B /* Makefile */,
 			);

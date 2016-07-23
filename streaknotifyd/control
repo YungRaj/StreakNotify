@@ -1,9 +1,0 @@
-Package: com.YungRaj.streaknotifyd
-Name: streaknotifyd
-Depends:
-Version: 0.0.1
-Architecture: iphoneos-arm
-Description: A daemon that requests displayNames from the Snapchat application
-Maintainer: Ilhan Raja
-Author: YungRaj<ilhan.raja@icloud.com>
-Section: System

@@ -1,6 +1,6 @@
 Package: com.YungRaj.streaknotify
 Name: StreakNotify
-Version: 1.0.5
+Version: 2.0
 Architecture: iphoneos-arm
 Description: Take snapchat streaks seriously? Make sure you know how much time you have left to respond with notifications! On your feed there will be a label that tells you how much time is remaining to keep the streak going
 Maintainer: Ilhan Raja
