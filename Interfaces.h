@@ -111,6 +111,71 @@
 @end
 
 
+@class NSDate, NSString, SCChat;
+@protocol SCChatMessage, SCMessageTableViewCellDelegate, SCFeedDisplayMessageDelegate;
+
+@interface SCChatFeedCellViewModel : NSObject 
+{
+    NSDate *_currentDisplayMessageGeneratedTimestamp;
+    SCChat *_chat;
+    // id <SCFeedDisplayMessageDelegate> _delegate;
+    _Bool _hasFailedMessages;
+    _Bool _hasUnreadMessages;
+    double _timeUntilCurrentFeedIconExpires;
+    // id <SCChatMessage><SCMessageTableViewCellDelegate> _currentDisplayingMessage;
+}
+
+@property(readonly, nonatomic) _Bool hasUnreadMessages; // @synthesize hasUnreadMessages=_hasUnreadMessages;
+@property(readonly, nonatomic) _Bool hasFailedMessages; // @synthesize hasFailedMessages=_hasFailedMessages;
+// @property(readonly, nonatomic) id <SCChatMessageSCMessageTableViewCellDelegate> currentDisplayingMessage; // @synthesize currentDisplayingMessage=_currentDisplayingMessage;
+// @property(readonly, nonatomic) __weak id <SCFeedDisplayMessageDelegate> delegate; // @synthesize delegate=_delegate;
+@property(readonly, nonatomic) double timeUntilCurrentFeedIconExpires; // @synthesize timeUntilCurrentFeedIconExpires=_timeUntilCurrentFeedIconExpires;
+- (_Bool)isSentByUser:(id)arg1;
+- (_Bool)shouldShowPendingChatInfo;
+- (long long)compareMessagesTimestamp:(id)arg1 message2:(id)arg2;
+- (id)nameToCompare;
+- (id)timestampToCompare;
+- (_Bool)matches:(id)arg1;
+- (long long)addFriendButtonState;
+- (_Bool)shouldDisableChatForAddFriendFeed;
+- (_Bool)shouldDisableMiniProfile;
+- (_Bool)shouldDisableFeedSwiping;
+- (_Bool)shouldShowSnapSubstituteSubLabelBriefly;
+- (id)snapToDisplayIcon;
+- (id)snapToDisplay;
+- (_Bool)isExpired;
+- (void)refreshFeedItem;
+- (_Bool)shouldBounceCellByDefault;
+- (unsigned long long)snapLeftTime;
+- (_Bool)shouldShowSnapLeftTime;
+- (id)showedSubLabelCompletionHandler;
+- (_Bool)_isFriend;
+- (id)friendUsername;
+- (_Bool)shouldHighlightBackgroundIcon;
+- (_Bool)shouldShowActivityIndicator;
+- (id)messageForDisplayingIconImage;
+- (id)feedIconImageName;
+- (id)timestamp;
+- (_Bool)shouldShowBirthdayText;
+- (id)substituteSubLabelText;
+- (id)subLabelText;
+- (id)displayNameFontKey;
+- (id)displayName;
+- (id)identifier;
+- (id)reusableCellIdentifier;
+- (id)updatedDisplayingMessageWithMostRecentMessages:(id)arg1;
+- (void)updateDisplayingMessage;
+- (void)updateCurrentDisplayingMessage:(id)arg1;
+- (id)initWithChat:(id)arg1 delegate:(id)arg2;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
 @class NSString, UILabel;
 
 @interface SCFriendmojiView : UIView
@@ -2031,144 +2096,83 @@
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
-@protocol SCMediaOwnerProtocol, SCUserProtocol;
+@protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedCellViewModel, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
 
+@protocol SCFeedCellViewModel, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
+
 @interface SCFeedTableViewCell : UITableViewCell
 {
-    _Bool _highlightEnabled;
-    _Bool _isAnimatingSubLabel;
-    _Bool _shouldHideSubLabel;
-    _Bool _isPulling;
-    _Bool _isScrolling;
-    _Bool _deceleratingToZero;
-    id _delegate;
-    SCChatViewModelForFeed *_feedItem;
-    UIScrollView *_scrollView;
-    UIView *_containerView;
-    UIImageView *_feedIconView;
-    UILabel *_iconLabel;
-    UILabel *_mainLabel;
-    UILabel *_subLabel;
-    UIView *_cellSwipeBackgroundView;
-    UIImageView *_iconForCellSwipeBackground;
-    UIActivityIndicatorView *_activityIndicator;
-    SCAnimatingReplaySnapView *_animatingReplaySnapView;
-    UILabel *_timestamp;
-    SCFriendmojiView *_friendMojiView;
-    double _decelerationDistanceRatio;
-    NSTimer *_expirationTimer;
-    double _displayedMessageExpiration;
+    id <SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate> _delegate;
+    SCChatViewModelForFeed <SCFeedCellViewModel> *_viewModel;
 }
 
-@property(nonatomic) double displayedMessageExpiration;
-@property(retain, nonatomic) NSTimer *expirationTimer;
-@property(nonatomic) double decelerationDistanceRatio;
-@property(nonatomic) _Bool deceleratingToZero;
-@property(nonatomic) _Bool isScrolling;
-@property(nonatomic) _Bool isPulling;
-@property(nonatomic) _Bool shouldHideSubLabel;
-@property(nonatomic) _Bool isAnimatingSubLabel;
-@property(retain, nonatomic) SCFriendmojiView *friendMojiView;
-@property(retain, nonatomic) UILabel *timestamp;
-@property(retain, nonatomic) SCAnimatingReplaySnapView *animatingReplaySnapView;
-@property(retain, nonatomic) UIActivityIndicatorView *activityIndicator;
-@property(retain, nonatomic) UIImageView *iconForCellSwipeBackground;
-@property(retain, nonatomic) UIView *cellSwipeBackgroundView;
-@property(retain, nonatomic) UILabel *subLabel;
-@property(retain, nonatomic) UILabel *mainLabel;
-@property(retain, nonatomic) UILabel *iconLabel;
-@property(retain, nonatomic) UIImageView *feedIconView;
-@property(retain, nonatomic) UIView *containerView;
-@property(retain, nonatomic) UIScrollView *scrollView;
-@property(retain, nonatomic) id feedItem;
-@property(assign, nonatomic) _Bool highlightEnabled;
-@property(weak, nonatomic) __weak id delegate;
-- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
-- (void)setBackgroundColorForTouch;
-- (void)scrollingEnded;
-- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
-- (void)scrollViewWillBeginDragging:(id)arg1;
-- (void)scrollViewDidEndDecelerating:(id)arg1;
-- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
-- (void)scrollViewDidScroll:(id)arg1;
-- (void)updateFriendMojiView;
-- (void)updateFriendMojiViewWithFriend:(id)arg1;
-- (void)updateMainLabelPositionForSubLabel;
-- (void)centerIconLabelForTime:(unsigned long long)arg1;
-- (void)stopExpirationTimer;
-- (void)expirationTimerFired;
-- (void)updateDisplayWithFeedItem:(id)arg1 updateFriendMojiView:(_Bool)arg2;
-- (void)updateDisplayWithFeedItem:(id)arg1;
-- (void)updateDisplay;
-- (void)animateReplayWithSnapIfNecessary:(id)arg1;
-- (void)bounceWithMagnitude:(long long)arg1 completion:(id)arg2;
-- (double)bounceXOffsetWithMagnitude:(long long)arg1;
-- (void)bounceWithCompletion:(id)arg1;
-- (void)bounce;
-- (void)bounceRepeatedlyAfterDelays:(id)arg1;
-- (void)bounceRepeatedly;
-- (_Bool)shouldShowReplyLabelBriefly;
-- (void)showSubLabelBriefly:(id)arg1;
-- (void)showSubLabelBrieflyIfNecessary;
-- (void)initCellSwipeBackgroundView;
-- (void)initLabels;
-- (void)initContainerView;
-- (void)initScrollView;
-
+@property(retain, nonatomic) SCChatViewModelForFeed <SCFeedCellViewModel> *viewModel; // @synthesize viewModel=_viewModel;
+@property(nonatomic) __weak id <SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate> delegate; // @synthesize delegate=_delegate;
+- (_Bool)longPressGestureRecognizerShouldBegin;
+- (_Bool)doubleTapGestureRecognizerShouldBegin;
+- (_Bool)delayedTapGestureRecognizerShouldBegin;
+- (_Bool)tapGestureRecognizerShouldBegin;
+- (void)handleLongPress:(id)arg1;
+- (void)handleDelayedTap:(id)arg1;
+- (void)handleDoubleTap:(id)arg1;
+- (void)handleTap:(id)arg1;
+- (void)viewHasFullyAppeared;
+- (id)identifier;
 
 @end
 
 
+@class SCFriendProfileCellView, UIView;
 
-
-@class AddedFriend, Friend, NSString, SCAddFriendButtonV2, SCProfilePictureThumbnail, UILabel;
-
-@interface SCMyFriendCellView : UIView {
-    _Bool _alreadyAdded;
-    _Bool _selected;
-    _Bool _animating;
-    id _delegate;
-    long long _myFriendCellType;
-    Friend *_friend;
-    AddedFriend *_addedFriend;
-    long long _sectionType;
-    unsigned long long _numberOfTaps;
-    UIView *_profileImagesContainer;
-    SCProfilePictureThumbnail *_profilePictureView;
-    UILabel *_nameLabel;
-    UILabel *_subLabel;
-    SCAddFriendButtonV2 *_addFriendButton;
+@interface SCFriendProfileCell : UITableViewCell
+{
+    UIView *_bottomBorder;
+    SCFriendProfileCellView *_cellView;
 }
 
-@property(retain, nonatomic) SCAddFriendButtonV2 *addFriendButton; // @synthesize addFriendButton=_addFriendButton;
-@property(retain, nonatomic) UILabel *subLabel; // @synthesize subLabel=_subLabel;
-@property(retain, nonatomic) UILabel *nameLabel; // @synthesize nameLabel=_nameLabel;
-@property(retain, nonatomic) SCProfilePictureThumbnail *profilePictureView; // @synthesize profilePictureView=_profilePictureView;
-@property(retain, nonatomic) UIView *profileImagesContainer; // @synthesize profileImagesContainer=_profileImagesContainer;
-@property(nonatomic) unsigned long long numberOfTaps; // @synthesize numberOfTaps=_numberOfTaps;
-@property _Bool animating; // @synthesize animating=_animating;
-@property(nonatomic) _Bool selected; // @synthesize selected=_selected;
-@property(nonatomic) _Bool alreadyAdded; // @synthesize alreadyAdded=_alreadyAdded;
-@property(nonatomic) long long sectionType; // @synthesize sectionType=_sectionType;
-@property(retain, nonatomic) AddedFriend *addedFriend; // @synthesize addedFriend=_addedFriend; // @synthesize friend=_friend;
-@property(nonatomic) long long myFriendCellType; // @synthesize myFriendCellType=_myFriendCellType;
-@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+@property(retain, nonatomic) SCFriendProfileCellView *cellView; // @synthesize cellView=_cellView;
+- (void)setBottomBorderRightOffset:(double)arg1;
+- (void)setBottomBorderHidden:(_Bool)arg1;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+
+@end
+
+@class SCMyFriendCellView;
+
+@class Friend, NSString, SCAddFriendButtonV2, SCFriendProfileCellTextView, SCFriendProfileCellTextViewV2, SCFriendmojiView, SCProfilePictureThumbnail;
+@protocol SCFriendProfileCellViewDelegate;
+
+@interface SCFriendProfileCellView : UIView
+{
+    UIView *_thumbnailContainer;
+    UIView *_emojiContainer;
+    UIView *_buttonContainer;
+    UIView *_buttonEmojiContainer;
+    SCProfilePictureThumbnail *_thumbnail;
+    SCFriendProfileCellTextView *_textView;
+    SCFriendProfileCellTextViewV2 *_textViewV2;
+    SCFriendmojiView *_friendMojiView;
+    SCAddFriendButtonV2 *_button;
+    id <SCFriendProfileCellViewDelegate> _delegate;
+    Friend *_friend;
+}
+
++ (id)profileCellView:(id)arg1;
 - (Friend*)friend;
+- (void)didDisplayProfilePictureOnThumbnail:(id)arg1 friend:(id)arg2;
 - (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
-- (_Bool)pointInsideAddFriendButton:(struct CGPoint)arg1;
-- (void)touchesEnded:(id)arg1 withEvent:(id)arg2;
-- (void)toggleRightOffset:(_Bool)arg1;
-- (void)setHighlightedState:(_Bool)arg1;
-- (void)setProfilePictureViewWithFriend:(id)arg1;
-- (void)hideSubLabelAnimated:(_Bool)arg1;
-- (void)showSubLabelAnimated:(_Bool)arg1;
-- (void)updateWithSubLabelText:(id)arg1 animated:(_Bool)arg2;
-- (void)updateWithNameLabeText:(id)arg1;
-- (void)setAddFriendButtonOn:(_Bool)arg1;
-- (void)setNameLabelText:(id)arg1 subLabelText:(id)arg2 Friend:(id)arg3 buttonState:(long long)arg4 alreadyAdded:(_Bool)arg5 myFriendCellType:(long long)arg6 selected:(_Bool)arg7;
-- (id)initWithStyleKey:(id)arg1 page:(id)arg2;
+- (_Bool)didDisplayProfilePicture;
+- (void)setDefaultRightOffset;
+- (void)setRightOffset:(double)arg1;
+- (void)updateWithMainLabel:(id)arg1 subLabel:(id)arg2 thirdLabel:(id)arg3 style:(long long)arg4;
+- (void)updateButtonWithState:(long long)arg1 friend:(id)arg2 style:(long long)arg3;
+- (void)updateWithMainLabel:(id)arg1 subLabel:(id)arg2 style:(long long)arg3 paddingStyle:(long long)arg4;
+- (void)updateWithMainLabel:(id)arg1 subLabel:(id)arg2 style:(long long)arg3;
+- (void)updateEmojiViewWithFriend:(id)arg1 emojiViewType:(long long)arg2;
+- (void)updateThumbnailWithFriend:(id)arg1 contexts:(id)arg2 style:(long long)arg3;
+- (id)initWithFrame:(struct CGRect)arg1 delegate:(id)arg2;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
@@ -2178,18 +2182,6 @@
 
 @end
 
-@class SCMyFriendCellView;
-
-@interface SCMyFriendCell : UITableViewCell
-{
-    SCMyFriendCellView *_myFriendCellView;
-}
-
-@property(retain, nonatomic) SCMyFriendCellView *myFriendCellView; // @synthesize myFriendCellView=_myFriendCellView;
-- (_Bool)gestureRecognizer:(id)arg1 shouldRecognizeSimultaneouslyWithGestureRecognizer:(id)arg2;
-- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2 key:(id)arg3 page:(id)arg4;
-
-@end
 
 @class NSArray, NSDate, NSString, NSURL, SCSimilarSnaps, SCStoryAdStreamInfo, SCTile, Story;
 

@@ -590,7 +590,8 @@ static NSMutableArray *feedCellLabels = nil;
          this should already be on the main thread but we should make sure of this
         */
         
-        if([cell isKindOfClass:objc_getClass("SCFeedTableViewCell")]){
+        if([cell isKindOfClass:objc_getClass("SCFeedTableViewCell")]
+           && [cell respondsToSelector:@selector(viewModel)]){
             SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
             
             if(!feedCells){
@@ -599,23 +600,33 @@ static NSMutableArray *feedCellLabels = nil;
                 feedCellLabels = [[NSMutableArray alloc] init];
             }
             
-            SCChatViewModelForFeed *feedItem = feedCell.feedItem;
-            SCChat *chat = [feedItem chat];
+            NSString *username = nil;
+            if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
+                SCChatFeedCellViewModel *viewModel = (SCChatFeedCellViewModel*)feedCell.viewModel;
+                username = [viewModel friendUsername];
+            } else {
+                SCChatViewModelForFeed *viewModel = (SCChatViewModelForFeed*)feedCell.viewModel;
+                username = [viewModel username];
+            }
+            
             Manager *manager = [objc_getClass("Manager") shared];
             User *user = [manager user];
             
+            SCChats *chats = [user chats];
+            SCChat * chat = [chats chatForUsername:username];
             Friends *friends = [user friends];
-            Friend *f = [friends friendForName:[chat recipient]];
-            
-            // Friend *f = [feedItem friendForFeedItem];
-            /* deprecated/removed in Snapchat 9.34.0 */
-            /* this caused the crash in that update */
+            Friend *f = [friends friendForName:username];
+                
+                // Friend *f = [feedItem friendForFeedItem];
+                /* deprecated/removed in Snapchat 9.34.0 */
+                /* this caused the crash in that update */
             
             Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
-            
+                
             NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
-            
+                
             ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+            
         }
     });
     
@@ -661,8 +672,8 @@ static NSMutableArray *contactCellLabels = nil;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        if([cell isKindOfClass:objc_getClass("SCMyFriendCell")]){
-            SCMyFriendCell *friendCell = (SCMyFriendCell*)cell;
+        if([cell isKindOfClass:objc_getClass("SCFriendProfileCell")]){
+            SCFriendProfileCell *friendCell = (SCFriendProfileCell*)cell;
             
             if(!contactCells){
                 contactCells = [[NSMutableArray alloc] init];
@@ -670,7 +681,7 @@ static NSMutableArray *contactCellLabels = nil;
                 contactCellLabels = [[NSMutableArray alloc] init];
             }
             
-            SCMyFriendCellView *friendCellView = friendCell.myFriendCellView;
+            SCFriendProfileCellView *friendCellView = friendCell.cellView;
             Manager *manager = [objc_getClass("Manager") shared];
             User *user = [manager user];
             

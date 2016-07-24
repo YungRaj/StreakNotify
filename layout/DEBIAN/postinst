@@ -1,5 +1,8 @@
 #!/bin/sh
 echo Changing permissions on daemon
+chmod 755 /usr/bin/streaknotifyd
+chown root:wheel /usr/bin/streaknotifyd
+chmod 755 /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
 chown root:wheel /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
 echo Unloading daemon
 launchctl unload /Library/LaunchDaemons/com.YungRaj.streaknotifyd.plist
