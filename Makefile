@@ -1,7 +1,7 @@
 include theos/makefiles/common.mk
 
 ARCHS = armv7 arm64
-export SDKVERSION = 9.0
+export SDKVERSION = 9.3
 
 
 TWEAK_NAME = StreakNotify

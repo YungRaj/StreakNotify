@@ -57,7 +57,7 @@ static void LoadPreferences() {
    this is a better solution than the private SnapStreakData class that the app uses in the new chat 2.0 update
  */
 
-Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
+Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
     NSArray *snaps = [chat allSnapsArray];
     
     if(!snaps || ![snaps count]){
@@ -84,11 +84,20 @@ Snap* FindEarliestUnrepliedSnapForChat(SCChat *chat){
     for(id obj in snaps){
         if([obj isKindOfClass:objc_getClass("Snap")]){
             Snap *snap = obj;
-            NSString *sender = [snap sender];
-            if(!sender){
-                earliestUnrepliedSnap = nil;
-            }else if(!earliestUnrepliedSnap && sender){
-                earliestUnrepliedSnap = snap;
+            if(receive){
+                NSString *sender = [snap sender];
+                if(!sender){
+                    earliestUnrepliedSnap = nil;
+                }else if(!earliestUnrepliedSnap && sender){
+                    earliestUnrepliedSnap = snap;
+                }
+            } else {
+                NSString *recipient = [snap recipient];
+                if(!recipient){
+                    earliestUnrepliedSnap = nil;
+                } else if(!earliestUnrepliedSnap && recipient){
+                    earliestUnrepliedSnap = snap;
+                }
             }
         }
     }
@@ -278,7 +287,7 @@ static void ResetNotifications(){
     
     for(SCChat *chat in [chats allChats]){
         
-        Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
+        Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
         NSDate *snapDate = [earliestUnrepliedSnap timestamp];
         Friend *f = [friends friendForName:[chat recipient]];
         
@@ -342,7 +351,12 @@ static void ConfigureCell(UITableViewCell *cell,
         label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
         SizeLabelToRect(label,label.frame);
         label.hidden = NO;
-    }else {
+    }else if([f snapStreakCount]>2){
+        Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
+        label.text = [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
+        SizeLabelToRect(label,label.frame);
+        label.hidden = NO;
+    }else{
         label.text = @"";
         label.hidden = YES;
     }
@@ -604,29 +618,30 @@ static NSMutableArray *feedCellLabels = nil;
             if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
                 SCChatFeedCellViewModel *viewModel = (SCChatFeedCellViewModel*)feedCell.viewModel;
                 username = [viewModel friendUsername];
-            } else {
+            } else if([[feedCell viewModel] respondsToSelector:@selector(username)]){
                 SCChatViewModelForFeed *viewModel = (SCChatViewModelForFeed*)feedCell.viewModel;
                 username = [viewModel username];
             }
             
-            Manager *manager = [objc_getClass("Manager") shared];
-            User *user = [manager user];
-            
-            SCChats *chats = [user chats];
-            SCChat * chat = [chats chatForUsername:username];
-            Friends *friends = [user friends];
-            Friend *f = [friends friendForName:username];
+            if(username){
+                Manager *manager = [objc_getClass("Manager") shared];
+                User *user = [manager user];
+                
+                SCChats *chats = [user chats];
+                SCChat * chat = [chats chatForUsername:username];
+                Friends *friends = [user friends];
+                Friend *f = [friends friendForName:username];
                 
                 // Friend *f = [feedItem friendForFeedItem];
                 /* deprecated/removed in Snapchat 9.34.0 */
                 /* this caused the crash in that update */
-            
-            Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
                 
-            NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+                Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
-            ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
-            
+                NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+                
+                ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+            }
         }
     });
     
@@ -681,20 +696,26 @@ static NSMutableArray *contactCellLabels = nil;
                 contactCellLabels = [[NSMutableArray alloc] init];
             }
             
-            SCFriendProfileCellView *friendCellView = friendCell.cellView;
-            Manager *manager = [objc_getClass("Manager") shared];
-            User *user = [manager user];
+            Friend *f = nil;
             
-            Friend *f = [friendCellView friend];
+            if([friendCell respondsToSelector:@selector(cellView)]){
+                SCFriendProfileCellView *friendCellView = friendCell.cellView;
+                f = [friendCellView friend];
+            } else if([friendCell respondsToSelector:@selector(currentFriend)]){
+                f = [friendCell currentFriend];
+            }
             
-            SCChats *chats = [user chats];
-            SCChat *chat = [chats chatForUsername:[f name]];
-            
-            Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
-            
-            NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
-            
-            ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap);
+            if(f){
+                Manager *manager = [objc_getClass("Manager") shared];
+                User *user = [manager user];
+                SCChats *chats = [user chats];
+                SCChat *chat = [chats chatForUsername:[f name]];
+                
+                Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
+                
+                NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+                ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap);
+            }
         }
     });
     
@@ -758,7 +779,7 @@ static NSMutableArray *storyCellLabels = nil;
             // Friend *f = [feedItem friendForFeedItem];
             /* deprecated/removed in Snapchat 9.34.0 */
             
-            Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(chat);
+            Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
             
             NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
             

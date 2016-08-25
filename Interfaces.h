@@ -2133,6 +2133,7 @@
 }
 
 @property(retain, nonatomic) SCFriendProfileCellView *cellView; // @synthesize cellView=_cellView;
+- (Friend*)currentFriend;
 - (void)setBottomBorderRightOffset:(double)arg1;
 - (void)setBottomBorderHidden:(_Bool)arg1;
 - (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
