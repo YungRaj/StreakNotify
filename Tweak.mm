@@ -44,7 +44,7 @@ static void LoadPreferences() {
         }
     }
     if(!autoReplySnapstreakImage){
-        NSString *filePath = @"/var/mobile/Documents/streaknotify_autoreply.png";
+        NSString *filePath = @"/var/mobile/Documents/streaknotify_autoreply.jpeg";
         NSFileManager *fileManager = [NSFileManager defaultManager];
         BOOL fileExists = [fileManager fileExistsAtPath:filePath];
         if(fileExists){

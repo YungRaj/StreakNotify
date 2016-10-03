@@ -36,7 +36,7 @@
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
     pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     pickerLibrary.delegate = self;
-     [self presentViewController:pickerLibrary animated:YES completion:nil];
+    [self presentViewController:pickerLibrary animated:YES completion:nil];
  }
  
  -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{

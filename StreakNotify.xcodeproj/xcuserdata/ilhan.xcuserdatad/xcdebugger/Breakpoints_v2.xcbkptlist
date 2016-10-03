@@ -77,8 +77,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "734"
             endingLineNumber = "734"
-            landmarkName = "HandleRemoteNotification()"
-            landmarkType = "9">
+            landmarkName = "dispatch_async(dispatch_get_main_queue(), ^{ if([cell isKindOfClass:objc_getClass(&quot;SCFriendProfileCell&quot;)]){ SCFriendProfileCell *friendCell = (SCFriendProfileCell*)cell; if(!contactCells){ contactCells = [[NSMutableArray alloc] init]; } if(!contactCellLabels){ contactCellLabels = [[NSMutableArray alloc] init]; } Friend *f = nil; if([friendCell respondsToSelector:@selector(cellView)]){ SCFriendProfileCellView *friendCellView = friendCell.cellView; f = [friendCellView friend]; } else if([friendCell respondsToSelector:@selector(currentFriend)]){ f = [friendCell currentFriend]; } if(f){ Manager *manager = [objc_getClass(&quot;Manager&quot;) shared]; User *user = [manager user]; SCChats *chats = [user chats]; SCChat *chat = [chats chatForUsername:[f name]]; Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat); NSLog(@&quot;StreakNotify::%@ is earliest unreplied snap %@&quot;,earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]); ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap); } } })"
+            landmarkType = "8">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
