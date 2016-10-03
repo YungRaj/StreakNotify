@@ -4,7 +4,7 @@
 
 @interface FriendmojiListController ()
 
-// @property (strong,nonatomic) UITableView *tableView;
+@property (strong,nonatomic) UITableView *tableView;
 
 @end
 
