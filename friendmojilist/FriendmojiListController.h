@@ -1,8 +1,8 @@
-#import <Preferences/PSListController.h>
+#import <Preferences/PSViewController.h>
 
 @class FriendmojiTableDataSource;
 
-@interface FriendmojiListController : PSListController
+@interface FriendmojiListController : PSViewController
 
 @property (strong,nonatomic) FriendmojiTableDataSource *dataSource;
 
