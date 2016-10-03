@@ -1,10 +1,10 @@
 #include "FriendmojiListController.h"
 #include "FriendmojiTableDataSource.h"
-
+#include <objc/runtime.h>
 
 @interface FriendmojiListController ()
 
-@property (strong,nonatomic) UITableView *tableView;
+// @property (strong,nonatomic) UITableView *tableView;
 
 @end
 
@@ -13,7 +13,7 @@
 
 -(id)initForContentSize:(CGSize)size
 {
-    if ([PSViewController instancesRespondToSelector:@selector(initForContentSize:)])
+    if ([objc_getClass("PSViewController") instancesRespondToSelector:@selector(initForContentSize:)])
         self = [super initForContentSize:size];
     else
         self = [super init];

@@ -2,7 +2,7 @@
 
 @class FriendmojiTableDataSource;
 
-@interface FriendmojiListController : PSViewController
+@interface FriendmojiListController : PSListController
 
 @property (strong,nonatomic) FriendmojiTableDataSource *dataSource;
 

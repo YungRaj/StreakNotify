@@ -383,12 +383,29 @@ void SendAutoReplySnapToUser(NSString *username){
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 
 void HandleRemoteNotification(){
-    [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^(BOOL success){
-        NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
-        ResetNotifications();
+    Manager *manager = [objc_getClass("Manager") shared];
+    if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                             includeStories:
+                                             didHappendWhenAppLaunch:)]){
+        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            ResetNotifications();
+        }
+                                                              includeStories:YES
+                                                     didHappendWhenAppLaunch:YES];
+        // Snapchat 9.40 and less
+        
+    }else{
+        
+        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            ResetNotifications();
+        }
+                                                              includeStories:YES
+                                                        includeConversations:YES
+                                                     didHappendWhenAppLaunch:YES];
+        // Snapchat 9.40 and greater
     }
-                                            includeStories:NO
-                                    didHappendWhenAppLaunch:YES];
 }
 
 void HandleLocalNotification(NSString *username){

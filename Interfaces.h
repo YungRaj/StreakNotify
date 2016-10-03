@@ -7,6 +7,7 @@
 
 // I'm sorry this is a spam file, haven't gone through each definition of each class to figure out what methods are used and which ones are not... but these are just classes dumped by class-dump so that I can get this thing to compile
 // Remember: not all this is going to be used, need to figure out which methods are going to be used/hooked into and which variables/properties will be used
+typedef id CDUnknownBlockType;
 
 @interface CPDistributedMessagingCenter : NSObject
 
@@ -1174,14 +1175,16 @@
 
 @class AVPlayer, ManagerUnarchiver, NSArray, NSData, NSDate, NSMutableDictionary, NSString, NSTimer, SCChatLoader, SCSnapLoader, SCStories, SCStoryLoader, User;
 
+
 @interface Manager : NSObject
 {
     ManagerUnarchiver *unarchiver;
-    _Bool _shouldUnarchiveStories;
     _Bool _shouldRecordFirstSnapWhenLaunchApp;
     _Bool _shouldRecordFirstStoryWhenLaunchApp;
     _Bool _fetchingAllUpdatesFromServer;
-    _Bool _didRegisterForPushNotifications;
+    _Bool _pendingAllUpdatesAfterQuickLogin;
+    _Bool _pendingConversationsAfterQuickLogin;
+    _Bool _pendingFriendsAfterQuickLogin;
     NSTimer *_snapDataTimer;
     User *_user;
     SCStories *_stories;
@@ -1195,22 +1198,39 @@
     NSDate *_referenceDateForFeedTimestamps;
     NSData *_pushNotificationDeviceToken;
     NSArray *_enabledIAPCurrencies;
-    NSArray *_enabledLensStoreCurrencies;
     unsigned long long _seqno;
     unsigned long long _sessionCount;
+    NSObject<OS_dispatch_queue> *_flushEventsQueue;
+    NSObject<OS_dispatch_queue> *_spotlightIndexingQueue;
 }
 
++ (long long)context;
++ (id)profiledSelectorNames;
 + (void)clearUnusedVideoURLsExcludingURLsFromSnaps:(id)arg1 andStories:(id)arg2;
-+ (void)performLoginWithUsernameOrEmail:(id)arg1 password:(id)arg2 preAuthToken:(id)arg3 twoFAMethod:(int)arg4 confirmReactivation:(_Bool)arg5 rememberDevice:(_Bool)arg6 onComplete:(id)arg7;
++ (void)updateFidelius:(id)arg1 oldUserId:(id)arg2;
++ (void)performLoginWithUsernameOrEmail:(id)arg1 password:(id)arg2 preAuthToken:(id)arg3 twoFAMethod:(int)arg4 confirmReactivation:(_Bool)arg5 rememberDevice:(_Bool)arg6 fromDeepLink:(_Bool)arg7 onComplete:(CDUnknownBlockType)arg8;
 + (id)inspectJsonValidity:(id)arg1;
 + (id)shared;
 + (_Bool)isInitialized;
-
++ (void)sendReportWithMedia:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)sendReportWithMetadata:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)reportSnapWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)fetchDataForLocationWithParameters:(id)arg1 callbackQueue:(id)arg2 successBlock:(CDUnknownBlockType)arg3 failureBlock:(CDUnknownBlockType)arg4;
++ (void)uploadUserEventsWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)registerDeviceTokenWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)fetchDescriptionForSharedStoryIdWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)requestDeviceIDWithRetriesWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)flushEvents:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)markViewedSnapsWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
++ (void)fetchAllUpdatesWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
+@property(readonly, nonatomic) NSObject<OS_dispatch_queue> *spotlightIndexingQueue; // @synthesize spotlightIndexingQueue=_spotlightIndexingQueue;
+@property(readonly, nonatomic) NSObject<OS_dispatch_queue> *flushEventsQueue; // @synthesize flushEventsQueue=_flushEventsQueue;
 @property(nonatomic) unsigned long long sessionCount; // @synthesize sessionCount=_sessionCount;
 @property(nonatomic) unsigned long long seqno; // @synthesize seqno=_seqno;
-@property(retain, nonatomic) NSArray *enabledLensStoreCurrencies; // @synthesize enabledLensStoreCurrencies=_enabledLensStoreCurrencies;
 @property(retain, nonatomic) NSArray *enabledIAPCurrencies; // @synthesize enabledIAPCurrencies=_enabledIAPCurrencies;
-@property _Bool didRegisterForPushNotifications; // @synthesize didRegisterForPushNotifications=_didRegisterForPushNotifications;
+@property(nonatomic) _Bool pendingFriendsAfterQuickLogin; // @synthesize pendingFriendsAfterQuickLogin=_pendingFriendsAfterQuickLogin;
+@property(nonatomic) _Bool pendingConversationsAfterQuickLogin; // @synthesize pendingConversationsAfterQuickLogin=_pendingConversationsAfterQuickLogin;
+@property(nonatomic) _Bool pendingAllUpdatesAfterQuickLogin; // @synthesize pendingAllUpdatesAfterQuickLogin=_pendingAllUpdatesAfterQuickLogin;
 @property(retain, nonatomic) NSData *pushNotificationDeviceToken; // @synthesize pushNotificationDeviceToken=_pushNotificationDeviceToken;
 @property(nonatomic) _Bool fetchingAllUpdatesFromServer; // @synthesize fetchingAllUpdatesFromServer=_fetchingAllUpdatesFromServer;
 @property(nonatomic) _Bool shouldRecordFirstStoryWhenLaunchApp; // @synthesize shouldRecordFirstStoryWhenLaunchApp=_shouldRecordFirstStoryWhenLaunchApp;
@@ -1223,10 +1243,12 @@
 @property(retain, nonatomic) AVPlayer *centralPlayerB; // @synthesize centralPlayerB=_centralPlayerB;
 @property(retain, nonatomic) AVPlayer *centralPlayerA; // @synthesize centralPlayerA=_centralPlayerA;
 @property(retain, nonatomic) NSMutableDictionary *times; // @synthesize times=_times;
-@property(readonly, nonatomic) _Bool shouldUnarchiveStories; // @synthesize shouldUnarchiveStories=_shouldUnarchiveStories;
 @property(retain, nonatomic) SCStories *stories; // @synthesize stories=_stories;
 @property(retain, nonatomic) User *user; // @synthesize user=_user;
-@property(retain, nonatomic) NSTimer *snapDataTimer;
+@property(retain, nonatomic) NSTimer *snapDataTimer; // @synthesize snapDataTimer=_snapDataTimer;
+- (_Bool)isOfficialStoryCollaborator;
+- (id)preferredProfiledSelectorNames;
+- (_Bool)wasStoriesUpdated;
 - (void)requestStudySettingsWithDeviceIdHash:(id)arg1 backgroundQueue:(id)arg2;
 - (void)fetchRegisterStudySettings;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
@@ -1237,6 +1259,7 @@
 - (void)clearViewedStories;
 - (void)clearExpiredStories;
 - (void)clearExpiredAndViewedStories;
+- (void)resetAppIconBadgeNumber;
 - (void)didAppStartupComplete;
 - (_Bool)userHasValidRequest;
 - (void)willEnterForegroundFromRemoteNotification:(_Bool)arg1;
@@ -1250,11 +1273,13 @@
 - (_Bool)hasUnviewedChats;
 - (_Bool)hasUnviewedCash;
 - (int)hasUnviewedSnaps;
+- (long long)unreadMessagesCount;
 - (long long)unreadCount;
 - (void)registerVoipDeviceToken:(id)arg1;
 - (void)registerDeviceToken:(id)arg1;
 - (void)checkMobile;
-- (void)verifyMobile:(id)arg1 shouldSkipConfirmation:(_Bool)arg2 type:(long long)arg3;
+- (void)verifyMobile:(id)arg1 shouldSkipConfirmation:(_Bool)arg2 type:(long long)arg3 isResetPassword:(_Bool)arg4;
+- (void)verifyMobile:(id)arg1 shouldSkipConfirmation:(_Bool)arg2 isResetPassword:(_Bool)arg3;
 - (void)verifyMobile:(id)arg1 shouldSkipConfirmation:(_Bool)arg2;
 - (void)verifyMobile:(id)arg1 type:(long long)arg2;
 - (void)verifyMobile:(id)arg1;
@@ -1262,26 +1287,32 @@
 - (void)_setMobile:(id)arg1 withCountryCode:(id)arg2 phoneCall:(_Bool)arg3 reverified:(_Bool)arg4 isResetPassword:(_Bool)arg5 usernameOrEmail:(id)arg6 preAuthToken:(id)arg7;
 - (void)setMobile:(id)arg1 withCountryCode:(id)arg2 phoneCall:(_Bool)arg3 usernameOrEmail:(id)arg4 preAuthToken:(id)arg5;
 - (void)setMobile:(id)arg1 withCountryCode:(id)arg2 phoneCall:(_Bool)arg3 reverified:(_Bool)arg4;
-- (void)verifyCaptchaWithId:(id)arg1 solution:(id)arg2 isResetPassword:(_Bool)arg3 usernameOrEmail:(id)arg4 successQueue:(id)arg5 completion:(id)arg6;
-- (void)fetchCaptchaImagesWithSuccessQueue:(id)arg1 isResetPassword:(_Bool)arg2 usernameOrEmail:(id)arg3 withCompletion:(id)arg4;
-- (void)getPasswordStrengthPreLogin:(id)arg1 quickCheck:(_Bool)arg2 preAuthToken:(id)arg3 usernameOrEmail:(id)arg4 onComplete:(id)arg5;
-- (void)changePassword:(id)arg1 isResetPassword:(_Bool)arg2 preAuthToken:(id)arg3 usernameOrEmail:(id)arg4 onComplete:(id)arg5;
+- (void)verifyCaptchaWithId:(id)arg1 solution:(id)arg2 isResetPassword:(_Bool)arg3 usernameOrEmail:(id)arg4 successQueue:(id)arg5 completion:(CDUnknownBlockType)arg6;
+- (void)fetchCaptchaImagesWithSuccessQueue:(id)arg1 isResetPassword:(_Bool)arg2 usernameOrEmail:(id)arg3 withCompletion:(CDUnknownBlockType)arg4;
+- (void)getPasswordStrengthPreLogin:(id)arg1 quickCheck:(_Bool)arg2 preAuthToken:(id)arg3 usernameOrEmail:(id)arg4 onComplete:(CDUnknownBlockType)arg5;
+- (void)changePassword:(id)arg1 isResetPassword:(_Bool)arg2 preAuthToken:(id)arg3 usernameOrEmail:(id)arg4 onComplete:(CDUnknownBlockType)arg5;
 - (void)doLogoutRequest:(_Bool)arg1;
 - (void)logoutForced:(_Bool)arg1;
 - (void)forceLogout;
 - (void)logout;
-- (id)fetchConversationsFailureBlock;
-- (id)fetchStoriesFailureBlock;
-- (id)fetchUpdatesFailureBlock;
-- (id)fetchStoriesSuccessBlock;
-- (id)fetchConversationsSuccessBlock;
-- (id)fetchUpdatesSuccessBlock;
-- (void)fetchStoriesWithCompletionHandler:(id)arg1;
+- (CDUnknownBlockType)fetchConversationsFailureBlock;
+- (CDUnknownBlockType)fetchStoriesFailureBlock;
+- (CDUnknownBlockType)fetchUpdatesFailureBlock;
+- (CDUnknownBlockType)fetchStoriesSuccessBlock;
+- (CDUnknownBlockType)fetchConversationsSuccessBlock;
+- (void)checkResyncVersion:(id)arg1;
+- (void)updateCacheLimit;
+- (CDUnknownBlockType)fetchUpdatesSuccessBlock;
+- (void)fetchStoriesWithCompletionHandler:(CDUnknownBlockType)arg1;
 - (void)fetchStories;
 - (void)fetchUpdatesWithCompletionHandler:(id)arg1 includeStories:(_Bool)arg2 didHappendWhenAppLaunch:(_Bool)arg3;
-- (void)fetchUpdatesSuccessWithResponse:(id)arg1 withStories:(_Bool)arg2 didPullToRefresh:(_Bool)arg3 didHappenOnAppLaunch:(_Bool)arg4 onCompletion:(id)arg5;
+- (void)_fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4 includeFriends:(_Bool)arg5;
+- (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4;
+- (void)fetchUpdatesSuccessWithResponse:(id)arg1 withStories:(_Bool)arg2 didPullToRefresh:(_Bool)arg3 didHappenOnAppLaunch:(_Bool)arg4 onCompletion:(CDUnknownBlockType)arg5;
 - (void)fetchUpdates;
-- (void)fetchUpdatesAndStoriesFromLaunch;
+- (void)_fetchConversationsWithoutFriends:(CDUnknownBlockType)arg1;
+- (void)fetchConversations:(CDUnknownBlockType)arg1;
+- (void)fetchUpdatesAndStoriesFromLaunchWithConversations:(_Bool)arg1;
 - (void)fetchUpdatesAndStories;
 - (id)parametersForFetchUpdates;
 - (void)markViewedStories:(_Bool)arg1;
@@ -1291,18 +1322,26 @@
 - (id)getUpdatedSnapsJsonWithUpdatedSnaps:(id)arg1;
 - (id)getUpdatedSnapsDictionaryWithUpdatedSnaps:(id)arg1;
 - (void)applyBackgroundFetchUpdates;
+- (void)getUsernameSuggestionsOnRegisterFirstName:(id)arg1 lastName:(id)arg2 onComplete:(CDUnknownBlockType)arg3;
+- (void)checkRequestedUsername:(id)arg1 onComplete:(CDUnknownBlockType)arg2;
+- (void)registerWithFirstName:(id)arg1 lastName:(id)arg2 username:(id)arg3 password:(id)arg4 birthday:(id)arg5;
 - (void)registerUsername:(id)arg1;
 - (id)jsonStringForEvents:(id)arg1;
-- (void)dealloc;
-- (void)addObservers;
 - (_Bool)compareSeqno:(unsigned long long)arg1;
 - (void)incSeqno;
 - (unsigned long long)getSeqno;
 - (_Bool)isUserCreated;
 - (id)init;
 
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
 
 @end
+
+
 
 @class Friends, KeychainItemWrapper, NSArray, NSDate, NSDictionary, NSMutableArray, NSMutableDictionary, NSNumber, NSString, SCCPSessionDataStore, SCChats, SCClientEncryption, SCDiscoverChannels, SCDiscoverUserProperties, SCFeatureSettings, SCProfileImages, SCSecurityProxyCredentials, SCStoryToPostTracker, SCUserCashStatus, SCUserToolTipStatus, Snap, UploadUrlCache;
 
