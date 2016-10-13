@@ -10,10 +10,9 @@
 
 @implementation FriendmojiListController
 
-
 -(id)initForContentSize:(CGSize)size
 {
-    if ([objc_getClass("PSViewController") instancesRespondToSelector:@selector(initForContentSize:)])
+    if ([PSViewController instancesRespondToSelector:@selector(initForContentSize:)])
         self = [super initForContentSize:size];
     else
         self = [super init];

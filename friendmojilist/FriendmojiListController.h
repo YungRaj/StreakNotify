@@ -1,4 +1,4 @@
-#import <Preferences/PSViewController.h>
+#include <Preferences/PSViewController.h>
 
 @class FriendmojiTableDataSource;
 

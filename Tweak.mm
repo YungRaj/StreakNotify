@@ -421,6 +421,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -823,6 +825,8 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
+#else
+@end
 #endif
 
 #ifdef THEOS

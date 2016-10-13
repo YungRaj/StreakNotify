@@ -2135,7 +2135,7 @@ typedef id CDUnknownBlockType;
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
-@protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedCellViewModel, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
+@protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
 
