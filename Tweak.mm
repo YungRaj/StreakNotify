@@ -646,6 +646,7 @@ static NSMutableArray *feedCellLabels = nil;
             }
             
             if(username){
+                NSLog(@"StreakNotify::%@ username found, showing label if possible",username);
                 Manager *manager = [objc_getClass("Manager") shared];
                 User *user = [manager user];
                 
@@ -663,6 +664,9 @@ static NSMutableArray *feedCellLabels = nil;
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
                 ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+            } else{
+                NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
+                // todo: let the user know that the timer could not added to the cells
             }
         }
     });
@@ -728,6 +732,7 @@ static NSMutableArray *contactCellLabels = nil;
             }
             
             if(f){
+                NSLog(@"StreakNotify::contactsViewController:%@ friend found displaying timer",[f name]);
                 Manager *manager = [objc_getClass("Manager") shared];
                 User *user = [manager user];
                 SCChats *chats = [user chats];
@@ -737,6 +742,8 @@ static NSMutableArray *contactCellLabels = nil;
                 
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap);
+            }else{
+                NSLog(@"StreakNotify::contactsViewController: friend not found, no selector was found to find the model!")
             }
         }
     });
@@ -746,6 +753,7 @@ static NSMutableArray *contactCellLabels = nil;
 }
 
 -(void)dealloc{
+    NSLog(@"StreakNotify::Deallocating contactsViewController")
     [contactCells removeAllObjects];
     [contactCellLabels removeAllObjects];
     [contactCells release];
