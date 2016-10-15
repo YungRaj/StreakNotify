@@ -20,6 +20,10 @@ Note: you won’t be able to receive updates unless you check out the project I 
 beta-testing branch is for beta testing new features to tweak
 
 # Known issues
+Auto IS NOT WORKING, do not ask about the matter <br />
+No caption insertion for auto reply in Preferences Bundle <br />
+Choose image is dead in the Preferences Bundle <br />
+Snapchat updates cause selectors used for models become deprecated <br />
 Daemon not loading because of permissions issues (FIXED) <br />
 FriendmojiList custom friends crashing (FIXED) <br />
 /var/root/Documents folder missing on some devices (FIXED) <br />
