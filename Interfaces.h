@@ -111,6 +111,51 @@ typedef id CDUnknownBlockType;
 - (id)initWithSCChat:(id)arg1;
 @end
 
+@class NSString, SCFeedItem;
+
+@interface SCFeedChatCellViewModel : NSObject <SCSwipeableFeedCellViewModel, SCFeedChatComponentViewModel, SCFeedSnapActionViewModel, SCFilterableProtocol>
+{
+    SCFeedItem *_feedItem;
+}
+
+@property(retain, nonatomic) SCFeedItem *feedItem; // @synthesize feedItem=_feedItem;
+- (void).cxx_destruct;
+- (_Bool)matches:(id)arg1;
+- (_Bool)shouldShowSnapSubstituteSubLabelBriefly;
+- (id)snapToHandle;
+- (long long)addFriendButtonState;
+- (unsigned long long)snapLeftTime;
+- (_Bool)canReplaySnap;
+- (_Bool)canShowReplyButtion;
+- (_Bool)shouldShowSnapLeftTime;
+- (long long)snapReplayMediaType;
+- (id)snapToReplay;
+- (CDUnknownBlockType)showedSubLabelCompletionHandler;
+- (id)substituteSubLabelText;
+- (_Bool)shouldShowActivityIndicator;
+- (id)feedIconImageName;
+- (id)timestamp;
+- (id)subLabelText;
+- (id)displayNameFontKey;
+- (id)displayName;
+- (id)friendUsername;
+- (_Bool)shouldDisableFeedSwiping;
+- (_Bool)shouldBounceCellByDefault;
+- (_Bool)shouldHighlightBackgroundIcon;
+- (_Bool)hasUnreadMessages;
+- (_Bool)hasFailedMessages;
+- (id)identifier;
+- (id)reusableCellIdentifier;
+- (id)initWithFeedItem:(id)arg1;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
 
 @class NSDate, NSString, SCChat;
 @protocol SCChatMessage, SCMessageTableViewCellDelegate, SCFeedDisplayMessageDelegate;

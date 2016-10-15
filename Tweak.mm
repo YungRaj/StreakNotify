@@ -640,6 +640,9 @@ static NSMutableArray *feedCellLabels = nil;
             } else if([[feedCell viewModel] respondsToSelector:@selector(username)]){
                 SCChatViewModelForFeed *viewModel = (SCChatViewModelForFeed*)feedCell.viewModel;
                 username = [viewModel username];
+            } else if([[feedCell viewModel] respondsToSelector:@selector(friendUsername)]){
+                SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)feedCell.viewModel;
+                username = [viewModel friendUsername];
             }
             
             if(username){
