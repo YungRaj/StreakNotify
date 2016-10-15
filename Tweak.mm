@@ -363,18 +363,20 @@ static void ConfigureCell(UITableViewCell *cell,
 }
 
 void SendAutoReplySnapToUser(NSString *username){
-    Snap *snap = [[objc_getClass("Snap") alloc] init];
     UIImage *image = [UIImage imageWithContentsOfFile:@"/var/mobile/Documents/streaknotify_autoreply.jpeg"];
-    snap.media.mediaDataToUpload = UIImageJPEGRepresentation(image,0.7);
-    snap.media.captionText = prefs[@"kAutoReplySnapstreakCaption"];
-    snap.recipient = username;
-    
-    NSLog(@"StreakNotify:: Snap has been created successfully, preparing to send");
-    
-    /* todo gotta figure out how to configure the snap that I want to send before it can be sent, right now we have the recipient and the image that we want to send but there are more routines to be done before it can be sent successfully */
-    
-    [snap send];
-    NSLog(@"StreakNotify:: Snap has been requested to send");
+    if(image){
+        Snap *snap = [[objc_getClass("Snap") alloc] init];
+        snap.media.mediaDataToUpload = UIImageJPEGRepresentation(image,0.7);
+        snap.media.captionText = prefs[@"kAutoReplySnapstreakCaption"];
+        snap.recipient = username;
+        
+        NSLog(@"StreakNotify:: Snap has been created successfully, preparing to send");
+        
+        /* todo gotta figure out how to configure the snap that I want to send before it can be sent, right now we have the recipient and the image that we want to send but there are more routines to be done before it can be sent successfully */
+        
+        [snap send];
+        NSLog(@"StreakNotify:: Snap has been requested to send");
+    }
     
 }
 
@@ -854,5 +856,6 @@ void constructor()
     LoadPreferences();
     if(![prefs[@"kStreakNotifyDisabled"] boolValue]){
         %init(SnapchatHooks);
+        // this has to be done otherwise our hooks would not be used!
     }
 }
