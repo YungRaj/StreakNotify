@@ -424,7 +424,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-@implementation SnapchatHooks
+@interface SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -745,7 +745,7 @@ static NSMutableArray *contactCellLabels = nil;
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap);
             }else{
-                NSLog(@"StreakNotify::contactsViewController: friend not found, no selector was found to find the model!")
+                NSLog(@"StreakNotify::contactsViewController: friend not found, no selector was found to find the model!");
             }
         }
     });
@@ -755,7 +755,7 @@ static NSMutableArray *contactCellLabels = nil;
 }
 
 -(void)dealloc{
-    NSLog(@"StreakNotify::Deallocating contactsViewController")
+    NSLog(@"StreakNotify::Deallocating contactsViewController");
     [contactCells removeAllObjects];
     [contactCellLabels removeAllObjects];
     [contactCells release];

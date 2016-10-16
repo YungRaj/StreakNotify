@@ -113,13 +113,12 @@ typedef id CDUnknownBlockType;
 
 @class NSString, SCFeedItem;
 
-@interface SCFeedChatCellViewModel : NSObject <SCSwipeableFeedCellViewModel, SCFeedChatComponentViewModel, SCFeedSnapActionViewModel, SCFilterableProtocol>
+@interface SCFeedChatCellViewModel : NSObject
 {
     SCFeedItem *_feedItem;
 }
 
 @property(retain, nonatomic) SCFeedItem *feedItem; // @synthesize feedItem=_feedItem;
-- (void).cxx_destruct;
 - (_Bool)matches:(id)arg1;
 - (_Bool)shouldShowSnapSubstituteSubLabelBriefly;
 - (id)snapToHandle;
