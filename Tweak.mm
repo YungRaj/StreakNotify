@@ -447,6 +447,30 @@ void HandleLocalNotification(NSString *username){
     
     %orig();
     
+    Manager *manager = [objc_getClass("Manager") shared];
+    if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                             includeStories:
+                                             didHappendWhenAppLaunch:)]){
+        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            ResetNotifications();
+        }
+                                                              includeStories:YES
+                                                     didHappendWhenAppLaunch:YES];
+        // Snapchat 9.40 and less
+        
+    }else{
+        
+        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            ResetNotifications();
+        }
+                                                              includeStories:YES
+                                                        includeConversations:YES
+                                                     didHappendWhenAppLaunch:YES];
+        // Snapchat 9.40 and greater
+    }
+    
     if(!prefs) {
         NSLog(@"StreakNotify:: No preferences found on file, letting user know");
         if([UIAlertController class]){
@@ -574,13 +598,6 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
     %orig();
 }
 
--(void)applicationDidBecomeActive:(UIApplication*)application
-{
-    LoadPreferences();
-    ResetNotifications();
-    SendRequestToDaemon();
-    %orig();
-}
 
 #ifdef THEOS
 %end
