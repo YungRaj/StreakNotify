@@ -1063,6 +1063,8 @@ typedef id CDUnknownBlockType;
 @end
 
 
+
+
 @class NSArray, NSDate, NSMutableArray, NSMutableDictionary, NSString, SCArchivedChats, SCChat, TMCache;
 
 @interface SCChats : NSObject <NSCoding>

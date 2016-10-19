@@ -6,6 +6,7 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <BulletinBoard/BBBulletin.h>
 #import <objc/runtime.h>
 #import <substrate.h>
 #import <rocketbootstrap/rocketbootstrap.h>
@@ -31,6 +32,10 @@ static UIImage *autoReplySnapstreakImage = nil;
 /* load the image that the user wants to auto reply to a streak to */
 
 static void LoadPreferences() {
+    if(!snapchatVersion){
+        NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
+        snapchatVersion = [infoDict objectForKey:@"CFBundleVersion"];
+    }
     if(!prefs){
         prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
     }
@@ -259,6 +264,7 @@ static void ScheduleNotification(NSDate *snapDate,
         NSLog(@"StreakNotify:: Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
     }
+    NSLog(@"Attempting to schedule a notification for %@",[f name]);
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *notificationDate =
@@ -285,25 +291,31 @@ static void ResetNotifications(){
     Friends *friends = [user friends];
     SCChats *chats = [user chats];
     
+    NSLog(@"SCChats allChats %@",[chats allChats]);
+    
     for(SCChat *chat in [chats allChats]){
         
         Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
         NSDate *snapDate = [earliestUnrepliedSnap timestamp];
         Friend *f = [friends friendForName:[chat recipient]];
         
-        NSLog(@"StreakNotify:: %@ for %@",snapDate,[chat recipient]);
+        NSLog(@"StreakNotify:: Name and date %@ for %@",snapDate,[chat recipient]);
         
         if([f snapStreakCount]>2 && earliestUnrepliedSnap){
             if([prefs[@"kTwelveHours"] boolValue]){
+                NSLog(@"Scheduling for 12 hours %@",[f name]);
                 ScheduleNotification(snapDate,f,0,0,12);
                 
             } if([prefs[@"kFiveHours"] boolValue]){
+                NSLog(@"Scheduling for 5 hours %@",[f name]);
                 ScheduleNotification(snapDate,f,0,0,5);
                 
             } if([prefs[@"kOneHour"] boolValue]){
+                NSLog(@"Scheduling for 1 hour %@",[f name]);
                 ScheduleNotification(snapDate,f,0,0,1);
                 
             } if([prefs[@"kTenMinutes"] boolValue]){
+                NSLog(@"Scheduling for 10 minutes %@",[f name]);
                 ScheduleNotification(snapDate,f,0,10,0);
             }
             
@@ -311,6 +323,7 @@ static void ResetNotifications(){
             float minutes = [prefs[@"kCustomMinutes"] floatValue];
             float hours = [prefs[@"kCustomHours"] floatValue] ;
             if(hours || minutes || seconds){
+                NSLog(@"Scheduling for custom time %@",[f name]);
                 ScheduleNotification(snapDate,f,seconds,minutes,hours);
             }
         }
@@ -424,7 +437,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-@interface SnapchatHooks
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -433,6 +446,7 @@ void HandleLocalNotification(NSString *username){
      */
     
     %orig();
+    
     if(!prefs) {
         NSLog(@"StreakNotify:: No preferences found on file, letting user know");
         if([UIAlertController class]){
@@ -523,7 +537,6 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
     NSLog(@"StreakNotify:: Just launched application successfully, resetting local notifications for streaks");
     
-    ResetNotifications();
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_distributedmessagingcenter_apply(c);

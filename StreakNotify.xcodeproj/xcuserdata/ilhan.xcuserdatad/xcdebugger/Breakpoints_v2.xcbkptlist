@@ -16,7 +16,7 @@
             startingLineNumber = "112"
             endingLineNumber = "112"
             landmarkName = "GetFriendmojis()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -46,9 +46,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "223"
-            endingLineNumber = "223"
-            landmarkName = "@interface SCChatFeedCellViewModel"
-            landmarkType = "2">
+            endingLineNumber = "223">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -62,7 +60,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "421"
-            endingLineNumber = "421">
+            endingLineNumber = "421"
+            landmarkName = "HandleLocalNotification(NSString *username)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -76,9 +76,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "734"
-            endingLineNumber = "734"
-            landmarkName = "@interface SnapchatHooks"
-            landmarkType = "2">
+            endingLineNumber = "734">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

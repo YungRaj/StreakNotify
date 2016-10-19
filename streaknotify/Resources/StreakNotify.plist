@@ -120,6 +120,20 @@
 		</dict>
 		<dict>
 			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Streak!</string>
+			<key>bestGuess</key>
+			<string>Streak!</string>
+			<key>defaults</key>
+			<string>com.YungRaj.streaknotify</string>
+			<key>key</key>
+			<string>kAutoReplySnapstreakCaption</string>
+			<key>label</key>
+			<string>Caption</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>action</key>
 			<string>choosePhotoForAutoReplySnapstreak</string>
