@@ -6,7 +6,7 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <BulletinBoard/BBBulletin.h>
+#import "BulletinBoard/BBBulletin.h"
 #import <objc/runtime.h>
 #import <substrate.h>
 #import <rocketbootstrap/rocketbootstrap.h>
@@ -267,9 +267,8 @@ static void ScheduleNotification(NSDate *snapDate,
     NSLog(@"Attempting to schedule a notification for %@",[f name]);
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
-    NSDate *notificationDate =
-    [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
-                               sinceDate:snapDate];
+    NSDate *notificationDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
+                                                          sinceDate:snapDate];
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.fireDate = notificationDate;
     notification.alertBody = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
@@ -280,6 +279,39 @@ static void ScheduleNotification(NSDate *snapDate,
         NSLog(@"StreakNotify:: Scheduling notification for %@, firing at %@",displayName,[notification fireDate]);
     }
 }
+
+/*
+static void ScheduleNotificationBB(NSDate *snapDate,
+                                   Friend *f,
+                                   float seconds,
+                                   float minutes,
+                                   float hours){
+    NSString *displayName = f.display;
+    NSString *username = f.name;
+    if([customFriends count] && ![customFriends containsObject:displayName]){
+        NSLog(@"StreakNotify:: Not scheduling notification for %@, not enabled in custom friends",displayName);
+        return;
+    }
+    NSLog(@"Using BulletinBoard Framework to schedule notification for %@",displayName);
+    float t = hours ? hours : minutes ? minutes : seconds;
+    NSString *time = hours ? @"hours" : minutes ? @"minutes" : @"seconds";
+    NSDate *bulletinDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
+                                                          sinceDate:snapDate];
+    // BBDataProviderWithdrawBulletinsWithRecordID(self, @"com.apple.mobileipod/banner");
+    // once bulletin is working, use this function to clear all Bulletins
+    BBBulletinRequest *bulletin = [[BBBulletinRequest alloc] init];
+    bulletin.sectionID = @"com.apple.mobileipod/banner";
+				bulletin.defaultAction = [BBAction actionWithLaunchURL:[NSURL URLWithString:@"music://"] callblock:nil];
+				bulletin.bulletinID = @"com.apple.mobileipod/banner";
+				bulletin.publisherBulletinID = @"com.apple.mobileipod/banner";
+				bulletin.recordID = @"com.apple.mobileipod/banner";
+				bulletin.showsUnreadIndicator = NO;
+    bulletin.message = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
+    bulletin.date = notificationDate;
+    bulletin.lastInterruptDate = notificationDate;
+}
+
+*/
 
 static void ResetNotifications(){
     /* ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
@@ -403,7 +435,7 @@ void HandleRemoteNotification(){
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
                                                               includeStories:YES
@@ -413,7 +445,7 @@ void HandleRemoteNotification(){
     }else{
         
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
                                                               includeStories:YES
@@ -452,7 +484,7 @@ void HandleLocalNotification(NSString *username){
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
             ResetNotifications();
         }
                                                               includeStories:YES
@@ -462,7 +494,7 @@ void HandleLocalNotification(NSString *username){
     }else{
         
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates, resetting local notifications");
+            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
             ResetNotifications();
         }
                                                               includeStories:YES
@@ -559,7 +591,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes: (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
     
-    NSLog(@"StreakNotify:: Just launched application successfully, resetting local notifications for streaks");
+    NSLog(@"StreakNotify:: Just launched application successfully running Snapchat version %@",snapchatVersion);
     
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
