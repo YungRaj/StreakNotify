@@ -10,14 +10,14 @@ Custom Friends allows notifications to be enabled for those specified in Friendm
 Auto Reply allows Snaps to be sent automatically to those when notifications are delivered
 
 # Features coming soon
-1. Auto send snaps which keep the streak for you after receiving the notification
+1. Auto send snaps which keep the streak for you after receiving the notification (or dynamically through the daemon)
 2. Custom pictures and caption you can send to keep the streak
 3. Disable auto-reply for x certain users if enabled
 4. Integration with Phantom and Snap+
 5. Ability to install on a non-jailbroken device
 Note: you won’t be able to receive updates unless you check out the project I have frequently as updates are pushed. <br />
 Check out http://github.com/yungraj/StreakNotify-jailed and http://github.com/BishopFox/theos-jailed <br />
-6. BulletinBoard framework handling notifications instead of UIKit (UILocalNotification) to fix issues with local notifications <br />
+6. BulletinBoard framework handling notifications instead of UIKit (UILocalNotification) to fix issues with notifications <br />
 7. More support with the objective-c frontend to Snapchat’s servers <br />
 8. More features that may not necessarily be related to Snapchat streaks… features such as those found in Phantom and Snap++
 
