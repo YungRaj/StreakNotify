@@ -289,23 +289,23 @@ static void ScheduleNotificationBB(NSDate *snapDate,
     NSString *displayName = f.display;
     NSString *username = f.name;
     if([customFriends count] && ![customFriends containsObject:displayName]){
-        NSLog(@"StreakNotify:: Not scheduling notification for %@, not enabled in custom friends",displayName);
+        NSLog(@"StreakNotify:: Not scheduling bulletin for %@, not enabled in custom friends",displayName);
         return;
     }
-    NSLog(@"Using BulletinBoard Framework to schedule notification for %@",displayName);
+    NSLog(@"Using BulletinBoard Framework to schedule bulletin for %@",displayName);
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time = hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *bulletinDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
                                                           sinceDate:snapDate];
-    // BBDataProviderWithdrawBulletinsWithRecordID(self, @"com.apple.mobileipod/banner");
+    // BBDataProviderWithdrawBulletinsWithRecordID(self, @"com.toyopagroup.picaboo");
     // once bulletin is working, use this function to clear all Bulletins
     BBBulletinRequest *bulletin = [[BBBulletinRequest alloc] init];
-    bulletin.sectionID = @"com.apple.mobileipod/banner";
-				bulletin.defaultAction = [BBAction actionWithLaunchURL:[NSURL URLWithString:@"music://"] callblock:nil];
-				bulletin.bulletinID = @"com.apple.mobileipod/banner";
-				bulletin.publisherBulletinID = @"com.apple.mobileipod/banner";
-				bulletin.recordID = @"com.apple.mobileipod/banner";
-				bulletin.showsUnreadIndicator = NO;
+    bulletin.sectionID = @"com.toyopagroup.picaboo";
+    // bulletin.defaultAction = [BBAction actionWithLaunchURL:[NSURL URLWithString:@"music://"] callblock:nil];
+    bulletin.bulletinID = @"com.toyopagroup.picaboo";
+    bulletin.publisherBulletinID = @"com.toyopagroup.picaboo";
+    bulletin.recordID = @"com.toyopagroup.picaboo";
+    bulletin.showsUnreadIndicator = NO;
     bulletin.message = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
     bulletin.date = notificationDate;
     bulletin.lastInterruptDate = notificationDate;
