@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A59675271DCAB799007003D8 /* Bulletins.mm in Sources */ = {isa = PBXBuildFile; fileRef = A59675261DCAB799007003D8 /* Bulletins.mm */; };
 		A5E994A71CC5F03600543E5C /* Tweak.mm in Sources */ = {isa = PBXBuildFile; fileRef = A519897A1C7EBFC1004BB62B /* Tweak.mm */; };
 		A5E994A81CC5F03E00543E5C /* Interfaces.h in Sources */ = {isa = PBXBuildFile; fileRef = A5B4BFA51C7F63330056EC0E /* Interfaces.h */; };
 		A5E994A91CC5F17600543E5C /* substrate.h in Sources */ = {isa = PBXBuildFile; fileRef = A51988D91C7EBFC1004BB62B /* substrate.h */; };
@@ -1914,6 +1915,8 @@
 		A519897A1C7EBFC1004BB62B /* Tweak.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tweak.mm; sourceTree = "<group>"; };
 		A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = friendmojilist.xcodeproj; path = friendmojilist/friendmojilist.xcodeproj; sourceTree = "<group>"; };
 		A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotifyd.xcodeproj; path = streaknotifyd/streaknotifyd.xcodeproj; sourceTree = "<group>"; };
+		A59675261DCAB799007003D8 /* Bulletins.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Bulletins.mm; sourceTree = "<group>"; };
+		A596752B1DCAB8BB007003D8 /* Bulletins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bulletins.h; sourceTree = "<group>"; };
 		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
@@ -1950,6 +1953,8 @@
 				A51981B61C7EBFB6004BB62B /* StreakNotify.plist */,
 				A51981B71C7EBFB6004BB62B /* theos */,
 				A519897A1C7EBFC1004BB62B /* Tweak.mm */,
+				A59675261DCAB799007003D8 /* Bulletins.mm */,
+				A596752B1DCAB8BB007003D8 /* Bulletins.h */,
 				A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */,
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 				A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */,
@@ -4813,6 +4818,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5E994BA1CC5F3A500543E5C /* FriendmojiListController.h in Sources */,
+				A59675271DCAB799007003D8 /* Bulletins.mm in Sources */,
 				A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */,
 				A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */,
 				A5E994BD1CC5F3A500543E5C /* FriendmojiTableDataSource.m in Sources */,

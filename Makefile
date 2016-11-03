@@ -5,7 +5,7 @@ export SDKVERSION = 9.0
 
 
 TWEAK_NAME = StreakNotify
-StreakNotify_FILES = Tweak.xm
+StreakNotify_FILES = Tweak.xm Bulletins.mm
 StreakNotify_PRIVATE_FRAMEWORKS = AppSupport BulletinBoard
 StreakNotify_LIBRARIES = rocketbootstrap
 StreakNotify_CFLAGS = -DTHEOS -Wno-deprecated-declarations
