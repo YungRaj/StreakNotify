@@ -11,7 +11,6 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #import <rocketbootstrap/rocketbootstrap.h>
 
 #import "Interfaces.h"
-#import "Bulletins.h"
 
 #define kiOS7 (kCFCoreFoundationVersionNumber >= 847.20 && kCFCoreFoundationVersionNumber <= 847.27)
 #define kiOS8 (kCFCoreFoundationVersionNumber >= 1140.10 && kCFCoreFoundationVersionNumber >= 1145.15)
@@ -19,10 +18,10 @@ This tweak notifies a user when a snapchat streak with another friend is running
 
 
 
-NSDictionary *prefs = nil;
-NSString *snapchatVersion = nil;
-NSMutableArray *customFriends = nil;
-UIImage *autoReplySnapstreakImage = nil;
+static NSDictionary *prefs = nil;
+static NSString *snapchatVersion = nil;
+static NSMutableArray *customFriends = nil;
+static UIImage *autoReplySnapstreakImage = nil;
 
 // static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
 
@@ -151,11 +150,106 @@ static NSDictionary* GetFriendmojis(){
     return dictionary;
 }
 
+static NSDictionary* SetUpBulletin(NSDate *snapDate,
+                             Friend *f,
+                             float seconds,
+                             float minutes,
+                             float hours){
+    NSString *displayName = f.display;
+    if([customFriends count] && ![customFriends containsObject:displayName]){
+        NSLog(@"StreakNotify:: Not scheduling bulletin for %@, not enabled in custom friends",displayName);
+        return nil;
+    }
+    NSLog(@"Using BulletinBoard Framework to schedule bulletin for %@",displayName);
+    float t = hours ? hours : minutes ? minutes : seconds;
+    NSString *time = hours ? @"hours" : minutes ? @"minutes" : @"seconds";
+    NSDate *bulletinDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
+                                                      sinceDate:snapDate];
+    
+    
+    NSString *bulletinMessage = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
+    
+    return [@{@"kBulletinMessage" : bulletinMessage,
+              @"kBulletinDate" : bulletinDate } retain];
+   
+}
+
+static void ScheduleBulletins(){
+    Manager *manager = [objc_getClass("Manager") shared];
+    User *user = [manager user];
+    Friends *friends = [user friends];
+    SCChats *chats = [user chats];
+    
+    NSMutableDictionary *bulletinsInfo = [[NSMutableDictionary alloc] init];
+    NSMutableArray *bulletins = [[NSMutableArray alloc] init];
+    NSLog(@"SCChats allChats %@",[chats allChats]);
+    
+    for(SCChat *chat in [chats allChats]){
+        
+        Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
+        NSDate *snapDate = [earliestUnrepliedSnap timestamp];
+        Friend *f = [friends friendForName:[chat recipient]];
+        
+        NSLog(@"StreakNotify:: Name and date %@ for %@",snapDate,[chat recipient]);
+        
+        if([f snapStreakCount]>2 && earliestUnrepliedSnap){
+            if([prefs[@"kTwelveHours"] boolValue]){
+                NSLog(@"Scheduling for 12 hours %@",[f name]);
+                NSDictionary *twelveHours = SetUpBulletin(snapDate,f,0,0,12);
+                if(twelveHours){
+                    [bulletins addObject:twelveHours];
+                }
+                
+            } if([prefs[@"kFiveHours"] boolValue]){
+                NSLog(@"Scheduling for 5 hours %@",[f name]);
+                NSDictionary *fiveHours =SetUpBulletin(snapDate,f,0,0,5);
+                if(fiveHours){
+                    [bulletins addObject:fiveHours];
+                }
+                
+            } if([prefs[@"kOneHour"] boolValue]){
+                NSLog(@"Scheduling for 1 hour %@",[f name]);
+                NSDictionary *oneHour = SetUpBulletin(snapDate,f,0,0,1);
+                if(oneHour){
+                    [bulletins addObject:oneHour];
+                }
+                
+            } if([prefs[@"kTenMinutes"] boolValue]){
+                NSLog(@"Scheduling for 10 minutes %@",[f name]);
+                NSDictionary *tenMinutes = SetUpBulletin(snapDate,f,0,10,0);
+                if(tenMinutes){
+                    [bulletins addObject:tenMinutes];
+                }
+            }
+            
+            float seconds = [prefs[@"kCustomSeconds"] floatValue];
+            float minutes = [prefs[@"kCustomMinutes"] floatValue];
+            float hours = [prefs[@"kCustomHours"] floatValue] ;
+            if(hours || minutes || seconds){
+                NSLog(@"Scheduling for custom time %@",[f name]);
+                NSDictionary *customTime = SetUpBulletin(snapDate,f,seconds,minutes,hours);
+                if(customTime){
+                    [bulletins addObject:customTime];
+                }
+            }
+        }
+    }
+    [bulletinsInfo setObject:bulletins forKey:@"kBulletins"];
+    NSLog(@"StreakNotify::Sending request to Daemon");
+    
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.snbulletinsd"];
+    rocketbootstrap_unlock("com.YungRaj.snbulletinsd");
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c sendMessageName:@"bulletins"
+              userInfo:bulletinsInfo];
+}
+
+
 /* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
 /* triggered when the application is open, coming from the background, or when the friends values change */
 
 static void SendFriendmojisToDaemon(){
-    NSLog(@"StreakNotify::Sending request to Daemon");
+    NSLog(@"StreakNotify::Sending friendmojis to streaknotifyd");
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
@@ -319,8 +413,7 @@ void HandleRemoteNotification(){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
-            SNDataProvider *provider = [SNDataProvider sharedProvider];
-            [provider dataProviderDidLoad];
+            ScheduleBulletins();
             
         }
                                                               includeStories:YES
@@ -332,8 +425,7 @@ void HandleRemoteNotification(){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
-            SNDataProvider *provider = [SNDataProvider sharedProvider];
-            [provider dataProviderDidLoad];
+            ScheduleBulletins();
         }
                                                               includeStories:YES
                                                         includeConversations:YES
@@ -355,8 +447,6 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-//#else
-//@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -374,8 +464,7 @@ void HandleLocalNotification(NSString *username){
             NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
             
             // Reset bulletins
-            SNDataProvider *provider = [SNDataProvider sharedProvider];
-            [provider dataProviderDidLoad];
+            ScheduleBulletins();
         }
                                                               includeStories:YES
                                                      didHappendWhenAppLaunch:YES];
@@ -386,8 +475,7 @@ void HandleLocalNotification(NSString *username){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
             // Reset bulletins
-            SNDataProvider *provider = [SNDataProvider sharedProvider];
-            [provider dataProviderDidLoad];
+            ScheduleBulletins();
         }
                                                               includeStories:YES
                                                         includeConversations:YES
@@ -465,7 +553,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex{
 #endif
 
 #ifdef THEOS
-%hook AppDelegate
+%hook SCAppDelegate
 #endif
 
 -(BOOL)application:(UIApplication*)application
@@ -623,8 +711,7 @@ static NSMutableArray *feedCellLabels = nil;
 -(void)didFinishFetchUpdates{
     NSLog(@"StreakNotify::Finished fetching data");
     %orig();
-    SNDataProvider *provider = [SNDataProvider sharedProvider];
-    [provider dataProviderDidLoad];
+    ScheduleBulletins();
 }
 
 -(void)dealloc{
@@ -778,23 +865,7 @@ static NSMutableArray *storyCellLabels = nil;
 
 #ifdef THEOS
 %end
-%hook BBServer
-#endif
-
--(void)_loadDataProvidersAndSettings{
-    %orig();
-    NSLog(@"BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
-    SNDataProvider *provider = [SNDataProvider sharedProvider];
-    [self _addDataProvider:provider sortSectionsNow:YES];
-    [provider release];
-}
-
-
-#ifdef THEOS
 %end
-%end
-//#else
-//@end
 #endif
 
 #ifdef THEOS
