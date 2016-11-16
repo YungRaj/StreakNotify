@@ -9,10 +9,9 @@
 /* Begin PBXFileReference section */
 		A5455ACD1DD0184700CF1406 /* .theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = .theos; sourceTree = "<group>"; };
 		A5455ACE1DD0184700CF1406 /* control */ = {isa = PBXFileReference; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
-		A5455ACF1DD0184700CF1406 /* entitlements.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = entitlements.xml; sourceTree = "<group>"; };
-		A5455AD01DD0184700CF1406 /* layout */ = {isa = PBXFileReference; lastKnownFileType = folder; path = layout; sourceTree = "<group>"; };
 		A5455AD11DD0184700CF1406 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A5455AD41DD0184700CF1406 /* Tweak.xm */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tweak.xm; sourceTree = "<group>"; };
+		A590F8BE1DDCCB30004757A0 /* libsnbulletins.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = libsnbulletins.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -21,9 +20,8 @@
 			children = (
 				A5455ACD1DD0184700CF1406 /* .theos */,
 				A5455ACE1DD0184700CF1406 /* control */,
-				A5455ACF1DD0184700CF1406 /* entitlements.xml */,
-				A5455AD01DD0184700CF1406 /* layout */,
 				A5455AD11DD0184700CF1406 /* Makefile */,
+				A590F8BE1DDCCB30004757A0 /* libsnbulletins.plist */,
 				A5455AD41DD0184700CF1406 /* Tweak.xm */,
 			);
 			sourceTree = "<group>";
@@ -31,17 +29,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		A5455ACB1DD0184700CF1406 /* snbulletinsd */ = {
+		A5455ACB1DD0184700CF1406 /* libsnbulletins */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = A5455AD51DD0184700CF1406 /* Build configuration list for PBXLegacyTarget "snbulletinsd" */;
+			buildConfigurationList = A5455AD51DD0184700CF1406 /* Build configuration list for PBXLegacyTarget "libsnbulletins" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
 			buildWorkingDirectory = /Users/ilhan/Downloads/Files/Code/StreakNotify/snbulletinsd;
 			dependencies = (
 			);
-			name = snbulletinsd;
+			name = libsnbulletins;
 			passBuildSettingsInEnvironment = 1;
 			productName = snbulletinsd;
 		};
@@ -52,7 +50,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = A5455ACA1DD0184700CF1406 /* Build configuration list for PBXProject "snbulletinsd" */;
+			buildConfigurationList = A5455ACA1DD0184700CF1406 /* Build configuration list for PBXProject "libsnbulletins" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -63,7 +61,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A5455ACB1DD0184700CF1406 /* snbulletinsd */,
+				A5455ACB1DD0184700CF1406 /* libsnbulletins */,
 			);
 		};
 /* End PBXProject section */
@@ -103,7 +101,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = snbulletinsd;
+				PRODUCT_NAME = libsnbulletins;
 			};
 			name = Debug;
 		};
@@ -115,14 +113,14 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = snbulletinsd;
+				PRODUCT_NAME = libsnbulletins;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A5455ACA1DD0184700CF1406 /* Build configuration list for PBXProject "snbulletinsd" */ = {
+		A5455ACA1DD0184700CF1406 /* Build configuration list for PBXProject "libsnbulletins" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A5455AC81DD0184700CF1406 /* Debug */,
@@ -131,7 +129,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A5455AD51DD0184700CF1406 /* Build configuration list for PBXLegacyTarget "snbulletinsd" */ = {
+		A5455AD51DD0184700CF1406 /* Build configuration list for PBXLegacyTarget "libsnbulletins" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A5455AD61DD0184700CF1406 /* Debug */,

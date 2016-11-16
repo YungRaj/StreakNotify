@@ -19,5 +19,5 @@ after-install::
 SUBPROJECTS += streaknotify
 SUBPROJECTS += streaknotifyd
 SUBPROJECTS += friendmojilist
-SUBPROJECTS += snbulletinsd
+SUBPROJECTS += libsnbulletins
 include $(THEOS_MAKE_PATH)/aggregate.mk

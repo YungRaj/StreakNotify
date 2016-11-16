@@ -45,7 +45,7 @@ static SNDataProvider *provider = nil;
 
 static void ScheduleBulletin(NSDate *bulletinDate,
                              NSString *bulletinMessage){
-    NSLog(@"snbulletinsd::Using BulletinBoard to schedule bulletin for message %@",bulletinMessage);
+    NSLog(@"libsnbulletins::Using BulletinBoard to schedule bulletin for message %@",bulletinMessage);
     
     BBBulletinRequest *bulletin = [[BBBulletinRequest alloc] init];
     bulletin.sectionID = @"com.toyopagroup.picaboo";
@@ -78,8 +78,8 @@ static void ResetBulletins(SNDataProvider *provider,
 -(id)init{
     if(self = [super init]){
         provider = self;
-        CPDistributedMessagingCenter *server = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.snbulletinsd"];
-        rocketbootstrap_unlock("com.YungRaj.snbulletinsd");
+        CPDistributedMessagingCenter *server = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.libsnbulletins"];
+        rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
         rocketbootstrap_distributedmessagingcenter_apply(server);
         [server runServerOnCurrentThread];
         [server registerForMessageName:@"bulletins" target:self selector:@selector(scheduleBulletins:withInfo:)];
@@ -121,7 +121,7 @@ static void ResetBulletins(SNDataProvider *provider,
 }
 
 -(void)dataProviderDidLoad{
-    NSLog(@"snbulletinsd::Sucessfully updated bulletins");
+    NSLog(@"libsnbulletins::Sucessfully updated bulletins");
 }
 
 @end
@@ -136,7 +136,7 @@ static void ResetBulletins(SNDataProvider *provider,
 
 -(void)_loadDataProvidersAndSettings{
     %orig();
-    NSLog(@"snbulletinsd::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
+    NSLog(@"libsnbulletins::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
     SNDataProvider *provider = [[SNDataProvider alloc] init];
     [self _addDataProvider:provider sortSectionsNow:YES];
     [provider release];

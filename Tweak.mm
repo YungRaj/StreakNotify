@@ -237,8 +237,8 @@ static void ScheduleBulletins(){
     [bulletinsInfo setObject:bulletins forKey:@"kBulletins"];
     NSLog(@"StreakNotify::Sending request to Daemon");
     
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.snbulletinsd"];
-    rocketbootstrap_unlock("com.YungRaj.snbulletinsd");
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.libsnbulletins"];
+    rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"bulletins"
               userInfo:bulletinsInfo];
@@ -447,6 +447,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -866,6 +868,8 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
+#else
+@end
 #endif
 
 #ifdef THEOS

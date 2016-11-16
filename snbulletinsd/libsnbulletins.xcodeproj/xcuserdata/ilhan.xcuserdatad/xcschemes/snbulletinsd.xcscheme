@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A5455ACB1DD0184700CF1406"
-               BuildableName = "snbulletinsd"
-               BlueprintName = "snbulletinsd"
-               ReferencedContainer = "container:snbulletinsd.xcodeproj">
+               BuildableName = "libsnbulletins"
+               BlueprintName = "libsnbulletins"
+               ReferencedContainer = "container:libsnbulletins.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A5455ACB1DD0184700CF1406"
-            BuildableName = "snbulletinsd"
-            BlueprintName = "snbulletinsd"
-            ReferencedContainer = "container:snbulletinsd.xcodeproj">
+            BuildableName = "libsnbulletins"
+            BlueprintName = "libsnbulletins"
+            ReferencedContainer = "container:libsnbulletins.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A5455ACB1DD0184700CF1406"
-            BuildableName = "snbulletinsd"
-            BlueprintName = "snbulletinsd"
-            ReferencedContainer = "container:snbulletinsd.xcodeproj">
+            BuildableName = "libsnbulletins"
+            BlueprintName = "libsnbulletins"
+            ReferencedContainer = "container:libsnbulletins.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
