@@ -2,6 +2,7 @@
 #import <objc/runtime.h>
 #import <substrate.h>
 #import <rocketbootstrap/rocketbootstrap.h>
+#import <BulletinBoard/BBLocalDataProviderStore.h>
 #import <BulletinBoard/BBServer.h>
 #import <BulletinBoard/BBDataProvider.h>
 #import <BulletinBoard/BBBulletinRequest.h>
@@ -82,22 +83,22 @@ static void ResetBulletins(SNDataProvider *provider,
         rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
         rocketbootstrap_distributedmessagingcenter_apply(server);
         [server runServerOnCurrentThread];
-        [server registerForMessageName:@"bulletins" target:self selector:@selector(scheduleBulletins:withInfo:)];
+        [server registerForMessageName:@"bulletins" target:self selector:@selector(scheduleBulletins:userInfo:)];
         
     }
     return self;
 }
 
--(NSDictionary*)scheduleBulletins:(NSString*)name withInfo:(NSDictionary*)info{
+-(NSDictionary*)scheduleBulletins:(NSString*)name userInfo:(NSDictionary*)info{
+    NSLog(@"libsnbulletins::attempting to schedule bulletins");
     [NSThread detachNewThreadSelector:@selector(scheduleBulletins:) toTarget:self withObject:info];
     return [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:1] forKey:@"status"];
 }
 
 -(void)scheduleBulletins:(NSDictionary*)info{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        ResetBulletins(self,info);
-        [self dataProviderDidLoad];
-    });
+    NSLog(@"libsnbulletins::using current thread to schedule bulletins");
+    ResetBulletins(self,info);
+    [self dataProviderDidLoad];
 }
 
 -(void)dealloc{
@@ -129,19 +130,26 @@ static void ResetBulletins(SNDataProvider *provider,
 
 #ifdef THEOS
 %group Bulletins
-%hook BBServer
+%hook BBLocalDataProviderStore
 //#else
 //@implementation Bulletins
 #endif
 
--(void)_loadDataProvidersAndSettings{
+-(void)loadAllDataProvidersAndPerformMigration:(bool)performMigration{
     %orig();
     NSLog(@"libsnbulletins::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
     SNDataProvider *provider = [[SNDataProvider alloc] init];
-    [self _addDataProvider:provider sortSectionsNow:YES];
+    [self addDataProvider:provider performMigration:performMigration];
     [provider release];
 }
 
+-(void)loadAllDataProviders{
+    %orig();
+    NSLog(@"libsnbulletins::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
+    SNDataProvider *provider = [[SNDataProvider alloc] init];
+    [self addDataProvider: provider];
+    [provider release];
+}
 
 #ifdef THEOS
 %end

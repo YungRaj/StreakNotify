@@ -17,7 +17,6 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
 
 
-
 static NSDictionary *prefs = nil;
 static NSString *snapchatVersion = nil;
 static NSMutableArray *customFriends = nil;
@@ -235,13 +234,15 @@ static void ScheduleBulletins(){
         }
     }
     [bulletinsInfo setObject:bulletins forKey:@"kBulletins"];
-    NSLog(@"StreakNotify::Sending request to Daemon");
+    NSLog(@"StreakNotify::Sending request to libsnbulletins");
     
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.libsnbulletins"];
-    rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
-    rocketbootstrap_distributedmessagingcenter_apply(c);
-    [c sendMessageName:@"bulletins"
-              userInfo:bulletinsInfo];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.libsnbulletins"];
+        rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
+        rocketbootstrap_distributedmessagingcenter_apply(c);
+        [c sendMessageName:@"bulletins"
+                  userInfo:bulletinsInfo];
+    });
 }
 
 
@@ -340,7 +341,7 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     return @"Unknown";
 }
 
-static void ConfigureCell(UITableViewCell *cell,
+static void ConfigureCell(UIView *view,
                           NSMutableArray *instances,
                           NSMutableArray *labels,
                           Friend *f,
@@ -348,9 +349,9 @@ static void ConfigureCell(UITableViewCell *cell,
                           Snap *snap){
     UILabel *label;
     
-    if(![instances containsObject:cell]){
+    if(![instances containsObject:view]){
         
-        CGSize size = cell.frame.size;
+        CGSize size = view.frame.size;
         CGRect rect = CGRectMake(size.width*.83,
                                  size.height*.7,
                                  size.width/8,
@@ -358,14 +359,14 @@ static void ConfigureCell(UITableViewCell *cell,
         
         label = [[UILabel alloc] initWithFrame:rect];
         
-        [instances addObject:cell];
+        [instances addObject:view];
         [labels addObject:label];
         
-        [cell addSubview:label];
+        [view addSubview:label];
         
         
     }else {
-        label = [labels objectAtIndex:[instances indexOfObject:cell]];
+        label = [labels objectAtIndex:[instances indexOfObject:view]];
     }
     
     if([f snapStreakCount]>2 && snap){
@@ -410,7 +411,7 @@ void HandleRemoteNotification(){
     if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+        [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
             ScheduleBulletins();
@@ -420,9 +421,12 @@ void HandleRemoteNotification(){
                                                      didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
-    }else{
+    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                                   includeStories:
+                                                   includeConversations:
+                                                   didHappendWhenAppLaunch:)]){
         
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+        [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
             ScheduleBulletins();
@@ -431,6 +435,15 @@ void HandleRemoteNotification(){
                                                         includeConversations:YES
                                                      didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
+    }else{
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            ScheduleBulletins();
+        }
+                                      isAllUpdates:YES
+                                    includeStories:YES
+                              includeConversations:YES
+                           didHappendWhenAppLaunch:YES];
     }
 }
 
@@ -447,8 +460,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-#else
-@implementation SnapchatHooks
+// #else
+// @implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -462,27 +475,39 @@ void HandleLocalNotification(NSString *username){
     if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
-            
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
             ScheduleBulletins();
+            
         }
-                                                              includeStories:YES
-                                                     didHappendWhenAppLaunch:YES];
+                                    includeStories:YES
+                           didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
-    }else{
+    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                                   includeStories:
+                                                   includeConversations:
+                                                   didHappendWhenAppLaunch:)]){
         
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             // Reset bulletins
             ScheduleBulletins();
         }
-                                                              includeStories:YES
-                                                        includeConversations:YES
-                                                     didHappendWhenAppLaunch:YES];
+                                    includeStories:YES
+                              includeConversations:YES
+                           didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
+    }else{
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            ScheduleBulletins();
+        }
+                                      isAllUpdates:YES
+                                    includeStories:YES
+                              includeConversations:YES
+                           didHappendWhenAppLaunch:YES];
     }
     
     if(!prefs) {
@@ -576,10 +601,6 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     NSLog(@"StreakNotify:: Just launched application successfully running Snapchat version %@",snapchatVersion);
     
     
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
-    rocketbootstrap_distributedmessagingcenter_apply(c);
-    [c sendMessageName:@"applicationLaunched" userInfo:nil];
-    
     SendFriendmojisToDaemon();
     
     
@@ -659,9 +680,9 @@ static NSMutableArray *feedCellLabels = nil;
          this should already be on the main thread but we should make sure of this
         */
         
-        if([cell isKindOfClass:objc_getClass("SCFeedTableViewCell")]
+        if([cell isKindOfClass:objc_getClass("SCFeedSwipeableTableViewCell")]
            && [cell respondsToSelector:@selector(viewModel)]){
-            SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
+            SCFeedSwipeableTableViewCell *feedCell = (SCFeedSwipeableTableViewCell*)cell;
             
             if(!feedCells){
                 feedCells = [[NSMutableArray alloc] init];
@@ -699,7 +720,7 @@ static NSMutableArray *feedCellLabels = nil;
                 
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
-                ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+                ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
             } else{
                 NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
                 // todo: let the user know that the timer could not added to the cells
@@ -868,8 +889,8 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
-#else
-@end
+// #else
+//@end
 #endif
 
 #ifdef THEOS

@@ -1356,6 +1356,7 @@ typedef id CDUnknownBlockType;
 - (void)_fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4 includeFriends:(_Bool)arg5;
 - (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4;
 - (void)fetchUpdatesSuccessWithResponse:(id)arg1 withStories:(_Bool)arg2 didPullToRefresh:(_Bool)arg3 didHappenOnAppLaunch:(_Bool)arg4 onCompletion:(CDUnknownBlockType)arg5;
+- (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 isAllUpdates:(_Bool)arg2 includeStories:(_Bool)arg3 includeConversations:(_Bool)arg4 didHappendWhenAppLaunch:(_Bool)arg5;
 - (void)fetchUpdates;
 - (void)_fetchConversationsWithoutFriends:(CDUnknownBlockType)arg1;
 - (void)fetchConversations:(CDUnknownBlockType)arg1;
@@ -2182,6 +2183,80 @@ typedef id CDUnknownBlockType;
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
+@class NSString, NSTimer, SCAddFriendButtonV2, SCAnimatingReplaySnapView, SCFriendmojiView, SCLoadingIndicatorView, SCReplyButton, UIImageView, UILabel;
+
+@interface SCFeedComponentView : UIView
+{
+    SCLoadingIndicatorView *_activityIndicator;
+    UIImageView *_feedIconView;
+    UILabel *_snapCountDownLabel;
+    SCAnimatingReplaySnapView *_animatingReplaySnapView;
+    UILabel *_mainLabel;
+    UILabel *_subLabel;
+    _Bool _isAnimatingSubLabel;
+    UIView *_bottomBorder;
+    SCFriendmojiView *_friendMojiView;
+    SCReplyButton *_replyButton;
+    SCAddFriendButtonV2 *_addFriendButton;
+    UILabel *_groupMojiLabel;
+    _Bool _highlightEnabled;
+    NSTimer *_snapTimer;
+    id _viewModel;
+    id  _delegate;
+    UIView *_replyButtonParentView;
+}
+
+- (void)_refreshGroupSnapCountdownLabel;
+- (void)_refreshSnapCountdownLabel;
+- (void)_setSnapCountdownLabelWithTimeLeft:(unsigned long long)arg1;
+- (void)_startSnapTimerIfNecessary;
+- (id)activityIndicator;
+- (void)alternateReplyButtonSubLabelWithTapToChatOn:(_Bool)arg1;
+- (void)animateSnapReplayIfNecessary;
+- (void)animateSubLabelWithAnimations:(CDUnknownBlockType)arg1 completion:(CDUnknownBlockType)arg2;
+- (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (id)feedIconView;
+- (void)handlePressOnReplyButton;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (_Bool)isAddFriendButtonVisible;
+- (_Bool)isFriendMojiViewVisible;
+- (_Bool)isGroupMojiLableVisible;
+- (_Bool)isReplyButtonVisible;
+- (void)prepareForReuse;
+- (void)removeSubstituteLabelAnimations;
+- (id)replyButton;
+@property(retain, nonatomic) UIView *replyButtonParentView; // @synthesize replyButtonParentView=_replyButtonParentView;
+- (void)resetBackgroundColorAnimated:(_Bool)arg1;
+- (void)resizeMainLabel;
+- (void)resizeSubLabel;
+- (void)setBackgroundAlpha:(double)arg1;
+- (void)setBackgroundColor:(id)arg1;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)setLabel:(id)arg1 width:(double)arg2;
+- (void)setTouchedBackgroundColor;
+- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
+@property(retain, nonatomic) id viewModel; // @synthesize viewModel=_viewModel;
+- (void)showSubstituteSubLabelBriefly;
+- (id)snapCountDownLabel;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)updateAddFriendButton;
+- (void)updateFriendMojiView;
+- (void)updateGroupIconView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+- (void)updateSnapCountdownLabel;
+- (void)updateSubLabel;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
+
+
 @protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
@@ -2190,8 +2265,8 @@ typedef id CDUnknownBlockType;
 
 @interface SCFeedTableViewCell : UITableViewCell
 {
-    id <SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate> _delegate;
-    SCChatViewModelForFeed <SCFeedCellViewModel> *_viewModel;
+    id _delegate;
+    SCChatViewModelForFeed *_viewModel;
 }
 
 @property(retain, nonatomic) SCChatViewModelForFeed <SCFeedCellViewModel> *viewModel; // @synthesize viewModel=_viewModel;
@@ -2208,6 +2283,67 @@ typedef id CDUnknownBlockType;
 - (id)identifier;
 
 @end
+
+@class NSString, SCFeedComponentView, UIImageView, UIScrollView, UIView;
+
+@interface SCFeedSwipeableTableViewCell : SCFeedTableViewCell
+{
+    UIView *_swipeBackgroundView;
+    UIImageView *_swipeBackgroundIconView;
+    _Bool _isPulling;
+    _Bool _isScrolling;
+    _Bool _deceleratingToZero;
+    UIScrollView *_scrollView;
+    SCFeedComponentView *_feedComponentView;
+    double _decelerationDistanceRatio;
+}
+
++ (_Bool)shouldEnableChatButtonReply;
++ (id)swipeBackgroundViewColor;
+- (void)_initV10Views;
+- (void)_initViews;
+- (void)bounce;
+- (void)bounceRepeatedlyAfterDelays:(id)arg1;
+- (void)bounceRepeatedlyIfNecessary;
+- (void)bounceWithCompletion:(CDUnknownBlockType)arg1;
+- (void)bounceWithMagnitude:(long long)arg1 completion:(CDUnknownBlockType)arg2;
+- (double)bounceXOffsetWithMagnitude:(long long)arg1;
+@property(nonatomic) _Bool deceleratingToZero; // @synthesize deceleratingToZero=_deceleratingToZero;
+@property(nonatomic) double decelerationDistanceRatio; // @synthesize decelerationDistanceRatio=_decelerationDistanceRatio;
+@property(retain, nonatomic) SCFeedComponentView *feedComponentView; // @synthesize feedComponentView=_feedComponentView;
+- (void)handlePressOnReplyButton;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+@property(nonatomic) _Bool isPulling; // @synthesize isPulling=_isPulling;
+@property(nonatomic) _Bool isScrolling; // @synthesize isScrolling=_isScrolling;
+- (void)prepareForReuse;
+- (void)prepareNextVC:(id)arg1;
+- (void)resetNextVC:(id)arg1;
+@property(retain, nonatomic) UIScrollView *scrollView; // @synthesize scrollView=_scrollView;
+- (void)scrollViewDidEndDecelerating:(id)arg1;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
+- (void)scrollingEnded;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)setViewModel:(id)arg1;
+- (void)slideOverWithOffset:(double)arg1;
+- (void)snapTimerDidExpire;
+- (id)swipeBackgroundIconView;
+- (id)swipeableViewModel;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)updateFriendMojiView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+@property(readonly) Class superclass;
+
+@end
+
+
 
 
 @class SCFriendProfileCellView, UIView;
@@ -2242,7 +2378,7 @@ typedef id CDUnknownBlockType;
     SCFriendProfileCellTextViewV2 *_textViewV2;
     SCFriendmojiView *_friendMojiView;
     SCAddFriendButtonV2 *_button;
-    id <SCFriendProfileCellViewDelegate> _delegate;
+    id _delegate;
     Friend *_friend;
 }
 
