@@ -113,7 +113,9 @@ static void ResetBulletins(SNDataProvider *provider,
     return [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
 }
 
--(NSArray *)bulletinsFilteredBy:(NSUInteger)by count:(NSUInteger)count lastCleared:(id)cleared{
+-(NSArray*)bulletinsFilteredBy:(NSUInteger)by
+                         count:(NSUInteger)count
+                   lastCleared:(id)cleared{
     return nil;
 }
 

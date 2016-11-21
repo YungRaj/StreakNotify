@@ -387,10 +387,16 @@ static void ConfigureCell(UIView *view,
 void SendAutoReplySnapToUser(NSString *username){
     UIImage *image = [UIImage imageWithContentsOfFile:@"/var/mobile/Documents/streaknotify_autoreply.jpeg"];
     if(image){
+        Manager *manager = [objc_getClass("Manager") shared];
+        User *user = [manager user];
+        Friends *friends = [user friends];
+        
         Snap *snap = [[objc_getClass("Snap") alloc] init];
         snap.media.mediaDataToUpload = UIImageJPEGRepresentation(image,0.7);
         snap.media.captionText = prefs[@"kAutoReplySnapstreakCaption"];
         snap.recipient = username;
+        snap.recipients = @[[friends friendForName:username]];
+        
         
         NSLog(@"StreakNotify:: Snap has been created successfully, preparing to send");
         
