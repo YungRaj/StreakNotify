@@ -44,10 +44,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 -(id)init{
     self = [super init];
     if(self){
-
         [self setUpDaemon];
-        
-        
         
     }
     return self;

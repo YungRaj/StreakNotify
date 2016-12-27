@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = StreakNotify;
+		cell = PSLinkCell;
+		detail = "StreakNotifyListController";
+		icon = "icon.png";
+		isController = YES;
+		label = StreakNotify;
+	};
+}

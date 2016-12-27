@@ -14,9 +14,6 @@
 		A5E994AE1CC5F28400543E5C /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5E994AD1CC5F28400543E5C /* main.mm */; };
 		A5E994B11CC5F2BD00543E5C /* StreakNotifyListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994AF1CC5F2BD00543E5C /* StreakNotifyListController.h */; };
 		A5E994B21CC5F2BD00543E5C /* StreakNotifyListController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B01CC5F2BD00543E5C /* StreakNotifyListController.mm */; };
-		A5E994B31CC5F32B00543E5C /* PSSpecifier.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983351C7EBFB6004BB62B /* PSSpecifier.h */; };
-		A5E994B41CC5F35B00543E5C /* PSViewController.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983371C7EBFB6004BB62B /* PSViewController.h */; };
-		A5E994B51CC5F37C00543E5C /* PSListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A51983311C7EBFB6004BB62B /* PSListController.h */; };
 		A5E994BA1CC5F3A500543E5C /* FriendmojiListController.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B61CC5F3A500543E5C /* FriendmojiListController.h */; };
 		A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B71CC5F3A500543E5C /* FriendmojiListController.m */; };
 		A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */ = {isa = PBXBuildFile; fileRef = A5E994B81CC5F3A500543E5C /* FriendmojiTableDataSource.h */; };
@@ -4829,9 +4826,6 @@
 				A5E994BB1CC5F3A500543E5C /* FriendmojiListController.m in Sources */,
 				A5E994BC1CC5F3A500543E5C /* FriendmojiTableDataSource.h in Sources */,
 				A5E994BD1CC5F3A500543E5C /* FriendmojiTableDataSource.m in Sources */,
-				A5E994B51CC5F37C00543E5C /* PSListController.h in Sources */,
-				A5E994B41CC5F35B00543E5C /* PSViewController.h in Sources */,
-				A5E994B31CC5F32B00543E5C /* PSSpecifier.h in Sources */,
 				A5E994B11CC5F2BD00543E5C /* StreakNotifyListController.h in Sources */,
 				A5E994B21CC5F2BD00543E5C /* StreakNotifyListController.mm in Sources */,
 				A5F50E3F1CC9AF5C0081ECDE /* main.m in Sources */,

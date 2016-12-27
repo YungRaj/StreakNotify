@@ -411,8 +411,7 @@ void SendAutoReplySnapToUser(NSString *username){
 /* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
 /* we need to fetch updates so that the new snap can be found */
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
-
-void HandleRemoteNotification(){
+void FetchUpdates(){
     Manager *manager = [objc_getClass("Manager") shared];
     if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
                                              includeStories:
@@ -423,8 +422,8 @@ void HandleRemoteNotification(){
             ScheduleBulletins();
             
         }
-                                                              includeStories:YES
-                                                     didHappendWhenAppLaunch:YES];
+                                    includeStories:YES
+                           didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
     }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
@@ -437,9 +436,9 @@ void HandleRemoteNotification(){
             // Reset bulletins
             ScheduleBulletins();
         }
-                                                              includeStories:YES
-                                                        includeConversations:YES
-                                                     didHappendWhenAppLaunch:YES];
+                                    includeStories:YES
+                              includeConversations:YES
+                           didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
     }else{
         [manager fetchUpdatesWithCompletionHandler:^{
@@ -451,6 +450,10 @@ void HandleRemoteNotification(){
                               includeConversations:YES
                            didHappendWhenAppLaunch:YES];
     }
+}
+
+void HandleRemoteNotification(){
+    FetchUpdates();
 }
 
 void HandleLocalNotification(NSString *username){
@@ -466,8 +469,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-// #else
-// @implementation SnapchatHooks
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -476,45 +479,6 @@ void HandleLocalNotification(NSString *username){
      */
     
     %orig();
-    
-    Manager *manager = [objc_getClass("Manager") shared];
-    if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
-                                             includeStories:
-                                             didHappendWhenAppLaunch:)]){
-        [manager fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            // Reset bulletins
-            ScheduleBulletins();
-            
-        }
-                                    includeStories:YES
-                           didHappendWhenAppLaunch:YES];
-        // Snapchat 9.40 and less
-        
-    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
-                                                   includeStories:
-                                                   includeConversations:
-                                                   didHappendWhenAppLaunch:)]){
-        
-        [manager fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            // Reset bulletins
-            ScheduleBulletins();
-        }
-                                    includeStories:YES
-                              includeConversations:YES
-                           didHappendWhenAppLaunch:YES];
-        // Snapchat 9.40 and greater
-    }else{
-        [manager fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            ScheduleBulletins();
-        }
-                                      isAllUpdates:YES
-                                    includeStories:YES
-                              includeConversations:YES
-                           didHappendWhenAppLaunch:YES];
-    }
     
     if(!prefs) {
         NSLog(@"StreakNotify:: No preferences found on file, letting user know");
@@ -697,15 +661,32 @@ static NSMutableArray *feedCellLabels = nil;
             }
             
             NSString *username = nil;
-            if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
+            if([[feedCell viewModel] respondsToSelector:@selector(identifier)]){
+                username = [[feedCell viewModel] identifier];
+                /* not sure if this works yet */
+                /* after reversing snapToHandle in the SCFeedChatCellViewModel class, it seems to use the identifier property to get the snapToHandle from the SCChats class */
+            }else if([[feedCell viewModel] respondsToSelector:@selector(snapToHandle)]){
+                SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)[feedCell viewModel];
+                NSString *recipient = [[viewModel snapToHandle] recipient];
+                NSString *sender = [[viewModel snapToHandle] sender];
+                if(recipient){
+                    username = recipient;
+                }else{
+                    username = sender;
+                }
+                /* this is an ugly way to do this, but for now it'll work as I reverse more of the SCFeedChatViewModel/SCFeedItem realm */
+            }else if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
                 SCChatFeedCellViewModel *viewModel = (SCChatFeedCellViewModel*)feedCell.viewModel;
                 username = [viewModel friendUsername];
+                /* deprecated in the new release, still works in some older versions */
             } else if([[feedCell viewModel] respondsToSelector:@selector(username)]){
                 SCChatViewModelForFeed *viewModel = (SCChatViewModelForFeed*)feedCell.viewModel;
                 username = [viewModel username];
+                /* deprecated in the new release, still works in some older versions */
             } else if([[feedCell viewModel] respondsToSelector:@selector(friendUsername)]){
                 SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)feedCell.viewModel;
                 username = [viewModel friendUsername];
+                /* deprecated in the new release, still works in some older versions */
             }
             
             if(username){
@@ -895,8 +876,8 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
-// #else
-//@end
+#else
+@end
 #endif
 
 #ifdef THEOS
