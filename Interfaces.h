@@ -111,7 +111,9 @@ typedef id CDUnknownBlockType;
 - (id)initWithSCChat:(id)arg1;
 @end
 
-@class NSString, SCFeedItem;
+
+
+@class NSString, SCFeedItem, Snap;
 
 @interface SCFeedChatCellViewModel : NSObject
 {
@@ -121,7 +123,7 @@ typedef id CDUnknownBlockType;
 @property(retain, nonatomic) SCFeedItem *feedItem; // @synthesize feedItem=_feedItem;
 - (_Bool)matches:(id)arg1;
 - (_Bool)shouldShowSnapSubstituteSubLabelBriefly;
-- (id)snapToHandle;
+- (Snap*)snapToHandle;
 - (long long)addFriendButtonState;
 - (unsigned long long)snapLeftTime;
 - (_Bool)canReplaySnap;

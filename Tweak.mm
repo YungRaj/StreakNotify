@@ -573,7 +573,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex{
 #endif
 
 #ifdef THEOS
-%hook AppDelegate
+%hook SCAppDelegate
 #endif
 
 -(BOOL)application:(UIApplication*)application
@@ -698,7 +698,21 @@ static NSMutableArray *feedCellLabels = nil;
             }
             
             NSString *username = nil;
-            if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
+            if([[feedCell viewModel] respondsToSelector:@selector(identifier)]){
+                username = [[feedCell viewModel] identifier];
+                /* not sure if this works yet */
+                /* after reversing snapToHandle in the SCFeedChatCellViewModel class, it seems to use the identifier property to get the snapToHandle from the SCChats class */
+            }else if([[feedCell viewModel] respondsToSelector:@selector(snapToHandle)]){
+                SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)[feedCell viewModel];
+                NSString *recipient = [[viewModel snapToHandle] recipient];
+                NSString *sender = [[viewModel snapToHandle] sender];
+                if(recipient){
+                    username = recipient;
+                }else{
+                    username = sender;
+                }
+                /* this is an ugly way to do this, but for now it'll work as I reverse more of the SCFeedChatViewModel/SCFeedItem realm */
+            }else if([[feedCell viewModel] isKindOfClass:objc_getClass("SCChatFeedCellViewModel")]){
                 SCChatFeedCellViewModel *viewModel = (SCChatFeedCellViewModel*)feedCell.viewModel;
                 username = [viewModel friendUsername];
             } else if([[feedCell viewModel] respondsToSelector:@selector(username)]){
@@ -708,6 +722,7 @@ static NSMutableArray *feedCellLabels = nil;
                 SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)feedCell.viewModel;
                 username = [viewModel friendUsername];
             }
+            
             
             if(username){
                 NSLog(@"StreakNotify::%@ username found, showing label if possible",username);
