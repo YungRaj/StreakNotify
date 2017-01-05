@@ -123,8 +123,6 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"streaknotifyd"];
     
     NSLog(@"Writing names and friendmojis to file %@",filePath);
-
-    
     [self.friendNamesAndEmojis writeToFile:filePath atomically:YES];
     
 }

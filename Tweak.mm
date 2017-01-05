@@ -438,20 +438,29 @@ void HandleRemoteNotification(){
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
-                                                              includeStories:YES
+                                                              includeStories:NO
                                                      didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
-    }else{
+    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                                   includeStories:
+                                                   includeConversations:
+                                                   didHappendWhenAppLaunch:)]){
         
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
+        [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
-                                                              includeStories:YES
+                                                              includeStories:NO
                                                         includeConversations:YES
                                                      didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
+    }else{
+        [objc_getClass("Manager") fetchAllUpdatesWithParameters:nil successBlock:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            ResetNotifications();
+        } failureBlock:nil];
+        // Snapchat 9.45.x and greater
     }
 }
 
@@ -483,24 +492,33 @@ void HandleLocalNotification(NSString *username){
     if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
-                                                              includeStories:YES
+                                                              includeStories:NO
                                                      didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
-    }else{
+    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
+                                                   includeStories:
+                                                   includeConversations:
+                                                   didHappendWhenAppLaunch:)]){
         
-        [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: viewDidLoad from MainViewController, fetching updates so that notifications can be updated");
+        [manager fetchUpdatesWithCompletionHandler:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
-                                                              includeStories:YES
-                                                        includeConversations:YES
-                                                     didHappendWhenAppLaunch:YES];
+                                    includeStories:NO
+                              includeConversations:YES
+                           didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
+    }else{
+        [objc_getClass("Manager") fetchAllUpdatesWithParameters:nil successBlock:^{
+            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            ResetNotifications();
+        } failureBlock:nil];
+        // Snapchat 9.45.x and greater
     }
     
     if(!prefs) {
@@ -699,7 +717,7 @@ static NSMutableArray *feedCellLabels = nil;
             
             NSString *username = nil;
             if([[feedCell viewModel] respondsToSelector:@selector(identifier)]){
-                username = [[feedCell viewModel] identifier];
+                username = [(SCFeedChatCellViewModel*)[feedCell viewModel] identifier];
                 /* not sure if this works yet */
                 /* after reversing snapToHandle in the SCFeedChatCellViewModel class, it seems to use the identifier property to get the snapToHandle from the SCChats class */
             }else if([[feedCell viewModel] respondsToSelector:@selector(snapToHandle)]){
@@ -914,10 +932,54 @@ static NSMutableArray *storyCellLabels = nil;
 
 #ifdef THEOS
 %end
+#endif
+
+#ifdef THEOS
+%hook SCSelectRecipientsView
+#endif
+
+-(UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath{
+    UITableViewCell *cell = %orig(tableView,indexPath);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([cell isKindOfClass:objc_getClass("SelectContactCell")]){
+            SelectContactCell *contactCell = (SelectContactCell*)cell;
+            Manager *manager = [objc_getClass("Manager") shared];
+            User *user = [manager user];
+            SCChats *chats = [user chats];
+            
+            Friend *f = [self getFriendAtIndexPath:indexPath];
+            if(f && [f isKindOfClass:objc_getClass("Friend")]){
+                SCChat *chat = [chats chatForUsername:[f name]];
+                Snap *snap = FindEarliestUnrepliedSnapForChat(YES,chat);
+                
+                UILabel *label = contactCell.subNameLabel;
+                if([f snapStreakCount]>2 && snap){
+                    label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
+                    label.hidden = NO;
+                }else if([f snapStreakCount]>2){
+                    Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
+                    label.text = [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
+                    label.hidden = NO;
+                }else{
+                    label.text = @"";
+                    label.hidden = YES;
+                }
+            }
+        }
+    });
+    return cell;
+}
+
+#ifdef THEOS
+%end
 %end
 #else
 @end
 #endif
+
+
 
 #ifdef THEOS
 %ctor
