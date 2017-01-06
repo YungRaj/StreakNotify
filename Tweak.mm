@@ -418,11 +418,9 @@ void FetchUpdates(){
                                              didHappendWhenAppLaunch:)]){
         [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            // Reset bulletins
             ScheduleBulletins();
-            
         }
-                                    includeStories:YES
+                                    includeStories:NO
                            didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and less
         
@@ -433,22 +431,18 @@ void FetchUpdates(){
         
         [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            // Reset bulletins
             ScheduleBulletins();
         }
-                                    includeStories:YES
+                                    includeStories:NO
                               includeConversations:YES
                            didHappendWhenAppLaunch:YES];
         // Snapchat 9.40 and greater
     }else{
-        [manager fetchUpdatesWithCompletionHandler:^{
+        [objc_getClass("Manager") fetchAllUpdatesWithParameters:nil successBlock:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ScheduleBulletins();
-        }
-                                      isAllUpdates:YES
-                                    includeStories:YES
-                              includeConversations:YES
-                           didHappendWhenAppLaunch:YES];
+        } failureBlock:nil];
+        // Snapchat 9.45.x and greater
     }
 }
 
@@ -479,6 +473,8 @@ void HandleLocalNotification(NSString *username){
      */
     
     %orig();
+    
+    FetchUpdates();
     
     if(!prefs) {
         NSLog(@"StreakNotify:: No preferences found on file, letting user know");
@@ -652,7 +648,7 @@ static NSMutableArray *feedCellLabels = nil;
         
         if([cell isKindOfClass:objc_getClass("SCFeedSwipeableTableViewCell")]
            && [cell respondsToSelector:@selector(viewModel)]){
-            SCFeedSwipeableTableViewCell *feedCell = (SCFeedSwipeableTableViewCell*)cell;
+            SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
             
             if(!feedCells){
                 feedCells = [[NSMutableArray alloc] init];
@@ -662,7 +658,7 @@ static NSMutableArray *feedCellLabels = nil;
             
             NSString *username = nil;
             if([[feedCell viewModel] respondsToSelector:@selector(identifier)]){
-                username = [[feedCell viewModel] identifier];
+                username = [(SCFeedChatCellViewModel*)[feedCell viewModel] identifier];
                 /* not sure if this works yet */
                 /* after reversing snapToHandle in the SCFeedChatCellViewModel class, it seems to use the identifier property to get the snapToHandle from the SCChats class */
             }else if([[feedCell viewModel] respondsToSelector:@selector(snapToHandle)]){
@@ -707,7 +703,7 @@ static NSMutableArray *feedCellLabels = nil;
                 
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
-                ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+                ConfigureCell(feedCell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
             } else{
                 NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
                 // todo: let the user know that the timer could not added to the cells
@@ -871,6 +867,48 @@ static NSMutableArray *storyCellLabels = nil;
     storyCells = nil;
     storyCellLabels = nil;
     %orig();
+}
+
+#ifdef THEOS
+%end
+#endif
+
+#ifdef THEOS
+%hook SCSelectRecipientsView
+#endif
+
+-(UITableViewCell*)tableView:(UITableView*)tableView
+       cellForRowAtIndexPath:(NSIndexPath*)indexPath{
+    UITableViewCell *cell = %orig(tableView,indexPath);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([cell isKindOfClass:objc_getClass("SelectContactCell")]){
+            SelectContactCell *contactCell = (SelectContactCell*)cell;
+            Manager *manager = [objc_getClass("Manager") shared];
+            User *user = [manager user];
+            SCChats *chats = [user chats];
+            
+            Friend *f = [self getFriendAtIndexPath:indexPath];
+            if(f && [f isKindOfClass:objc_getClass("Friend")]){
+                SCChat *chat = [chats chatForUsername:[f name]];
+                Snap *snap = FindEarliestUnrepliedSnapForChat(YES,chat);
+                
+                UILabel *label = contactCell.subNameLabel;
+                if([f snapStreakCount]>2 && snap){
+                    label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
+                    label.hidden = NO;
+                }else if([f snapStreakCount]>2){
+                    Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
+                    label.text = [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
+                    label.hidden = NO;
+                }else{
+                    label.text = @"";
+                    label.hidden = YES;
+                }
+            }
+        }
+    });
+    return cell;
 }
 
 #ifdef THEOS

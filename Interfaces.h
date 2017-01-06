@@ -3,7 +3,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
-#import <BulletinBoard/BBServer.h>
 
 
 // I'm sorry this is a spam file, haven't gone through each definition of each class to figure out what methods are used and which ones are not... but these are just classes dumped by class-dump so that I can get this thing to compile
@@ -112,7 +111,9 @@ typedef id CDUnknownBlockType;
 - (id)initWithSCChat:(id)arg1;
 @end
 
-@class NSString, SCFeedItem;
+
+
+@class NSString, SCFeedItem, Snap;
 
 @interface SCFeedChatCellViewModel : NSObject
 {
@@ -122,7 +123,7 @@ typedef id CDUnknownBlockType;
 @property(retain, nonatomic) SCFeedItem *feedItem; // @synthesize feedItem=_feedItem;
 - (_Bool)matches:(id)arg1;
 - (_Bool)shouldShowSnapSubstituteSubLabelBriefly;
-- (id)snapToHandle;
+- (Snap*)snapToHandle;
 - (long long)addFriendButtonState;
 - (unsigned long long)snapLeftTime;
 - (_Bool)canReplaySnap;
@@ -1352,11 +1353,12 @@ typedef id CDUnknownBlockType;
 - (CDUnknownBlockType)fetchUpdatesSuccessBlock;
 - (void)fetchStoriesWithCompletionHandler:(CDUnknownBlockType)arg1;
 - (void)fetchStories;
+- (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 isAllUpdates:(_Bool)arg2 includeStories:(_Bool)arg3 includeConversations:(_Bool)arg4 didHappendWhenAppLaunch:(_Bool)arg5;
 - (void)fetchUpdatesWithCompletionHandler:(id)arg1 includeStories:(_Bool)arg2 didHappendWhenAppLaunch:(_Bool)arg3;
 - (void)_fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4 includeFriends:(_Bool)arg5;
 - (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 includeStories:(_Bool)arg2 includeConversations:(_Bool)arg3 didHappendWhenAppLaunch:(_Bool)arg4;
 - (void)fetchUpdatesSuccessWithResponse:(id)arg1 withStories:(_Bool)arg2 didPullToRefresh:(_Bool)arg3 didHappenOnAppLaunch:(_Bool)arg4 onCompletion:(CDUnknownBlockType)arg5;
-- (void)fetchUpdatesWithCompletionHandler:(CDUnknownBlockType)arg1 isAllUpdates:(_Bool)arg2 includeStories:(_Bool)arg3 includeConversations:(_Bool)arg4 didHappendWhenAppLaunch:(_Bool)arg5;
+- (void)fetchUpdatesFromLaunchIncludeStories:(_Bool)arg1 includeConversations:(_Bool)arg2;
 - (void)fetchUpdates;
 - (void)_fetchConversationsWithoutFriends:(CDUnknownBlockType)arg1;
 - (void)fetchConversations:(CDUnknownBlockType)arg1;
@@ -2183,80 +2185,6 @@ typedef id CDUnknownBlockType;
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
-@class NSString, NSTimer, SCAddFriendButtonV2, SCAnimatingReplaySnapView, SCFriendmojiView, SCLoadingIndicatorView, SCReplyButton, UIImageView, UILabel;
-
-@interface SCFeedComponentView : UIView
-{
-    SCLoadingIndicatorView *_activityIndicator;
-    UIImageView *_feedIconView;
-    UILabel *_snapCountDownLabel;
-    SCAnimatingReplaySnapView *_animatingReplaySnapView;
-    UILabel *_mainLabel;
-    UILabel *_subLabel;
-    _Bool _isAnimatingSubLabel;
-    UIView *_bottomBorder;
-    SCFriendmojiView *_friendMojiView;
-    SCReplyButton *_replyButton;
-    SCAddFriendButtonV2 *_addFriendButton;
-    UILabel *_groupMojiLabel;
-    _Bool _highlightEnabled;
-    NSTimer *_snapTimer;
-    id _viewModel;
-    id  _delegate;
-    UIView *_replyButtonParentView;
-}
-
-- (void)_refreshGroupSnapCountdownLabel;
-- (void)_refreshSnapCountdownLabel;
-- (void)_setSnapCountdownLabelWithTimeLeft:(unsigned long long)arg1;
-- (void)_startSnapTimerIfNecessary;
-- (id)activityIndicator;
-- (void)alternateReplyButtonSubLabelWithTapToChatOn:(_Bool)arg1;
-- (void)animateSnapReplayIfNecessary;
-- (void)animateSubLabelWithAnimations:(CDUnknownBlockType)arg1 completion:(CDUnknownBlockType)arg2;
-- (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
-@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
-- (id)feedIconView;
-- (void)handlePressOnReplyButton;
-- (id)initWithFrame:(struct CGRect)arg1;
-- (_Bool)isAddFriendButtonVisible;
-- (_Bool)isFriendMojiViewVisible;
-- (_Bool)isGroupMojiLableVisible;
-- (_Bool)isReplyButtonVisible;
-- (void)prepareForReuse;
-- (void)removeSubstituteLabelAnimations;
-- (id)replyButton;
-@property(retain, nonatomic) UIView *replyButtonParentView; // @synthesize replyButtonParentView=_replyButtonParentView;
-- (void)resetBackgroundColorAnimated:(_Bool)arg1;
-- (void)resizeMainLabel;
-- (void)resizeSubLabel;
-- (void)setBackgroundAlpha:(double)arg1;
-- (void)setBackgroundColor:(id)arg1;
-- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
-- (void)setLabel:(id)arg1 width:(double)arg2;
-- (void)setTouchedBackgroundColor;
-- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
-@property(retain, nonatomic) id viewModel; // @synthesize viewModel=_viewModel;
-- (void)showSubstituteSubLabelBriefly;
-- (id)snapCountDownLabel;
-- (void)toggleBottomBorderVisibility:(_Bool)arg1;
-- (void)updateAddFriendButton;
-- (void)updateFriendMojiView;
-- (void)updateGroupIconView;
-- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
-- (void)updateSnapCountdownLabel;
-- (void)updateSubLabel;
-
-// Remaining properties
-@property(readonly, copy) NSString *debugDescription;
-@property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
-@property(readonly) Class superclass;
-
-@end
-
-
-
 @protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
@@ -2265,8 +2193,8 @@ typedef id CDUnknownBlockType;
 
 @interface SCFeedTableViewCell : UITableViewCell
 {
-    id _delegate;
-    SCChatViewModelForFeed *_viewModel;
+    id <SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate> _delegate;
+    SCChatViewModelForFeed <SCFeedCellViewModel> *_viewModel;
 }
 
 @property(retain, nonatomic) SCChatViewModelForFeed <SCFeedCellViewModel> *viewModel; // @synthesize viewModel=_viewModel;
@@ -2283,67 +2211,6 @@ typedef id CDUnknownBlockType;
 - (id)identifier;
 
 @end
-
-@class NSString, SCFeedComponentView, UIImageView, UIScrollView, UIView;
-
-@interface SCFeedSwipeableTableViewCell : SCFeedTableViewCell
-{
-    UIView *_swipeBackgroundView;
-    UIImageView *_swipeBackgroundIconView;
-    _Bool _isPulling;
-    _Bool _isScrolling;
-    _Bool _deceleratingToZero;
-    UIScrollView *_scrollView;
-    SCFeedComponentView *_feedComponentView;
-    double _decelerationDistanceRatio;
-}
-
-+ (_Bool)shouldEnableChatButtonReply;
-+ (id)swipeBackgroundViewColor;
-- (void)_initV10Views;
-- (void)_initViews;
-- (void)bounce;
-- (void)bounceRepeatedlyAfterDelays:(id)arg1;
-- (void)bounceRepeatedlyIfNecessary;
-- (void)bounceWithCompletion:(CDUnknownBlockType)arg1;
-- (void)bounceWithMagnitude:(long long)arg1 completion:(CDUnknownBlockType)arg2;
-- (double)bounceXOffsetWithMagnitude:(long long)arg1;
-@property(nonatomic) _Bool deceleratingToZero; // @synthesize deceleratingToZero=_deceleratingToZero;
-@property(nonatomic) double decelerationDistanceRatio; // @synthesize decelerationDistanceRatio=_decelerationDistanceRatio;
-@property(retain, nonatomic) SCFeedComponentView *feedComponentView; // @synthesize feedComponentView=_feedComponentView;
-- (void)handlePressOnReplyButton;
-- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
-@property(nonatomic) _Bool isPulling; // @synthesize isPulling=_isPulling;
-@property(nonatomic) _Bool isScrolling; // @synthesize isScrolling=_isScrolling;
-- (void)prepareForReuse;
-- (void)prepareNextVC:(id)arg1;
-- (void)resetNextVC:(id)arg1;
-@property(retain, nonatomic) UIScrollView *scrollView; // @synthesize scrollView=_scrollView;
-- (void)scrollViewDidEndDecelerating:(id)arg1;
-- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
-- (void)scrollViewDidScroll:(id)arg1;
-- (void)scrollViewWillBeginDragging:(id)arg1;
-- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
-- (void)scrollingEnded;
-- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
-- (void)setViewModel:(id)arg1;
-- (void)slideOverWithOffset:(double)arg1;
-- (void)snapTimerDidExpire;
-- (id)swipeBackgroundIconView;
-- (id)swipeableViewModel;
-- (void)toggleBottomBorderVisibility:(_Bool)arg1;
-- (void)updateFriendMojiView;
-- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
-
-// Remaining properties
-@property(readonly, copy) NSString *debugDescription;
-@property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
-@property(readonly) Class superclass;
-
-@end
-
-
 
 
 @class SCFriendProfileCellView, UIView;
@@ -2378,7 +2245,7 @@ typedef id CDUnknownBlockType;
     SCFriendProfileCellTextViewV2 *_textViewV2;
     SCFriendmojiView *_friendMojiView;
     SCAddFriendButtonV2 *_button;
-    id _delegate;
+    id <SCFriendProfileCellViewDelegate> _delegate;
     Friend *_friend;
 }
 
@@ -2703,6 +2570,339 @@ typedef id CDUnknownBlockType;
 
 @end
 
+@class MASConstraint, UIImageView, UILabel, UIView;
+
+@interface SelectContactCell : UITableViewCell
+{
+    UIImageView *_circle;
+    MASConstraint *_circleRightConstraint;
+    unsigned long long _circleType;
+    UILabel *_nameLabel;
+    UILabel *_subNameLabel;
+    UIView *_friendMojiContainerView;
+}
+
+@property(retain, nonatomic) UIView *friendMojiContainerView; // @synthesize friendMojiContainerView=_friendMojiContainerView;
+@property(retain, nonatomic) UILabel *subNameLabel; // @synthesize subNameLabel=_subNameLabel;
+@property(retain, nonatomic) UILabel *nameLabel; // @synthesize nameLabel=_nameLabel;
+@property(nonatomic) unsigned long long circleType; // @synthesize circleType=_circleType;
+@property(retain, nonatomic) MASConstraint *circleRightConstraint; // @synthesize circleRightConstraint=_circleRightConstraint;
+@property(retain, nonatomic) UIImageView *circle; // @synthesize circle=_circle;
+- (void)hideCircleViewAndUpdateEmojiView;
+- (id)detailTextLabel;
+- (id)textLabel;
+- (void)addFriendMojiView:(id)arg1;
+- (void)prepareForReuse;
+- (void)setUnselectedBackground;
+- (void)setSelectedBackground;
+- (void)toggleRightOffsetIsSearching:(_Bool)arg1 isFastStoryPost:(_Bool)arg2;
+- (void)setFontSelected:(_Bool)arg1;
+- (void)setCircleSelected:(_Bool)arg1;
+- (void)setBackgroundSelected:(_Bool)arg1;
+- (void)setCellSelected:(_Bool)arg1 shouldSetFondSelected:(_Bool)arg2;
+- (void)setCellSelected:(_Bool)arg1;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+
+@end
 
 
+@class FriendsTableIndex, NSArray, NSMutableArray, NSString, SCFriendFilter, SCSearchBar, UIImage, UILabel, UITableView, UIView, GenericSettingsViewController;
 
+@interface SelectFriendsViewController : UITableViewController
+{
+    _Bool _searchBarNeedsTopBottomBorders;
+    _Bool _searching;
+    UIView *_containerView;
+    id _dataSource;
+    NSArray *_filteredFriends;
+    SCSearchBar *_searchBar;
+    UIImage *_searchBarXButtonImage;
+    NSArray *_sectionFriendKeys;
+    NSArray *_sectionFriends;
+    NSMutableArray *_selectedFriends;
+    UIView *_tableHeader;
+    UILabel *_tableHeaderLabel;
+    FriendsTableIndex *_tableIndex;
+    UITableView *_tableView;
+    SCFriendFilter *_friendFilter;
+}
+
+@property(retain, nonatomic) SCFriendFilter *friendFilter; // @synthesize friendFilter=_friendFilter;
+@property(retain, nonatomic) UITableView *tableView; // @synthesize tableView=_tableView;
+@property(retain, nonatomic) FriendsTableIndex *tableIndex; // @synthesize tableIndex=_tableIndex;
+@property(retain, nonatomic) UILabel *tableHeaderLabel; // @synthesize tableHeaderLabel=_tableHeaderLabel;
+@property(retain, nonatomic) UIView *tableHeader; // @synthesize tableHeader=_tableHeader;
+@property(retain, nonatomic) NSMutableArray *selectedFriends; // @synthesize selectedFriends=_selectedFriends;
+@property(retain, nonatomic) NSArray *sectionFriends; // @synthesize sectionFriends=_sectionFriends;
+@property(retain, nonatomic) NSArray *sectionFriendKeys; // @synthesize sectionFriendKeys=_sectionFriendKeys;
+@property(nonatomic) _Bool searching; // @synthesize searching=_searching;
+@property(retain, nonatomic) UIImage *searchBarXButtonImage; // @synthesize searchBarXButtonImage=_searchBarXButtonImage;
+@property(nonatomic) _Bool searchBarNeedsTopBottomBorders; // @synthesize searchBarNeedsTopBottomBorders=_searchBarNeedsTopBottomBorders;
+@property(retain, nonatomic) SCSearchBar *searchBar; // @synthesize searchBar=_searchBar;
+@property(retain, nonatomic) NSArray *filteredFriends; // @synthesize filteredFriends=_filteredFriends;
+@property(nonatomic) __weak id dataSource; // @synthesize dataSource=_dataSource;
+@property(retain, nonatomic) UIView *containerView; // @synthesize containerView=_containerView;
+- (void)leftSwipeCancelled;
+- (void)leftSwipePrepare;
+- (void)scrollToIndex:(BOOL)arg1;
+- (void)filterSearch:(id)arg1;
+- (void)resetFriendFilter;
+- (void)filterResults:(id)arg1;
+- (void)searchBarKeyboardWillHide:(id)arg1;
+- (void)searchBarDidBeginSearch:(id)arg1;
+- (void)searchBar:(id)arg1 textDidChange:(id)arg2;
+- (void)searchBar:(id)arg1 didSearch:(id)arg2;
+- (void)searchBarDidEndEditing:(id)arg1;
+- (void)searchBarDidBeginEditing:(id)arg1;
+- (unsigned long long)cellCircleType;
+- (void)removeFriendFromSelectedFriends:(id)arg1;
+- (void)addFriendToSelectedFriends:(id)arg1;
+- (void)friendsDidChange;
+- (void)reloadFriends;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (Friend*)getFriendAtIndexPath:(id)arg1;
+- (void)didSelectCell:(id)arg1;
+- (void)tableView:(id)arg1 didSelectRowAtIndexPath:(id)arg2;
+- (id)tableView:(id)arg1 viewForHeaderInSection:(long long)arg2;
+- (double)tableView:(id)arg1 heightForHeaderInSection:(long long)arg2;
+- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forRowAtIndexPath:(id)arg3;
+- (id)tableView:(id)arg1 cellForRowAtIndexPath:(id)arg2;
+- (long long)tableView:(id)arg1 numberOfRowsInSection:(long long)arg2;
+- (unsigned long long)numberOfSectionsInFullTable;
+- (long long)numberOfSectionsInTableView:(id)arg1;
+- (void)viewWillAppear:(_Bool)arg1;
+- (void)dealloc;
+- (void)viewDidLoad;
+- (void)loadView;
+
+@end
+
+@class AddFriendsDelegateObject, Friend, FriendsTableIndex, NSArray, NSDictionary, NSMutableArray, NSMutableDictionary, NSMutableSet, NSString, SCFriendFilter, SCGroupFilter, SCMiniProfileController, SCSearchBar, SCSelectRecipientsConfiguration, UILabel, UITableView, UIView, UIViewController, SCSelectRecipientsBaseView;
+
+@interface SCSelectRecipientsView : UIView
+{
+    NSArray *_filteredFriends;
+    NSArray *_filteredMischiefs;
+    NSArray *_filteredContacts;
+    NSArray *_friendKeys;
+    NSArray *_friends;
+    NSArray *_friendsInOneArray;
+    NSArray *_bestFriends;
+    NSArray *_recents;
+    NSArray *_contacts;
+    NSArray *_needsLoveFriends;
+    NSArray *_suggestedFriendsAsFriends;
+    NSArray *_suggestedFriends;
+    NSMutableArray *_mutableRecipients;
+    NSMutableArray *_mutableInvitedRecipients;
+    NSMutableArray *_mutableJustAdded;
+    NSMutableArray *_mutableSharedStoriesSelected;
+    NSDictionary *_suggestedReasons;
+    _Bool _searching;
+    _Bool _showingSearchBar;
+    _Bool _isNewSendToEnabled;
+    long long _recentsShown;
+    long long _lastRecentShownNum;
+    long long _contactsShown;
+    long long _mischiefsShown;
+    long long _addDiceEmojiToNeedsLove;
+    long long _unidirectionFriendsCount;
+    NSMutableArray *_mischiefs;
+    NSMutableArray *_mutableMischiefsSelected;
+    SCSelectRecipientsConfiguration *_configuration;
+    NSMutableArray *_friendUsernameToAutocheck;
+    SCMiniProfileController *_miniProfileController;
+    id _mischiefMiniProfileController;
+    id _delegate;
+    UIViewController *_viewController;
+    NSMutableSet *_selectedFriends;
+    _Bool _shouldShowQuickAdd;
+    _Bool _shouldShowQuickAddAboveIndex;
+    long long _quickAddShowItemCount;
+    _Bool _shouldShowMemoriesCell;
+    NSMutableSet *_contactsUserHasSeen;
+    UIView *_storyHeader;
+    UIView *_friendHeader;
+    UIView *_recentHeader;
+    _Bool _addToMyStory;
+    _Bool _addToMyGallery;
+    _Bool _showsAddDuplicatePromptForMyStory;
+    _Bool _disallowAddFriend;
+    _Bool _fastStoryPost;
+    _Bool _searchable;
+    FriendsTableIndex *_tableIndex;
+    UITableView *_tableView;
+    Friend *_replyFriend;
+    NSArray *_sharedStories;
+    NSArray *_officialStories;
+    AddFriendsDelegateObject *_addFriendsDelegate;
+    id _groupRecipientsDelegate;
+    id _singleRecipientDelegate;
+    unsigned long long _groupCreationType;
+    SCFriendFilter *_friendFilter;
+    SCGroupFilter *_mischiefFilter;
+    SCFriendFilter *_contactFilter;
+    SCSearchBar *_searchBar;
+    UILabel *_noSearchResultsLabel;
+    NSMutableArray *_mutableOfficialStoriesSelected;
+    UILabel *_createMischiefLabel;
+    NSMutableDictionary *_existedSnapchatters;
+    Friend *_searchedFriend;
+}
+
++ (long long)context;
++ (id)profiledSelectorNames;
+@property(retain, nonatomic) Friend *searchedFriend; // @synthesize searchedFriend=_searchedFriend;
+@property(retain, nonatomic) NSMutableDictionary *existedSnapchatters; // @synthesize existedSnapchatters=_existedSnapchatters;
+@property(retain, nonatomic) UILabel *createMischiefLabel; // @synthesize createMischiefLabel=_createMischiefLabel;
+@property(retain, nonatomic) NSMutableArray *mutableOfficialStoriesSelected; // @synthesize mutableOfficialStoriesSelected=_mutableOfficialStoriesSelected;
+@property(retain, nonatomic) UILabel *noSearchResultsLabel; // @synthesize noSearchResultsLabel=_noSearchResultsLabel;
+@property(retain, nonatomic) SCSearchBar *searchBar; // @synthesize searchBar=_searchBar;
+@property(retain, nonatomic) SCFriendFilter *contactFilter; // @synthesize contactFilter=_contactFilter;
+@property(retain, nonatomic) SCGroupFilter *mischiefFilter; // @synthesize mischiefFilter=_mischiefFilter;
+@property(retain, nonatomic) SCFriendFilter *friendFilter; // @synthesize friendFilter=_friendFilter;
+@property(nonatomic) unsigned long long groupCreationType; // @synthesize groupCreationType=_groupCreationType;
+@property(nonatomic) __weak id singleRecipientDelegate; // @synthesize singleRecipientDelegate=_singleRecipientDelegate;
+@property(nonatomic) __weak id groupRecipientsDelegate; // @synthesize groupRecipientsDelegate=_groupRecipientsDelegate;
+@property(retain, nonatomic) AddFriendsDelegateObject *addFriendsDelegate; // @synthesize addFriendsDelegate=_addFriendsDelegate;
+@property(copy, nonatomic) NSArray *officialStories; // @synthesize officialStories=_officialStories;
+@property(readonly, copy, nonatomic) NSArray *sharedStories; // @synthesize sharedStories=_sharedStories;
+@property(retain, nonatomic) Friend *replyFriend; // @synthesize replyFriend=_replyFriend;
+@property(readonly, nonatomic) UITableView *tableView; // @synthesize tableView=_tableView;
+@property(readonly, nonatomic) FriendsTableIndex *tableIndex; // @synthesize tableIndex=_tableIndex;
+@property(nonatomic) _Bool searchable; // @synthesize searchable=_searchable;
+@property(nonatomic) _Bool fastStoryPost; // @synthesize fastStoryPost=_fastStoryPost;
+@property(nonatomic) _Bool disallowAddFriend; // @synthesize disallowAddFriend=_disallowAddFriend;
+@property(nonatomic) _Bool showsAddDuplicatePromptForMyStory; // @synthesize showsAddDuplicatePromptForMyStory=_showsAddDuplicatePromptForMyStory;
+@property(nonatomic) _Bool addToMyGallery; // @synthesize addToMyGallery=_addToMyGallery;
+@property(nonatomic) _Bool addToMyStory; // @synthesize addToMyStory=_addToMyStory;
+- (void)didCreateGroupOnServerWithId:(id)arg1 initialSojuMischief:(id)arg2;
+- (void)didChangeGroups;
+- (void)didJoinGroupWithId:(id)arg1;
+- (void)didLeaveGroupWithId:(id)arg1;
+- (void)didBeginLeavingGroupWithId:(id)arg1;
+- (void)didChangeInfoForGroupWithId:(id)arg1;
+- (void)didChangeInfoForGroups;
+- (unsigned long long)recentTypeForIndexPath:(id)arg1;
+- (double)maxWidthForSelectContactCell;
+- (id)mischiefsPendingSelected;
+- (void)reloadTableViewWithPendingMischiefCreatedForGroupId:(id)arg1;
+- (_Bool)checkAndReloadMischiefIfMischiefExistsForRecipients:(id)arg1;
+- (void)clearSelected;
+- (void)_removeSelectedMischiefIfNeededForGroupId:(id)arg1;
+- (void)resetSelectedMischiefForGroupId:(id)arg1;
+- (id)friendsForGroup:(id)arg1;
+- (void)_updateHeaderMask:(id)arg1 scrollView:(id)arg2 section:(unsigned long long)arg3;
+- (_Bool)_shouldShowMemories;
+- (_Bool)shouldShowRecentSubLabel;
+- (_Bool)isRecentShown;
+- (_Bool)shouldShowFriendsSubLabel;
+- (_Bool)shouldShowStoriesHeaderSubLabel;
+- (_Bool)shouldShowIndexedFriendsHeader;
+- (_Bool)shouldShowRecent;
+- (_Bool)shouldShowLiveStory;
+- (id)excludedProfiledSelectorNames;
+- (id)requestsContext;
+- (_Bool)isNewOrHighRiskUser;
+- (id)suggestedReasons:(id)arg1;
+- (id)suggestedFriendsAsFriends:(id)arg1;
+- (void)reloadSuggestedFriends;
+- (long long)numContactsUserHaveSeen;
+- (void)_presentMischiefMiniProfile:(id)arg1;
+- (void)_presentMiniProfile:(id)arg1;
+- (void)_longPress:(id)arg1;
+- (void)_initGesture;
+- (_Bool)inMiniProfile;
+- (void)showSearchingFor:(id)arg1;
+- (void)showKeyboard:(_Bool)arg1;
+- (void)updateActionCounters:(id)arg1;
+- (void)scrollToIndex:(BOOL)arg1;
+- (id)pendingFriendsForMischief;
+- (id)mischiefsSelected;
+- (id)justAdded;
+- (id)invitedRecipients;
+- (id)recipients;
+- (_Bool)hasSelectedRecipients;
+- (void)addedFriends:(id)arg1 removedFriends:(id)arg2 invitedFriends:(id)arg3;
+- (void)searchBarKeyboardWillHide:(id)arg1;
+- (void)searchBarDidBeginSearch:(id)arg1;
+- (void)_checkExistenceOfUsername:(id)arg1;
+- (void)searchBar:(id)arg1 textDidChange:(id)arg2;
+- (void)searchBar:(id)arg1 didSearch:(id)arg2;
+- (id)getPageViewName;
+- (void)updateNoSearchResultsLabel;
+- (void)filterSearch:(id)arg1;
+- (void)resetContactFilter;
+- (void)resetMischiefFilter;
+- (void)resetFriendFilter;
+- (void)filterResults:(id)arg1;
+- (void)scrollViewDidEndScrolling:(id)arg1;
+- (void)scrollViewDidEndDecelerating:(id)arg1;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)didSelectAddFriendByNameCell:(id)arg1;
+- (void)populateCellDisplayTextForMischief:(id)arg1 cell:(id)arg2;
+- (void)populateCellDisplayTextForFriend:(id)arg1 selectContactCell:(id)arg2;
+- (id)emptyMischiefsCell;
+- (id)viewMoreCell:(id)arg1;
+- (id)viewMoreMischiefsCell;
+- (id)viewMoreContactsCell;
+- (id)viewMoreRecentsCell;
+- (unsigned long long)sectionTypeOfSection:(unsigned long long)arg1;
+- (id)searchingSectionTypes;
+- (id)sectionTypes;
+- (long long)mischiefsSectionIndex;
+- (unsigned long long)quickAddSectionIndex;
+- (unsigned long long)needsLoveSectionIndex;
+- (unsigned long long)friendsSectionStartIndex;
+- (unsigned long long)storiesSectionIndex;
+- (id)getMischiefAtIndexPath:(id)arg1;
+- (Friend*)getFriendAtIndexPath:(id)arg1;
+- (void)toggleMischiefSelected:(id)arg1;
+- (void)addMischief:(id)arg1;
+- (void)removeFriendFromGroupSend:(id)arg1;
+- (void)removeRecipient:(id)arg1;
+- (void)addFriendToGroupSend:(id)arg1;
+- (void)addRecipient:(id)arg1;
+- (void)_displayIntroSendForStory:(id)arg1 completion:(CDUnknownBlockType)arg2;
+- (void)_displayIntroSendWithTitle:(id)arg1 message:(id)arg2 completion:(CDUnknownBlockType)arg3;
+- (_Bool)_needsIntroSendForStory:(id)arg1;
+- (void)didSelectPostSharedStoryCellWithSharedStory:(id)arg1;
+- (void)didSelectPostOfficialStory:(id)arg1;
+- (void)toggleSharedStory:(id)arg1;
+- (void)didSelectPostMyStoryCell;
+- (void)didSelectPostStoryCellAtIndexPath:(id)arg1;
+- (void)didSelectCellAtIndexPath:(id)arg1;
+- (void)tableView:(id)arg1 didSelectRowAtIndexPath:(id)arg2;
+- (double)tableView:(id)arg1 heightForRowAtIndexPath:(id)arg2;
+- (long long)indexOfSharedStoryAtIndexPath:(id)arg1;
+- (id)officialStoryAtIndexPath:(id)arg1;
+- (unsigned long long)storyRowTypeOfRowAtIndexPath:(id)arg1;
+- (id)getHeaderSubLabelText:(long long)arg1;
+- (void)_addActionLabel:(id)arg1 toHeader:(id)arg2 withText:(id)arg3 selector:(SEL)arg4;
+- (id)tableView:(id)arg1 viewForHeaderInSection:(long long)arg2;
+- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forRowAtIndexPath:(id)arg3;
+- (double)tableView:(id)arg1 heightForHeaderInSection:(long long)arg2;
+- (id)tableView:(id)arg1 cellForRowAtIndexPath:(id)arg2;
+- (long long)tableView:(id)arg1 numberOfRowsInSection:(long long)arg2;
+- (long long)numberOfSectionsInTableView:(id)arg1;
+- (void)didTapAddMischiefHeader;
+- (void)didTapNeedsLoveHeader;
+- (id)rollNeedsLoveFromSortedFriends:(id)arg1 excludingBestFriends:(id)arg2 andRecents:(id)arg3;
+- (void)reloadContacts;
+- (void)contactsDidChange;
+- (void)_reloadRecents;
+- (void)reloadMischiefs;
+- (void)reloadFriends;
+- (void)friendsDidChange:(id)arg1;
+- (void)updateSharedStories;
+- (void)_setAddToMyGallery:(_Bool)arg1 reloadsCell:(_Bool)arg2 notifiesDelegate:(_Bool)arg3;
+@property(nonatomic) _Bool bounces;
+- (id)officialStoriesSelected;
+- (id)sharedStoriesSelected;
+- (void)dealloc;
+- (id)initWithFrame:(struct CGRect)arg1 configuration:(id)arg2 miniProfileDelegate:(id)arg3 viewController:(id)arg4;
+- (id)initWithFrame:(struct CGRect)arg1 configuration:(id)arg2;
+
+@end
