@@ -24,6 +24,10 @@
                                                  selector:@selector(loadFriendmojiListFailed:)
                                                      name:@"loadFriendmojiListFailed"
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self
+                                                selector:@selector(applicationDidResignActive:)
+                                                    name:UIApplicationWillResignActiveNotification
+                                                  object:nil];
     }
     return self;
 }
@@ -43,6 +47,11 @@
     [self.view addSubview:self.tableView];
     
     [self.tableView reloadData];
+}
+
+-(CGSize)contentSize
+{
+    return [self.tableView frame].size;
 }
 
 -(void)loadFriendmojiListFailed:(NSNotification*)notification{
@@ -69,9 +78,9 @@
     }
 }
 
--(CGSize)contentSize
-{
-    return [self.tableView frame].size;
+-(void)applicationWillResignActive:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"friendmojiPreferencesWillExit"
+                                                        object:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated{

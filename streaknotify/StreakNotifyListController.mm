@@ -31,6 +31,14 @@
 
 }
 
+-(void)terminateSnapchat{
+    pid_t pid;
+    int status;
+    const char *argv[] = {"killall","Snapchat", NULL};
+    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+    waitpid(pid, &status, WEXITED);
+}
+
  -(void)choosePhotoForAutoReplySnapstreak{
      NSLog(@"streaknotify:: prompting user to select auto reply snapstreak image");
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
