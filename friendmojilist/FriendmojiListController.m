@@ -20,8 +20,10 @@
         CGRect frame;
         frame.origin = CGPointZero;
         frame.size = size;
-        
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(loadFriendmojiListFailed:)
+                                                     name:@"loadFriendmojiListFailed"
+                                                   object:nil];
     }
     return self;
 }
@@ -41,6 +43,30 @@
     [self.view addSubview:self.tableView];
     
     [self.tableView reloadData];
+}
+
+-(void)loadFriendmojiListFailed:(NSNotification*)notification{
+    if([UIAlertController class]){
+        UIAlertController *controller =
+        [UIAlertController alertControllerWithTitle:@"StreakNotify"
+                                            message:@"Friendmojis were not saved to disk at /var/root/Documents? Or syscall failed"
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *cancel =
+        [UIAlertAction actionWithTitle:@"Cancel"
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction* action){
+                                   [self.navigationController popToRootViewControllerAnimated:YES];
+                               }];
+        UIAlertAction *ok =
+        [UIAlertAction actionWithTitle:@"Ok"
+                                 style:UIAlertActionStyleCancel
+                               handler:^(UIAlertAction* action){
+                                   
+                               }];
+        [controller addAction:cancel];
+        [controller addAction:ok];
+        [self presentViewController:controller animated:NO completion:nil];
+    }
 }
 
 -(CGSize)contentSize

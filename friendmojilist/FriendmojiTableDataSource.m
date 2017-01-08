@@ -38,20 +38,19 @@
     if (self) {
         self.settings = [NSMutableDictionary dictionaryWithContentsOfFile:@"var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         
-    
-        
-        /* if the daemon loaded right during a springboard launch, then it's impossible to not have the file saved to disk */
+        /* if the daemon loaded right during a springboard launch, then it's theoreotically impossible to not have the file saved to disk */
         
         NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
         
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
         if(!friendNamesAndEmojis){
             NSLog(@"friendmojilist:: Fatal - the dictionary that the daemon should save doesn't exist");
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1.5];
-            notification.alertBody = @"friendmojilist error: streaknotifyd hasn't sent us friendmojis from Snapchat (this is not a crash).... Exiting";
-            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-            exit(0);
+            // instead of exiting, let the user know that the file is not found or the system call to access the file failed
+            // people think that his is a crash, and it's not... issa bug
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadFriendmojiListFailed"
+                                                                object:nil];
+            
+
         }
         NSDictionary *friendsWithStreaks = friendNamesAndEmojis[@"friendsWithStreaks"];
         NSDictionary *friendsWithoutStreaks = friendNamesAndEmojis[@"friendsWithoutStreaks"];
@@ -106,10 +105,10 @@
         
         /* add the data source as an observer to find out when the friendmojilistcontroller will exit so that we can save the dictionary to file */
         [[NSNotificationCenter defaultCenter]
-                        addObserver:self
-                           selector:@selector(friendmojiPreferencesWillExit:)
-                               name:@"friendmojiPreferencesWillExit"
-                            object:nil];
+         addObserver:self
+         selector:@selector(friendmojiPreferencesWillExit:)
+         name:@"friendmojiPreferencesWillExit"
+         object:nil];
     }
     return self;
 }

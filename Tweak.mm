@@ -151,13 +151,13 @@ static NSDictionary* GetFriendmojis(){
 /* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
 /* triggered when the application is open, coming from the background, or when the friends values change */
 
-static void SendRequestToDaemon(){
-    NSLog(@"StreakNotify::Sending request to Daemon");
+static void SendFriendmojisToDaemon(){
+    NSLog(@"StreakNotify::Sending friendmojis to Daemon");
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
     rocketbootstrap_distributedmessagingcenter_apply(c);
-    [c sendMessageName:@"tweak-daemon"
+    [c sendMessageName:@"friendmojis"
               userInfo:GetFriendmojis()];
 }
 
@@ -223,7 +223,7 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     
     if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
-        /*this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
+        /* this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
          in the new chat 2.0 update the new properties introduced into the public API for the SOJUFriend and SOJUFriendBuilder class allow us to know when the server will end the streak
          if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
          this API isn't available (or public) so for previous versions of Snapchat this would not work
@@ -429,70 +429,12 @@ void SendAutoReplySnapToUser(NSString *username){
 /* we need to fetch updates so that the new snap can be found */
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 
-void HandleRemoteNotification(){
+void FetchUpdates(){
     Manager *manager = [objc_getClass("Manager") shared];
     if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            ResetNotifications();
-        }
-                                                              includeStories:NO
-                                                     didHappendWhenAppLaunch:YES];
-        // Snapchat 9.40 and less
-        
-    }else if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
-                                                   includeStories:
-                                                   includeConversations:
-                                                   didHappendWhenAppLaunch:)]){
-        
-        [manager fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            ResetNotifications();
-        }
-                                                              includeStories:NO
-                                                        includeConversations:YES
-                                                     didHappendWhenAppLaunch:YES];
-        // Snapchat 9.40 and greater
-    }else{
-        [objc_getClass("Manager") fetchAllUpdatesWithParameters:nil successBlock:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
-            ResetNotifications();
-        } failureBlock:nil];
-        // Snapchat 9.45.x and greater
-    }
-}
-
-void HandleLocalNotification(NSString *username){
-    NSLog(@"StreakNotify:: Handling local notification, sending auto reply snap to %@",username);
-    /* handle local notification and send auto reply message for a streak */
-    /* let's say that someone hasn't enabled custom friends and receives a notification, that means that we can send the auto reply snap regardless... if custom friends is enabled for the friend the notification wouldn't have been scheduled in the first place without it being enabled in custom friends */
-    if(prefs[@"kAutoReplySnapstreak"]){
-        SendAutoReplySnapToUser(username);
-    }
-    
-}
-
-#ifdef THEOS
-%group SnapchatHooks
-%hook MainViewController
-#else
-@implementation SnapchatHooks
-#endif
-
--(void)viewDidLoad{
-    /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
-     it's ok if the custom friends hasn't been configured because it's ok for none to be selected
-     */
-    
-    %orig();
-    
-    Manager *manager = [objc_getClass("Manager") shared];
-    if([manager respondsToSelector:@selector(fetchUpdatesWithCompletionHandler:
-                                             includeStories:
-                                             didHappendWhenAppLaunch:)]){
-        [manager fetchUpdatesWithCompletionHandler:^{
             NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
@@ -520,6 +462,36 @@ void HandleLocalNotification(NSString *username){
         } failureBlock:nil];
         // Snapchat 9.45.x and greater
     }
+}
+
+void HandleRemoteNotification(){
+    FetchUpdates();
+}
+
+void HandleLocalNotification(NSString *username){
+    NSLog(@"StreakNotify:: Handling local notification, sending auto reply snap to %@",username);
+    /* handle local notification and send auto reply message for a streak */
+    /* let's say that someone hasn't enabled custom friends and receives a notification, that means that we can send the auto reply snap regardless... if custom friends is enabled for the friend the notification wouldn't have been scheduled in the first place without it being enabled in custom friends */
+    if(prefs[@"kAutoReplySnapstreak"]){
+        SendAutoReplySnapToUser(username);
+    }
+    
+}
+
+#ifdef THEOS
+%group SnapchatHooks
+%hook MainViewController
+#else
+//@implementation SnapchatHooks
+#endif
+
+-(void)viewDidLoad{
+    /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
+     it's ok if the custom friends hasn't been configured because it's ok for none to be selected
+     */
+    
+    %orig();
+    FetchUpdates();
     
     if(!prefs) {
         NSLog(@"StreakNotify:: No preferences found on file, letting user know");
@@ -616,7 +588,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"applicationLaunched" userInfo:nil];
     
-    SendRequestToDaemon();
+    SendFriendmojisToDaemon();
     
     
     return %orig();
@@ -662,7 +634,7 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
 -(void)setSnapStreakCount:(long long)snapStreakCount{
     %orig(snapStreakCount);
     
-    SendRequestToDaemon();
+    SendFriendmojisToDaemon();
 }
 
 /* call the chatsDidMethod on the chats object so that the SCFeedViewController tableview can reload safely */
@@ -778,6 +750,12 @@ static NSMutableArray *feedCellLabels = nil;
     %orig();
     ResetNotifications();
     
+}
+
+-(void)pullToRefreshDidFinish{
+    NSLog(@"StreakNotify::Finished reloading data");
+    %orig();
+    ResetNotifications();
 }
 
 
@@ -976,7 +954,7 @@ static NSMutableArray *storyCellLabels = nil;
 %end
 %end
 #else
-@end
+//@end
 #endif
 
 

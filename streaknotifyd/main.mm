@@ -32,9 +32,9 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 
 
 @interface SNDaemon : NSObject {
-    BOOL _snapchatOpen;
 }
 
+@property (assign, nonatomic) BOOL applicationLaunched;
 @property (strong,nonatomic) NSDictionary *friendNamesAndEmojis;
 
 @end
@@ -82,7 +82,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     
     NSLog(@"Running servers on the daemon");
     
-    _snapchatOpen = NO;
+    self.applicationLaunched = NO;
     
     /* run a messaging center server on the daemon so that the client (tweak) can send us messages when it needs to update anything that we need */
     
@@ -91,15 +91,15 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c runServerOnCurrentThread];
     [c retain];
-    [c registerForMessageName:@"tweak-daemon"
+    [c registerForMessageName:@"friendmojis"
                        target:self
-                     selector:@selector(callBackToDaemon:userInfo:)];
+                     selector:@selector(message: userInfo:)];
     [c registerForMessageName:@"applicationLaunched"
                        target:self
-                     selector:@selector(applicationLaunched: userInfo:)];
+                     selector:@selector(message: userInfo:)];
     [c registerForMessageName:@"applicationTerminated"
                        target:self
-                     selector:@selector(applicationTerminated: userInfo:)];
+                     selector:@selector(message: userInfo:)];
     
     /* start the server so that clients can start listening to us, and sends a notification to us if a client does in fact start listening, at this point none of the clients are created and the daemon is being initialized after a reboot/respring of the device */
     
@@ -127,24 +127,16 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     
 }
 
-
--(void)applicationLaunched:(NSString*)name userInfo:(NSDictionary*)userInfo{
-    _snapchatOpen = YES;
-}
-
--(void)applicationTerminated:(NSString*)name userInfo:(NSDictionary*)userInfo{
-    _snapchatOpen = NO;
-}
-
--(void)callBackToDaemon:(NSString*)name userInfo:(NSDictionary*)userInfo{
-    if([name isEqual:@"tweak-daemon"]){
-        
-        /* the snapchat application has started or friends have changed and it has sent us this message so that we can grab a copy of the data that we need and save it to file. So that when the preferences bundle requests the display names, we will have them. We should have them already if the daemon is not running for the first time, but it could be an updated list when a friend has been added or the snap streak count has been updated for a friend. We can keep this data and have it stored in the daemon if the preferences bundle is open but still store it so that the next time it is open we can use it  */
-        
+-(void)message:(NSString*)name userInfo:(NSDictionary*)userInfo{
+    if([name isEqual:@"friendmojis"]){
         NSLog(@"Got dictionary from tweak, updating for preferences on next launch");
         self.friendNamesAndEmojis = userInfo;
         NSLog(@"%@",userInfo);
         [self saveDataToPlist];
+    }else if([name isEqual:@"applicationLaunched"]){
+        self.applicationLaunched = YES;
+    }else if([name isEqual:@"applicationTerminated"]){
+        self.applicationLaunched = NO;
     }
 }
 
