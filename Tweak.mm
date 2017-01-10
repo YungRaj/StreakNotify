@@ -409,12 +409,13 @@ static void ConfigureCell(UIView *cell,
     if(![instances containsObject:cell]){
         
         CGSize size = cell.frame.size;
-        CGRect rect = CGRectMake(size.width*.83,
+        CGRect rect = CGRectMake(size.width*.75,
                                  size.height*.7,
-                                 size.width/8,
+                                 size.width/5,
                                  size.height/4);
         
         label = [[UILabel alloc] initWithFrame:rect];
+        label.textAlignment = NSTextAlignmentRight;
         
         [instances addObject:cell];
         [labels addObject:label];
@@ -515,6 +516,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -966,11 +969,17 @@ static NSMutableArray *storyCellLabels = nil;
                 
                 UILabel *label = contactCell.subNameLabel;
                 if([f snapStreakCount]>2 && snap){
-                    label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
+                    NSString *timeRemaining = GetTimeRemaining(f,chat,snap);
+                    if(![label.text isEqual:timeRemaining]){
+                        label.text = [NSString stringWithFormat:@"⏰ %@",timeRemaining];
+                    }
                     label.hidden = NO;
                 }else if([f snapStreakCount]>2){
                     Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
-                    label.text = [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
+                    NSString *timeRemaining = GetTimeRemaining(f,chat,sentUnrepliedSnap);
+                    if(![label.text isEqual:timeRemaining]){
+                        label.text = [NSString stringWithFormat:@"⌛️ %@",timeRemaining];
+                    }
                     label.hidden = NO;
                 }else{
                     label.text = @"";
@@ -985,6 +994,8 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
+#else
+@end
 #endif
 
 
