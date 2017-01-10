@@ -1951,66 +1951,142 @@ typedef id CDUnknownBlockType;
 @end
 
 
-@class NSArray, NSDate, NSNumber, NSSet, NSString;
+@class Media, NSArray, NSDate, NSNumber, NSSet, NSString;
 
 @interface Friend : NSObject
 {
+    _Bool _isVerified;
+    _Bool _newLink;
+    _Bool _ignored;
+    _Bool _hidden;
+    _Bool _isRecommended;
+    _Bool _canSeeCustomStories;
+    _Bool _needsLoveCandidate;
+    _Bool _isSharedStory;
+    _Bool _hasCustomDescriptionForSharedStory;
+    _Bool _sharedLocalStory;
+    _Bool _unVerifiedByServer;
+    _Bool _autoAdded;
+    NSString *_atomicName;
     NSString *_kvoName;
-    NSString *_name;
     NSString *_userId;
     NSString *_display;
-    NSSet *_searchKeywords;
+    NSString *_suggestionToken;
+    NSString *_suggestReasonDisplay;
+    NSSet *_atomicSearchKeywords;
     long long _type;
-    NSArray *_bests;
-    NSDate *_bestsUpdated;
+    NSNumber *_contactBasedRecommendationScore;
     NSNumber *_score;
-    NSArray *_friendmojiSymbols;
+    NSArray *_friendmojis;
     long long _snapStreakCount;
     NSString *_snaptagUrl;
     NSString *_sharedStoryDescription;
     NSString *_sharedStoryId;
     NSString *_sharedStoryVenue;
+    NSString *_storyPrivacy;
+    NSString *_bitmojiAvatarId;
+    Media *_latestStoryThumbnailMedia;
+    NSString *_latestStoryMediaKey;
+    NSString *_latestStoryThumbnailIv;
+    NSString *_latestStoryThumbnailUrl;
+    NSString *_birthday;
+    NSDate *_birthdayDate;
     NSDate *_expiration;
 }
 
++ (id)firstNameForName:(id)arg1;
 + (id)friendWithSuggestedFriend:(id)arg1;
 + (id)friendWithAddedFriend:(id)arg1;
-@property(retain, nonatomic) NSString *snaptagUrl; 
-@property(readonly, nonatomic) long long snapStreakCount;
-@property(retain, nonatomic) NSArray *friendmojiSymbols;
-@property(nonatomic) _Bool scrambleBestFriends;
-@property(retain, nonatomic) NSNumber *score;
-@property(retain, nonatomic) NSDate *bestsUpdated;
-@property(retain, nonatomic) NSArray *bests;
-@property(nonatomic) long long type;
-@property(retain, nonatomic) NSSet *searchKeywords;
-@property(nonatomic) _Bool isVerified;
-@property(copy, nonatomic) NSString *display;
-@property(copy, nonatomic) NSString *userId;
-@property(copy, nonatomic) NSString *name;
-@property(retain, nonatomic) NSString *kvoName;
-
++ (id)convertCategoriesToFriendmojis:(id)arg1;
++ (CDUnknownBlockType)friendFilterBlockIncludeStories:(_Bool)arg1;
+@property(retain) NSDate *expiration; // @synthesize expiration=_expiration;
+@property _Bool autoAdded; // @synthesize autoAdded=_autoAdded;
+@property(retain) NSDate *birthdayDate; // @synthesize birthdayDate=_birthdayDate;
+@property(copy) NSString *birthday; // @synthesize birthday=_birthday;
+@property _Bool unVerifiedByServer; // @synthesize unVerifiedByServer=_unVerifiedByServer;
+@property(copy) NSString *latestStoryThumbnailUrl; // @synthesize latestStoryThumbnailUrl=_latestStoryThumbnailUrl;
+@property(copy) NSString *latestStoryThumbnailIv; // @synthesize latestStoryThumbnailIv=_latestStoryThumbnailIv;
+@property(copy) NSString *latestStoryMediaKey; // @synthesize latestStoryMediaKey=_latestStoryMediaKey;
+@property(retain) Media *latestStoryThumbnailMedia; // @synthesize latestStoryThumbnailMedia=_latestStoryThumbnailMedia;
+@property(copy) NSString *bitmojiAvatarId; // @synthesize bitmojiAvatarId=_bitmojiAvatarId;
+@property(copy) NSString *storyPrivacy; // @synthesize storyPrivacy=_storyPrivacy;
+@property _Bool sharedLocalStory; // @synthesize sharedLocalStory=_sharedLocalStory;
+@property(copy) NSString *sharedStoryVenue; // @synthesize sharedStoryVenue=_sharedStoryVenue;
+@property(copy) NSString *sharedStoryId; // @synthesize sharedStoryId=_sharedStoryId;
+@property _Bool hasCustomDescriptionForSharedStory; // @synthesize hasCustomDescriptionForSharedStory=_hasCustomDescriptionForSharedStory;
+@property(copy) NSString *sharedStoryDescription; // @synthesize sharedStoryDescription=_sharedStoryDescription;
+@property _Bool isSharedStory; // @synthesize isSharedStory=_isSharedStory;
+@property(retain) NSString *snaptagUrl; // @synthesize snaptagUrl=_snaptagUrl;
+@property long long snapStreakCount; // @synthesize snapStreakCount=_snapStreakCount;
+@property(retain) NSArray *friendmojis; // @synthesize friendmojis=_friendmojis;
+@property _Bool needsLoveCandidate; // @synthesize needsLoveCandidate=_needsLoveCandidate;
+@property _Bool canSeeCustomStories; // @synthesize canSeeCustomStories=_canSeeCustomStories;
+@property(retain) NSNumber *score; // @synthesize score=_score;
+@property(retain) NSNumber *contactBasedRecommendationScore; // @synthesize contactBasedRecommendationScore=_contactBasedRecommendationScore;
+@property _Bool isRecommended; // @synthesize isRecommended=_isRecommended;
+@property _Bool hidden; // @synthesize hidden=_hidden;
+@property _Bool ignored; // @synthesize ignored=_ignored;
+@property _Bool newLink; // @synthesize newLink=_newLink;
+@property long long type; // @synthesize type=_type;
+@property(retain) NSSet *atomicSearchKeywords; // @synthesize atomicSearchKeywords=_atomicSearchKeywords;
+@property _Bool isVerified; // @synthesize isVerified=_isVerified;
+@property(copy) NSString *suggestReasonDisplay; // @synthesize suggestReasonDisplay=_suggestReasonDisplay;
+@property(copy) NSString *suggestionToken; // @synthesize suggestionToken=_suggestionToken;
+@property(copy) NSString *display; // @synthesize display=_display;
+@property(copy) NSString *userId; // @synthesize userId=_userId;
+@property(copy) NSString *kvoName; // @synthesize kvoName=_kvoName;
+@property(copy) NSString *atomicName; // @synthesize atomicName=_atomicName;
+- (id)URLForMedia:(id)arg1;
+- (id)requestContexts;
+- (_Bool)needsAuthToFetch;
+- (_Bool)encrypt;
+- (_Bool)persist;
+- (id)encryptionDictionaryForMedia:(id)arg1;
+- (id)decryptData:(id)arg1 forMedia:(id)arg2;
+- (id)mediaIdForMedia:(id)arg1;
+- (_Bool)isCurrentFriend;
+- (_Bool)isStoryPublic;
+- (_Bool)isInvitedFriend;
 - (_Bool)shouldShowFriendmoji:(id)arg1 forViewType:(long long)arg2;
+- (id)getFriendmojisWithoutSnapStreakMojis;
+- (void)removeSnapStreak;
+- (void)setSnapStreakMetadataWithExpiryTime:(id)arg1 withCount:(long long)arg2;
 - (id)getFriendmojiForViewType:(long long)arg1;
+- (id)getFriendmoji;
+- (_Bool)hasFriendmoji;
 - (id)getSharedStoriesMessage;
 - (id)getKey;
+- (id)getBirthday;
 - (id)duplicate;
 - (id)updateWithFriend:(id)arg1;
+- (_Bool)hasBirthdayToday;
 - (id)nameToDisplay;
 - (_Bool)hasDisplay;
-- (_Bool)shouldFetchBestFriends;
-- (_Bool)fetchedBestFriends;
 - (id)toDictionary;
 @property(readonly) unsigned long long hash;
 - (_Bool)isEqualToFriend:(id)arg1;
 - (long long)compare:(id)arg1;
 - (_Bool)keywordMatchesCleanedQuery:(id)arg1;
+- (id)searchKeywords;
+- (void)setSearchKeywords:(id)arg1;
+- (_Bool)matchesByPartialName:(id)arg1;
+- (_Bool)matchesByDisplayLastName:(id)arg1;
+- (_Bool)matchesByDisplayFirstName:(id)arg1;
+- (_Bool)matchesByDisplayAndUserNames:(id)arg1;
+- (_Bool)matchesPrefix:(id)arg1;
 - (_Bool)matchesForOfficialStorySearch:(id)arg1;
 - (_Bool)matchesByDisplayName:(id)arg1;
 - (_Bool)matchesByUsername:(id)arg1;
 - (_Bool)matches:(id)arg1;
 - (_Bool)isEqual:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
 - (void)updateSnaptagUrl:(id)arg1;
+- (void)setName:(id)arg1;
+- (id)name;
+- (void)upgradeFriendmojisIfNecessaryWithSymbols:(id)arg1;
+- (id)initUnverifiedUserWithUsername:(id)arg1;
+- (id)initDummyUserWithUsername:(id)arg1 displayName:(id)arg2 userId:(id)arg3;
 - (id)initWithSearchResultSOJU:(id)arg1;
 - (void)initNewFriendFields;
 - (id)initWithName:(id)arg1;
@@ -2019,7 +2095,9 @@ typedef id CDUnknownBlockType;
 - (id)initWithFindFriendsContact:(id)arg1;
 - (id)initWithSoju:(id)arg1;
 
+
 @end
+
 
 @class NSMutableArray, NSMutableDictionary, NSString, SCFriendProfileCollection, SCRecentFriends;
 
@@ -2185,6 +2263,73 @@ typedef id CDUnknownBlockType;
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
+@class NSString, NSTimer, SCAddFriendButtonV2, SCAnimatingReplaySnapView, SCFriendmojiView, SCLoadingIndicatorView, SCReplyButton, UIImageView, UILabel;
+
+
+@interface SCFeedComponentView : UIView
+{
+    SCLoadingIndicatorView *_activityIndicator;
+    UIImageView *_feedIconView;
+    UILabel *_snapCountDownLabel;
+    SCAnimatingReplaySnapView *_animatingReplaySnapView;
+    UILabel *_mainLabel;
+    UILabel *_subLabel;
+    _Bool _isAnimatingSubLabel;
+    UIView *_bottomBorder;
+    SCFriendmojiView *_friendMojiView;
+    SCReplyButton *_replyButton;
+    SCAddFriendButtonV2 *_addFriendButton;
+    UILabel *_groupMojiLabel;
+    _Bool _highlightEnabled;
+    NSTimer *_snapTimer;
+    id _viewModel;
+    id _delegate;
+    UIView *_replyButtonParentView;
+}
+
+- (void)_refreshGroupSnapCountdownLabel;
+- (void)_refreshSnapCountdownLabel;
+- (void)_setSnapCountdownLabelWithTimeLeft:(unsigned long long)arg1;
+- (void)_startSnapTimerIfNecessary;
+- (id)activityIndicator;
+- (void)alternateReplyButtonSubLabelWithTapToChatOn:(_Bool)arg1;
+- (void)animateSnapReplayIfNecessary;
+- (void)animateSubLabelWithAnimations:(CDUnknownBlockType)arg1 completion:(CDUnknownBlockType)arg2;
+- (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (id)feedIconView;
+- (void)handlePressOnReplyButton;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (_Bool)isAddFriendButtonVisible;
+- (_Bool)isFriendMojiViewVisible;
+- (_Bool)isGroupMojiLableVisible;
+- (_Bool)isReplyButtonVisible;
+- (void)prepareForReuse;
+- (void)removeSubstituteLabelAnimations;
+- (id)replyButton;
+@property(retain, nonatomic) UIView *replyButtonParentView; // @synthesize replyButtonParentView=_replyButtonParentView;
+- (void)resetBackgroundColorAnimated:(_Bool)arg1;
+- (void)resizeMainLabel;
+- (void)resizeSubLabel;
+- (void)setBackgroundAlpha:(double)arg1;
+- (void)setBackgroundColor:(id)arg1;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)setLabel:(id)arg1 width:(double)arg2;
+- (void)setTouchedBackgroundColor;
+- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
+@property(retain, nonatomic) id viewModel; // @synthesize viewModel=_viewModel;
+- (void)showSubstituteSubLabelBriefly;
+- (id)snapCountDownLabel;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)updateAddFriendButton;
+- (void)updateFriendMojiView;
+- (void)updateGroupIconView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+- (void)updateSnapCountdownLabel;
+- (void)updateSubLabel;
+
+@end
+
 @protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
@@ -2212,6 +2357,71 @@ typedef id CDUnknownBlockType;
 
 @end
 
+@interface SCFeedSwipeableTableViewCell : SCFeedTableViewCell
+{
+    UIImageView *_swipeBackgroundIconView;
+    _Bool _isPulling;
+    _Bool _isScrolling;
+    _Bool _deceleratingToZero;
+    UIScrollView *_scrollView;
+    UIView *_swipeBackgroundView;
+    SCFeedComponentView *_feedComponentView;
+    double _decelerationDistanceRatio;
+}
+
++ (_Bool)shouldEnableChatButtonReply;
++ (double)feedSwipeViewWidth;
++ (id)swipeBackgroundViewColor;
+@property(nonatomic) double decelerationDistanceRatio; // @synthesize decelerationDistanceRatio=_decelerationDistanceRatio;
+@property(nonatomic) _Bool deceleratingToZero; // @synthesize deceleratingToZero=_deceleratingToZero;
+@property(nonatomic) _Bool isScrolling; // @synthesize isScrolling=_isScrolling;
+@property(nonatomic) _Bool isPulling; // @synthesize isPulling=_isPulling;
+@property(retain, nonatomic) SCFeedComponentView *feedComponentView; // @synthesize feedComponentView=_feedComponentView;
+@property(retain, nonatomic) UIView *swipeBackgroundView; // @synthesize swipeBackgroundView=_swipeBackgroundView;
+@property(retain, nonatomic) UIScrollView *scrollView; // @synthesize scrollView=_scrollView;
+- (id)swipeBackgroundIconView;
+- (void)endPanning:(_Bool)arg1;
+- (void)panOverWithOffset:(double)arg1 isDragging:(_Bool)arg2;
+- (void)bounceWithMagnitude:(long long)arg1 completion:(CDUnknownBlockType)arg2;
+- (double)bounceXOffsetWithMagnitude:(long long)arg1;
+- (void)bounceWithCompletion:(CDUnknownBlockType)arg1;
+- (void)bounce;
+- (void)bounceRepeatedlyAfterDelays:(id)arg1;
+- (void)bounceRepeatedlyIfNecessary;
+- (void)resetNextVC:(id)arg1;
+- (void)prepareNextVC:(id)arg1;
+- (void)snapTimerDidExpire;
+- (void)snapSubstituteLabelDidShow;
+- (void)handlePressOnReplyButton;
+- (void)scrollingEnded;
+- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)scrollViewDidEndDecelerating:(id)arg1;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)removeSubstituteLabelAnimations;
+- (void)showSnapSubstituteSubLabelBrieflyIfNecessary;
+- (void)showSubstituteSubLabelBriefly;
+- (void)resetBackgroundColorAnimated:(_Bool)arg1;
+- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
+- (void)setTouchedBackgroundColor;
+- (id)feedIconView;
+- (void)updateFriendMojiView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)setViewModel:(id)arg1;
+- (_Bool)longPressGestureRecognizerShouldBegin;
+- (_Bool)doubleTapGestureRecognizerShouldBegin;
+- (_Bool)delayedTapGestureRecognizerShouldBegin;
+- (_Bool)tapGestureRecognizerShouldBegin;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)prepareForReuse;
+- (id)swipeableViewModel;
+- (void)_initV10Views;
+- (void)initViews;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+
+@end
 
 @class SCFriendProfileCellView, UIView;
 
@@ -2904,5 +3114,30 @@ typedef id CDUnknownBlockType;
 - (void)dealloc;
 - (id)initWithFrame:(struct CGRect)arg1 configuration:(id)arg2 miniProfileDelegate:(id)arg3 viewController:(id)arg4;
 - (id)initWithFrame:(struct CGRect)arg1 configuration:(id)arg2;
+
+@end
+
+
+@class NSNumber, NSString;
+
+@interface SOJUFriendmoji : NSObject
+{
+    NSString *_categoryName;
+    NSNumber *_expirationTime;
+}
+
+@property(readonly, copy, nonatomic) NSNumber *expirationTime; // @synthesize expirationTime=_expirationTime;
+@property(readonly, copy, nonatomic) NSString *categoryName; // @synthesize categoryName=_categoryName;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+- (_Bool)isEqual:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithCategoryName:(id)arg1 expirationTime:(id)arg2;
+- (id)toJson;
+- (id)toDictionary;
+- (id)initWithJSONDictionary:(id)arg1;
+- (long long)expirationTimeValue;
 
 @end

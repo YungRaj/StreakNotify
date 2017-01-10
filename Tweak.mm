@@ -182,9 +182,21 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
         if(size.height <= label.frame.size.height )
             break;
         
-        fontSize -= 0.5;
+        fontSize -= 0.2;
         
     } while (fontSize > minFontSize);
+}
+
+SOJUFriendmoji *FindOnFireEmoji(NSArray *friendmojis){
+    for(NSObject *obj in friendmojis){
+        if([obj isKindOfClass:objc_getClass("SOJUFriendmoji")]){
+            SOJUFriendmoji *friendmoji = (SOJUFriendmoji*)obj;
+            if([[friendmoji categoryName] isEqual:@"on_fire"]){
+                return friendmoji;
+            }
+        }
+    }
+    return nil;
 }
 
 
@@ -207,20 +219,42 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     NSDate *date = [NSDate date];
     
     
-    NSDate *latestSnapDate = [earliestUnrepliedSnap timestamp];
-    int daysToAdd = 1;
-    NSDate *latestSnapDateDayAfter = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
+    NSDate *expirationDate = nil;
+    if(objc_getClass("SOJUFriendmoji")){
+        NSArray *friendmojis = f.friendmojis;
+        SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
+        long long expirationTimeValue = [friendmoji expirationTimeValue];
+        expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
+        
+    }else{
+        NSDate *latestSnapDate = [earliestUnrepliedSnap timestamp];
+        int daysToAdd = 1;
+        expirationDate = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
+    }
+    
     NSCalendar *gregorianCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     NSUInteger unitFlags = NSSecondCalendarUnit | NSMinuteCalendarUnit |NSHourCalendarUnit | NSDayCalendarUnit;
     NSDateComponents *components = [gregorianCal components:unitFlags
                                                 fromDate:date
-                                                  toDate:latestSnapDateDayAfter
+                                                  toDate:expirationDate
                                                  options:0];
     NSInteger day = [components day];
     NSInteger hour = [components hour];
     NSInteger minute = [components minute];
     NSInteger second = [components second];
     
+    if([prefs[@"kExactTime"] boolValue]){
+        if(day){
+            return [NSString stringWithFormat:@"%ldd %ldh %ldm",(long)day,long(hour),(long)minute];
+        }else if(!day && hour){
+            return [NSString stringWithFormat:@"%ldh %ldm",(long)hour,(long)minute];
+        }else{
+            goto NotExactTime;
+        }
+    }else{
+        goto NotExactTime;
+    }
+NotExactTime:
     if(day<0 || hour<0 || minute<0 || second<0){
         return @"Limited";
         /* this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
@@ -231,7 +265,7 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     }
     
     if(day){
-        return [NSString stringWithFormat:@"%ldd",(long)day];
+        return [NSString stringWithFormat:@"%ld d",(long)day];
     }else if(hour){
         return [NSString stringWithFormat:@"%ld hr",(long)hour];
     }else if(minute){
@@ -364,7 +398,7 @@ static void ResetNotifications(){
     NSLog(@"StreakNotify:: Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
 }
 
-static void ConfigureCell(UITableViewCell *cell,
+static void ConfigureCell(UIView *cell,
                           NSMutableArray *instances,
                           NSMutableArray *labels,
                           Friend *f,
@@ -481,8 +515,6 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-#else
-//@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -677,9 +709,9 @@ static NSMutableArray *feedCellLabels = nil;
          this should already be on the main thread but we should make sure of this
         */
         
-        if([cell isKindOfClass:objc_getClass("SCFeedTableViewCell")]
+        if([cell isKindOfClass:objc_getClass("SCFeedSwipeableTableViewCell")]
            && [cell respondsToSelector:@selector(viewModel)]){
-            SCFeedTableViewCell *feedCell = (SCFeedTableViewCell*)cell;
+            SCFeedSwipeableTableViewCell *feedCell = (SCFeedSwipeableTableViewCell*)cell;
             
             if(!feedCells){
                 feedCells = [[NSMutableArray alloc] init];
@@ -720,7 +752,7 @@ static NSMutableArray *feedCellLabels = nil;
                 User *user = [manager user];
                 
                 SCChats *chats = [user chats];
-                SCChat * chat = [chats chatForUsername:username];
+                SCChat *chat = [chats chatForUsername:username];
                 Friends *friends = [user friends];
                 Friend *f = [friends friendForName:username];
                 
@@ -732,7 +764,7 @@ static NSMutableArray *feedCellLabels = nil;
                 
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
-                ConfigureCell(cell, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+                ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
             } else{
                 NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
                 // todo: let the user know that the timer could not added to the cells
@@ -953,8 +985,6 @@ static NSMutableArray *storyCellLabels = nil;
 #ifdef THEOS
 %end
 %end
-#else
-//@end
 #endif
 
 
@@ -972,7 +1002,10 @@ void constructor()
     
     LoadPreferences();
     if(![prefs[@"kStreakNotifyDisabled"] boolValue]){
+        // Class Friend = objc_getClass("Friend");
+        
         %init(SnapchatHooks);
         // this has to be done otherwise our hooks would not be used!
+        
     }
 }
