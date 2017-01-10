@@ -40,7 +40,7 @@
         
         /* if the daemon loaded right during a springboard launch, then it's theoreotically impossible to not have the file saved to disk */
         
-        NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/root/Documents/streaknotifyd"];
+        NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Documents/streaknotifyd"];
         
         /* crash the app if it doesn't exist, which shouldn't happen if everything is working */
         if(!friendNamesAndEmojis){

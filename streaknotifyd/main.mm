@@ -112,8 +112,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     /* saves the dictionary containing the data that we need for the preferences bundle to disk so that it can be recycled */
     /* this is a workaround so that we don't have to request to the snapchat application every time the preferences bundle wants information it */
     /* make sure that the file in /var/root/Documents is valid so that it doesn't fail saving to file */
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *documentsDirectory = @"/var/mobile/Documents";
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:documentsDirectory]){
         NSError *error;

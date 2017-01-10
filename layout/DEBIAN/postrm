@@ -4,7 +4,7 @@ if [ $1 = "remove" ]; then
 	/bin/rm /var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist
 	echo Removing streaknotify preferences
 	echo Removing data…
-	/bin/rm /var/root/Documents/streaknotifyd
+	/bin/rm /var/mobile/Documents/streaknotifyd
 	echo Thank you for trying StreakNotify
 fi
 exit 0

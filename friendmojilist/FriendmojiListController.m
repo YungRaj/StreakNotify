@@ -58,7 +58,7 @@
     if([UIAlertController class]){
         UIAlertController *controller =
         [UIAlertController alertControllerWithTitle:@"StreakNotify"
-                                            message:@"Friendmojis were not saved to disk at /var/root/Documents? Or syscall failed"
+                                            message:@"Friendmojis were not saved to disk at /var/mobile/Documents? Or syscall failed"
                                      preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *cancel =
         [UIAlertAction actionWithTitle:@"Cancel"

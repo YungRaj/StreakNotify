@@ -362,27 +362,36 @@ static void ResetNotifications(){
     for(SCChat *chat in [chats allChats]){
         
         Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
-        NSDate *snapDate = [earliestUnrepliedSnap timestamp];
         Friend *f = [friends friendForName:[chat recipient]];
         
-        NSLog(@"StreakNotify:: Name and date %@ for %@",snapDate,[chat recipient]);
+        NSDate *expirationDate = nil;
+        if(objc_getClass("SOJUFriendmoji")){
+            NSArray *friendmojis = f.friendmojis;
+            SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
+            long long expirationTimeValue = [friendmoji expirationTimeValue];
+            expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
+        }else{
+            expirationDate = [earliestUnrepliedSnap timestamp];
+        }
+        
+        NSLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
         
         if([f snapStreakCount]>2 && earliestUnrepliedSnap){
             if([prefs[@"kTwelveHours"] boolValue]){
                 NSLog(@"Scheduling for 12 hours %@",[f name]);
-                ScheduleNotification(snapDate,f,0,0,12);
+                ScheduleNotification(expirationDate,f,0,0,12);
                 
             } if([prefs[@"kFiveHours"] boolValue]){
                 NSLog(@"Scheduling for 5 hours %@",[f name]);
-                ScheduleNotification(snapDate,f,0,0,5);
+                ScheduleNotification(expirationDate,f,0,0,5);
                 
             } if([prefs[@"kOneHour"] boolValue]){
                 NSLog(@"Scheduling for 1 hour %@",[f name]);
-                ScheduleNotification(snapDate,f,0,0,1);
+                ScheduleNotification(expirationDate,f,0,0,1);
                 
             } if([prefs[@"kTenMinutes"] boolValue]){
                 NSLog(@"Scheduling for 10 minutes %@",[f name]);
-                ScheduleNotification(snapDate,f,0,10,0);
+                ScheduleNotification(expirationDate,f,0,10,0);
             }
             
             float seconds = [prefs[@"kCustomSeconds"] floatValue];
@@ -390,7 +399,7 @@ static void ResetNotifications(){
             float hours = [prefs[@"kCustomHours"] floatValue] ;
             if(hours || minutes || seconds){
                 NSLog(@"Scheduling for custom time %@",[f name]);
-                ScheduleNotification(snapDate,f,seconds,minutes,hours);
+                ScheduleNotification(expirationDate,f,seconds,minutes,hours);
             }
         }
     }
@@ -517,7 +526,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-@implementation SnapchatHooks
+//@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -995,7 +1004,7 @@ static NSMutableArray *storyCellLabels = nil;
 %end
 %end
 #else
-@end
+//@end
 #endif
 
 
