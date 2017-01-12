@@ -187,7 +187,7 @@ static void SizeLabelToRect(UILabel *label, CGRect labelRect){
     } while (fontSize > minFontSize);
 }
 
-SOJUFriendmoji *FindOnFireEmoji(NSArray *friendmojis){
+SOJUFriendmoji* FindOnFireEmoji(NSArray *friendmojis){
     for(NSObject *obj in friendmojis){
         if([obj isKindOfClass:objc_getClass("SOJUFriendmoji")]){
             SOJUFriendmoji *friendmoji = (SOJUFriendmoji*)obj;
@@ -204,14 +204,10 @@ static
 NSString*
 GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     
-    /* good utility method to figure out the time remaining for the streak
-     
-     in the new chat 2.0 update to snapchat, the SOJUFriend and SOJUFriendBuilder class now sets a property called snapStreakExpiration/snapStreakExpiryTime which is basically a long long value that describes the time in seconds since 1970 of when the snap streak should end when that expiration date arrives.
-     
-     if I decide to support only the newest revisions of Snapchat, then I will implement it this way. however even though in the last revisions of Snapchat that API wasn't there it could be possible that it was private and thus not available on headers dumped via class-dump.
-     
-     for now I am just using 24 hours past the earliest snap sent that wasn't replied to
+    /* In the new chat 2.0 update to snapchat, the SOJUFriend and SOJUFriendBuilder class now sets a property called snapStreakExpiration/snapStreakExpiryTime which is basically a long long value that describes the time in seconds since 1970 of when the snap streak should end when that expiration date arrives.
      */
+    /* Note: January 10, 2017
+     In the newest versions of Snapchat, not sure which version this started, a class named SOJUFriendmoji contains data related to the friendmoji's. Since the fire emoji is a friendmoji, the SOJUFriendmoji class is what we were always looking for. There is a memeber of the class named categoryName and expirationTime. After some exploration, if the categoryName's value is @"on_fire", then the expirationTime is the exact time when the friendmoji is valid until. We can now use this for retrieving the time remaining */
     if(!f || !c){
         return @"";
     }
@@ -261,6 +257,7 @@ NotExactTime:
          in the new chat 2.0 update the new properties introduced into the public API for the SOJUFriend and SOJUFriendBuilder class allow us to know when the server will end the streak
          if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
          this API isn't available (or public) so for previous versions of Snapchat this would not work
+         Note: IGNORE this, we have what we are looking for now with the SOJUFriendmoji class
          */
     }
     
@@ -286,12 +283,13 @@ static void CancelScheduledLocalNotifications(){
     }
 }
 
-static void ScheduleNotification(NSDate *snapDate,
+static void ScheduleNotification(NSDate *expirationDate,
                                  Friend *f,
                                  float seconds,
                                  float minutes,
                                  float hours){
-    /* schedules the notification and makes sure it isn't before the current time */
+    /* schedules the notification and makes sure it isn't before the current time
+     todo: get this particular function working with the BulletinBoard framework */
     NSString *displayName = f.display;
     NSString *username = f.name;
     if([customFriends count] && ![customFriends containsObject:displayName]){
@@ -301,8 +299,14 @@ static void ScheduleNotification(NSDate *snapDate,
     NSLog(@"Attempting to schedule a notification for %@",[f name]);
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
-    NSDate *notificationDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
-                                                          sinceDate:snapDate];
+    NSDate *notificationDate = nil;
+    if(objc_getClass("SOJUFriendmoji")){
+        notificationDate = [[NSDate alloc] initWithTimeInterval:-60*60*hours - 60*minutes - seconds
+                                                  sinceDate:expirationDate];
+    }else{
+        notificationDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
+                                                  sinceDate:expirationDate];
+    }
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.fireDate = notificationDate;
     notification.alertBody = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
@@ -348,7 +352,7 @@ static void ScheduleNotificationBB(NSDate *snapDate,
 */
 
 static void ResetNotifications(){
-    /* ofc set the local notifications based on the preferences, good utility function that is commonly used in the tweak
+    /* Set the local notifications based on the preferences, good utility function that is commonly used in the tweak
      */
     
     CancelScheduledLocalNotifications();
@@ -470,7 +474,7 @@ void SendAutoReplySnapToUser(NSString *username){
 }
 
 /* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
-/* we need to fetch updates so that the new snap can be found */
+/* we need to fetch updates so that the new snap that was sent from the notification can now be recognized as far as notifications go */
 /* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 
 void FetchUpdates(){
@@ -641,7 +645,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 -(void)application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    /* everytime we receive a snap or even a chat message, we want to make sure that the notifications are updated each time*/
+    /* everytime we receive a snap or even a chat message (wouldn't know in a remote notification), we want to make sure that the notifications are updated each time */
     LoadPreferences();
     HandleRemoteNotification();
     %orig();
@@ -681,7 +685,7 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
     SendFriendmojisToDaemon();
 }
 
-/* call the chatsDidMethod on the chats object so that the SCFeedViewController tableview can reload safely */
+/* call the chatsDidChange Method on the chats object so that the SCFeedViewController tableview can reload safely */
 
 -(void)postSend{
     %orig();
@@ -999,6 +1003,107 @@ static NSMutableArray *storyCellLabels = nil;
     });
     return cell;
 }
+
+
+#ifdef THEOS
+%end
+#endif
+
+static NSMutableArray *chatCells = nil;
+static NSMutableArray *chatCellLabels = nil;
+
+#ifdef THEOS
+%hook SCChatTableViewDataSourceV2
+#endif
+
+-(UITableViewCell*)tableView:(UITableView*)tableView
+    cellForRowAtIndexPath:(NSIndexPath*)indexPath{
+    UITableViewCell *cell = %orig(tableView, indexPath);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([cell isKindOfClass:objc_getClass("SCSnapChatTableViewCellV2")]){
+            SCSnapChatTableViewCellV2 *chatCell = (SCSnapChatTableViewCellV2*)cell;
+            SCChatV2SnapChatTableViewCellViewModel *viewModel = (SCChatV2SnapChatTableViewCellViewModel*)chatCell.viewModel;
+            Snap *message = viewModel.message;
+            NSDate *date = [message timestamp];
+            
+            SCSnapMediaCardView *mediaCardView = MSHookIvar<SCSnapMediaCardView*>(chatCell, "_mediaCardView");
+            
+            NSLog(@"%@ is the date for Snap",date);
+            
+            CGSize size = mediaCardView.frame.size;
+            CGRect rect = CGRectMake(size.width*.55,
+                                     size.height*3/8,
+                                     size.width/3,
+                                     size.height/4);
+            
+            if(!chatCells){
+                chatCells = [[NSMutableArray alloc] init];
+            } if(!chatCellLabels){
+                chatCellLabels = [[NSMutableArray alloc] init];
+            }
+            
+            UILabel *label;
+            
+            if(![chatCells containsObject:cell]){
+                label = [[UILabel alloc] initWithFrame:rect];
+                label.textAlignment = NSTextAlignmentCenter;
+                
+                [chatCells addObject:cell];
+                [chatCellLabels addObject:label];
+                
+                [mediaCardView addSubview:label];
+            }else {
+                label = [chatCellLabels objectAtIndex:[chatCells indexOfObject:cell]];
+            }
+            
+            label.frame = rect;
+            
+            NSCalendar* calendar = [NSCalendar currentCalendar];
+            
+            BOOL today = [calendar isDateInToday:date];
+            BOOL yesterday = [calendar isDateInYesterday:date];
+            
+            NSString *timeSinceSnap = nil;
+            
+           if(today){
+                NSUInteger unitFlags = NSSecondCalendarUnit | NSMinuteCalendarUnit | NSHourCalendarUnit | NSDayCalendarUnit;
+                NSDateComponents *components = [calendar components:unitFlags
+                                                               fromDate:date
+                                                                 toDate:[NSDate date]
+                                                                options:0];
+                NSInteger hour = [components hour];
+                NSInteger minute = [components minute];
+                NSInteger second = [components second];
+                
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"hh:mm"];
+                NSString *clockTime = [dateFormatter stringFromDate:date];
+                
+                if(hour){
+                    timeSinceSnap = [NSString stringWithFormat:@"%ld hour%@ ago at %@",(long)hour,hour==1 ? @"" : @"s",clockTime];
+                }else if(minute){
+                    timeSinceSnap = [NSString stringWithFormat:@"%ld minute%@ ago at %@",(long)minute,minute==1 ? @"" : @"s",clockTime];
+                }else if(second){
+                    timeSinceSnap = [NSString stringWithFormat:@"%ld second%@ ago at %@",(long)second,second==1 ? @"" : @"s",clockTime];
+                }
+                
+            }else if(yesterday){
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"hh:mm"];
+                NSString *clockTime = [dateFormatter stringFromDate:date];
+                timeSinceSnap = [NSString stringWithFormat:@"Yesterday %@",clockTime];
+            }else{
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"MMM dd, YYYY hh:mm"];
+                timeSinceSnap = [dateFormatter stringFromDate:date];
+            }
+            label.text = timeSinceSnap;
+            SizeLabelToRect(label,label.frame);
+        }
+    });
+    return cell;
+}
+
 
 #ifdef THEOS
 %end
