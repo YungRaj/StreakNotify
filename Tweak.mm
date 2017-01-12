@@ -530,7 +530,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-//@implementation SnapchatHooks
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -1031,9 +1031,9 @@ static NSMutableArray *chatCellLabels = nil;
             NSLog(@"%@ is the date for Snap",date);
             
             CGSize size = mediaCardView.frame.size;
-            CGRect rect = CGRectMake(size.width*.55,
-                                     size.height*3/8,
-                                     size.width/3,
+            CGRect rect = CGRectMake(size.width*.1,
+                                     size.height*.65,
+                                     size.width/2.5,
                                      size.height/4);
             
             if(!chatCells){
@@ -1046,7 +1046,8 @@ static NSMutableArray *chatCellLabels = nil;
             
             if(![chatCells containsObject:cell]){
                 label = [[UILabel alloc] initWithFrame:rect];
-                label.textAlignment = NSTextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentLeft;
+                
                 
                 [chatCells addObject:cell];
                 [chatCellLabels addObject:label];
@@ -1109,7 +1110,7 @@ static NSMutableArray *chatCellLabels = nil;
 %end
 %end
 #else
-//@end
+@end
 #endif
 
 

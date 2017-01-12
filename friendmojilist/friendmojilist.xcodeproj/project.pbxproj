@@ -10,7 +10,6 @@
 		A52038D11CB58B9E00C89B0C /* FriendmojiTableDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendmojiTableDataSource.h; sourceTree = "<group>"; };
 		A54E2FFC1CB1F4E200C15C00 /* FriendmojiListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiListController.m; sourceTree = "<group>"; };
 		A54E2FFD1CB1F4E200C15C00 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		A54E2FFE1CB1F4E200C15C00 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 		A5D2734C1CB2EAB1003AF340 /* FriendmojiTableDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiTableDataSource.m; sourceTree = "<group>"; };
 		A5F50E301CC9AE9B0081ECDE /* FriendmojiListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendmojiListController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -24,7 +23,6 @@
 				A5F50E301CC9AE9B0081ECDE /* FriendmojiListController.h */,
 				A54E2FFC1CB1F4E200C15C00 /* FriendmojiListController.m */,
 				A54E2FFD1CB1F4E200C15C00 /* Makefile */,
-				A54E2FFE1CB1F4E200C15C00 /* Resources */,
 			);
 			sourceTree = "<group>";
 		};
