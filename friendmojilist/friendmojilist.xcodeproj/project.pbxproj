@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		A52038D11CB58B9E00C89B0C /* FriendmojiTableDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendmojiTableDataSource.h; sourceTree = "<group>"; };
+		A542C8A81E2831E5006DAF83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A54E2FFC1CB1F4E200C15C00 /* FriendmojiListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiListController.m; sourceTree = "<group>"; };
 		A54E2FFD1CB1F4E200C15C00 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A5D2734C1CB2EAB1003AF340 /* FriendmojiTableDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendmojiTableDataSource.m; sourceTree = "<group>"; };
@@ -15,9 +16,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		A542C8A71E2831E5006DAF83 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A542C8A81E2831E5006DAF83 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		A54E2FF31CB1F4E200C15C00 = {
 			isa = PBXGroup;
 			children = (
+				A542C8A71E2831E5006DAF83 /* Resources */,
 				A52038D11CB58B9E00C89B0C /* FriendmojiTableDataSource.h */,
 				A5D2734C1CB2EAB1003AF340 /* FriendmojiTableDataSource.m */,
 				A5F50E301CC9AE9B0081ECDE /* FriendmojiListController.h */,

@@ -354,69 +354,69 @@ static void ScheduleNotificationBB(NSDate *snapDate,
 static void ResetNotifications(){
     /* Set the local notifications based on the preferences, good utility function that is commonly used in the tweak
      */
-    
-    CancelScheduledLocalNotifications();
-    Manager *manager = [objc_getClass("Manager") shared];
-    User *user = [manager user];
-    Friends *friends = [user friends];
-    SCChats *chats = [user chats];
-    
-    NSLog(@"SCChats allChats %@",[chats allChats]);
-    
-    for(SCChat *chat in [chats allChats]){
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        CancelScheduledLocalNotifications();
+        Manager *manager = [objc_getClass("Manager") shared];
+        User *user = [manager user];
+        Friends *friends = [user friends];
+        SCChats *chats = [user chats];
         
-        Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
-        Friend *f = [friends friendForName:[chat recipient]];
+        NSLog(@"SCChats allChats %@",[chats allChats]);
         
-        NSDate *expirationDate = nil;
-        if(objc_getClass("SOJUFriendmoji")){
-            NSArray *friendmojis = f.friendmojis;
-            SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
-            long long expirationTimeValue = [friendmoji expirationTimeValue];
-            expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
-        }else{
-            expirationDate = [earliestUnrepliedSnap timestamp];
-        }
-        
-        NSLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
-        
-        if([f snapStreakCount]>2 && earliestUnrepliedSnap){
-            if([prefs[@"kTwelveHours"] boolValue]){
-                NSLog(@"Scheduling for 12 hours %@",[f name]);
-                ScheduleNotification(expirationDate,f,0,0,12);
+        if([[chats allChats] count]){
+            for(SCChat *chat in [chats allChats]){
                 
-            } if([prefs[@"kFiveHours"] boolValue]){
-                NSLog(@"Scheduling for 5 hours %@",[f name]);
-                ScheduleNotification(expirationDate,f,0,0,5);
+                Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
+                Friend *f = [friends friendForName:[chat recipient]];
                 
-            } if([prefs[@"kOneHour"] boolValue]){
-                NSLog(@"Scheduling for 1 hour %@",[f name]);
-                ScheduleNotification(expirationDate,f,0,0,1);
+                NSDate *expirationDate = nil;
+                if(objc_getClass("SOJUFriendmoji")){
+                    NSArray *friendmojis = f.friendmojis;
+                    SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
+                    long long expirationTimeValue = [friendmoji expirationTimeValue];
+                    expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
+                }else{
+                    expirationDate = [earliestUnrepliedSnap timestamp];
+                }
                 
-            } if([prefs[@"kTenMinutes"] boolValue]){
-                NSLog(@"Scheduling for 10 minutes %@",[f name]);
-                ScheduleNotification(expirationDate,f,0,10,0);
+                NSLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if([f snapStreakCount]>2 && (earliestUnrepliedSnap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
+                        if([prefs[@"kTwelveHours"] boolValue]){
+                            NSLog(@"Scheduling for 12 hours %@",[f name]);
+                            ScheduleNotification(expirationDate,f,0,0,12);
+                            
+                        } if([prefs[@"kFiveHours"] boolValue]){
+                            NSLog(@"Scheduling for 5 hours %@",[f name]);
+                            ScheduleNotification(expirationDate,f,0,0,5);
+                            
+                        } if([prefs[@"kOneHour"] boolValue]){
+                            NSLog(@"Scheduling for 1 hour %@",[f name]);
+                            ScheduleNotification(expirationDate,f,0,0,1);
+                            
+                        } if([prefs[@"kTenMinutes"] boolValue]){
+                            NSLog(@"Scheduling for 10 minutes %@",[f name]);
+                            ScheduleNotification(expirationDate,f,0,10,0);
+                        }
+                        
+                        float seconds = [prefs[@"kCustomSeconds"] floatValue];
+                        float minutes = [prefs[@"kCustomMinutes"] floatValue];
+                        float hours = [prefs[@"kCustomHours"] floatValue] ;
+                        if(hours || minutes || seconds){
+                            NSLog(@"Scheduling for custom time %@",[f name]);
+                            ScheduleNotification(expirationDate,f,seconds,minutes,hours);
+                        }
+                    }
+                });
             }
-            
-            float seconds = [prefs[@"kCustomSeconds"] floatValue];
-            float minutes = [prefs[@"kCustomMinutes"] floatValue];
-            float hours = [prefs[@"kCustomHours"] floatValue] ;
-            if(hours || minutes || seconds){
-                NSLog(@"Scheduling for custom time %@",[f name]);
-                ScheduleNotification(expirationDate,f,seconds,minutes,hours);
-            }
         }
-    }
-    
-    NSLog(@"StreakNotify:: Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
+        NSLog(@"StreakNotify:: Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
+    });
 }
 
-static void ConfigureCell(UIView *cell,
-                          NSMutableArray *instances,
-                          NSMutableArray *labels,
-                          Friend *f,
-                          SCChat *chat,
-                          Snap *snap){
+static UILabel* GetLabelFromCell(UIView *cell,
+                                 NSMutableArray *instances,
+                                 NSMutableArray *labels){
     UILabel *label;
     
     if(![instances containsObject:cell]){
@@ -439,20 +439,40 @@ static void ConfigureCell(UIView *cell,
     }else {
         label = [labels objectAtIndex:[instances indexOfObject:cell]];
     }
-    
-    if([f snapStreakCount]>2 && snap){
-        label.text = [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
-        SizeLabelToRect(label,label.frame);
-        label.hidden = NO;
+    return label;
+}
+
+static NSString *TextForLabel(Friend *f,
+                              SCChat *chat,
+                              Snap *snap){
+    if([f snapStreakCount]>2 &&
+       (snap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
+        return [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
     }else if([f snapStreakCount]>2){
         Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
-        label.text = [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
-        SizeLabelToRect(label,label.frame);
-        label.hidden = NO;
-    }else{
-        label.text = @"";
-        label.hidden = YES;
+        return [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
     }
+    return @"";
+}
+
+static NSString* ConfigureCell(UIView *cell,
+                          NSMutableArray *instances,
+                          NSMutableArray *labels,
+                          Friend *f,
+                          SCChat *chat,
+                          Snap *snap){
+    UILabel *label = GetLabelFromCell(cell,instances,labels);
+    
+    NSString *text = TextForLabel(f,chat,snap);
+    label.text = text;
+    
+    if([text isEqualToString:@""]){
+        label.hidden = YES;
+    }else{
+        label.hidden = NO;
+        SizeLabelToRect(label,label.frame);
+    }
+    return label.text;
 }
 
 void SendAutoReplySnapToUser(NSString *username){
@@ -706,6 +726,19 @@ static NSMutableArray *feedCells = nil;
 static NSMutableArray *feedCellLabels = nil;
 
 #ifdef THEOS
+%hook SCFeedSwipeableTableViewCell
+#endif
+
+-(void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2{
+    
+}
+
+#if THEOS
+%end
+#endif
+
+
+#ifdef THEOS
 %hook SCFeedViewController
 #endif
 
@@ -780,7 +813,13 @@ static NSMutableArray *feedCellLabels = nil;
                 
                 NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
-                ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+                if(!MSHookIvar<SCReplyButton*>(feedCell.feedComponentView,"_replyButton")){
+                    ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
+                }else{
+                    UILabel *label = GetLabelFromCell(cell,feedCells,feedCellLabels);
+                    label.text = @"";
+                    label.hidden = YES;
+                }
             } else{
                 NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
                 // todo: let the user know that the timer could not added to the cells
@@ -893,6 +932,7 @@ static NSMutableArray *contactCellLabels = nil;
 static NSMutableArray *storyCells = nil;
 static NSMutableArray *storyCellLabels = nil;
 
+
 #ifdef THEOS
 %hook SCStoriesViewController
 #endif
@@ -936,8 +976,14 @@ static NSMutableArray *storyCellLabels = nil;
             
             NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
             
-            ConfigureCell(cell, storyCells, storyCellLabels, f, chat, earliestUnrepliedSnap);
-            
+            if([storiesCell respondsToSelector:@selector(isTapToReplyMode)]
+               && ![storiesCell isTapToReplyMode]){
+                ConfigureCell(cell, storyCells, storyCellLabels, f, chat, earliestUnrepliedSnap);
+            }else{
+                UILabel *label = GetLabelFromCell(cell,storyCells,storyCellLabels);
+                label.text = @"";
+                label.hidden = YES;
+            }
         }
     });
 
@@ -981,7 +1027,7 @@ static NSMutableArray *storyCellLabels = nil;
                 Snap *snap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
                 UILabel *label = contactCell.subNameLabel;
-                if([f snapStreakCount]>2 && snap){
+                if([f snapStreakCount]>2 && (snap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
                     NSString *timeRemaining = GetTimeRemaining(f,chat,snap);
                     if(![label.text isEqual:timeRemaining]){
                         label.text = [NSString stringWithFormat:@"⏰ %@",timeRemaining];
@@ -1077,7 +1123,7 @@ static NSMutableArray *chatCellLabels = nil;
                 NSInteger second = [components second];
                 
                 NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                [dateFormatter setDateFormat:@"hh:mm"];
+                [dateFormatter setDateFormat:@"hh:mm a"];
                 NSString *clockTime = [dateFormatter stringFromDate:date];
                 
                 if(hour){
@@ -1090,12 +1136,12 @@ static NSMutableArray *chatCellLabels = nil;
                 
             }else if(yesterday){
                 NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                [dateFormatter setDateFormat:@"hh:mm"];
+                [dateFormatter setDateFormat:@"hh:mm a"];
                 NSString *clockTime = [dateFormatter stringFromDate:date];
                 timeSinceSnap = [NSString stringWithFormat:@"Yesterday %@",clockTime];
             }else{
                 NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                [dateFormatter setDateFormat:@"MMM dd, YYYY hh:mm"];
+                [dateFormatter setDateFormat:@"MMM dd, YYYY hh:mm a"];
                 timeSinceSnap = [dateFormatter stringFromDate:date];
             }
             label.text = timeSinceSnap;
