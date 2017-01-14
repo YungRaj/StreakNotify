@@ -32,9 +32,10 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 
 
 @interface SNDaemon : NSObject {
-    BOOL _snapchatOpen;
+    
 }
 
+@property (assign,nonatomic) BOOL applicationLaunched;
 @property (strong,nonatomic) NSDictionary *friendNamesAndEmojis;
 
 @end
@@ -79,7 +80,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     
     NSLog(@"Running servers on the daemon");
     
-    _snapchatOpen = NO;
+    self.applicationLaunched = NO;
     
     /* run a messaging center server on the daemon so that the client (tweak) can send us messages when it needs to update anything that we need */
     

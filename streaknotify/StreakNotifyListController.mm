@@ -14,8 +14,6 @@
 -(id)specifiers {
     if(!_specifiers) {
 		_specifiers = [[self loadSpecifiersFromPlistName:@"StreakNotify" target:self] retain];
-        
-       
 	}
 	return _specifiers;
 }
@@ -31,6 +29,14 @@
 
 }
 
+-(void)terminateSnapchat{
+    pid_t pid;
+    int status;
+    const char *argv[] = {"killall","Snapchat", NULL};
+    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+    waitpid(pid, &status, WEXITED);
+}
+
  -(void)choosePhotoForAutoReplySnapstreak{
      NSLog(@"streaknotify:: prompting user to select auto reply snapstreak image");
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
@@ -38,7 +44,7 @@
     pickerLibrary.delegate = self;
     [self presentViewController:pickerLibrary animated:YES completion:nil];
  }
- 
+
  -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
     UIImage *image = [info valueForKey:UIImagePickerControllerOriginalImage];
     NSData *imageData = UIImageJPEGRepresentation(image,0.7);
@@ -71,7 +77,7 @@
 
 // check out my project on github
 -(void)github {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/ilhanraja/StreakNotify"]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/yungraj/StreakNotify"]];
 }
 
 

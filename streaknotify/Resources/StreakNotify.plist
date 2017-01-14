@@ -6,11 +6,25 @@
 	<array>
 		<dict>
 			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>General</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>action</key>
 			<string>respring</string>
 			<key>label</key>
 			<string>Respring</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>action</key>
+			<string>terminateSnapchat</string>
+			<key>label</key>
+			<string>Close Snapchat</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -23,6 +37,18 @@
 			<string>kStreakNotifyDisabled</string>
 			<key>label</key>
 			<string>Disable StreakNotify?</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.YungRaj.streaknotify</string>
+			<key>key</key>
+			<string>kExactTime</string>
+			<key>label</key>
+			<string>Show exact time remaining</string>
 		</dict>
 		<dict>
 			<key>cell</key>

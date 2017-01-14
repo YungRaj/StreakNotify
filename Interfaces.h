@@ -1161,7 +1161,7 @@ typedef id CDUnknownBlockType;
 - (void)discoverMessageDidSentWithSuccess:(_Bool)arg1 discoverMessage:(id)arg2;
 - (void)insertSendingMedia:(id)arg1;
 - (id)chatForBaseMediaMessage:(id)arg1;
-- (id)allChats;
+- (NSArray*)allChats;
 - (id)clearableChats;
 - (id)orderedChats;
 - (id)uniqueChats;
@@ -1951,66 +1951,142 @@ typedef id CDUnknownBlockType;
 @end
 
 
-@class NSArray, NSDate, NSNumber, NSSet, NSString;
+@class Media, NSArray, NSDate, NSNumber, NSSet, NSString;
 
 @interface Friend : NSObject
 {
+    _Bool _isVerified;
+    _Bool _newLink;
+    _Bool _ignored;
+    _Bool _hidden;
+    _Bool _isRecommended;
+    _Bool _canSeeCustomStories;
+    _Bool _needsLoveCandidate;
+    _Bool _isSharedStory;
+    _Bool _hasCustomDescriptionForSharedStory;
+    _Bool _sharedLocalStory;
+    _Bool _unVerifiedByServer;
+    _Bool _autoAdded;
+    NSString *_atomicName;
     NSString *_kvoName;
-    NSString *_name;
     NSString *_userId;
     NSString *_display;
-    NSSet *_searchKeywords;
+    NSString *_suggestionToken;
+    NSString *_suggestReasonDisplay;
+    NSSet *_atomicSearchKeywords;
     long long _type;
-    NSArray *_bests;
-    NSDate *_bestsUpdated;
+    NSNumber *_contactBasedRecommendationScore;
     NSNumber *_score;
-    NSArray *_friendmojiSymbols;
+    NSArray *_friendmojis;
     long long _snapStreakCount;
     NSString *_snaptagUrl;
     NSString *_sharedStoryDescription;
     NSString *_sharedStoryId;
     NSString *_sharedStoryVenue;
+    NSString *_storyPrivacy;
+    NSString *_bitmojiAvatarId;
+    Media *_latestStoryThumbnailMedia;
+    NSString *_latestStoryMediaKey;
+    NSString *_latestStoryThumbnailIv;
+    NSString *_latestStoryThumbnailUrl;
+    NSString *_birthday;
+    NSDate *_birthdayDate;
     NSDate *_expiration;
 }
 
++ (id)firstNameForName:(id)arg1;
 + (id)friendWithSuggestedFriend:(id)arg1;
 + (id)friendWithAddedFriend:(id)arg1;
-@property(retain, nonatomic) NSString *snaptagUrl; 
-@property(readonly, nonatomic) long long snapStreakCount;
-@property(retain, nonatomic) NSArray *friendmojiSymbols;
-@property(nonatomic) _Bool scrambleBestFriends;
-@property(retain, nonatomic) NSNumber *score;
-@property(retain, nonatomic) NSDate *bestsUpdated;
-@property(retain, nonatomic) NSArray *bests;
-@property(nonatomic) long long type;
-@property(retain, nonatomic) NSSet *searchKeywords;
-@property(nonatomic) _Bool isVerified;
-@property(copy, nonatomic) NSString *display;
-@property(copy, nonatomic) NSString *userId;
-@property(copy, nonatomic) NSString *name;
-@property(retain, nonatomic) NSString *kvoName;
-
++ (id)convertCategoriesToFriendmojis:(id)arg1;
++ (CDUnknownBlockType)friendFilterBlockIncludeStories:(_Bool)arg1;
+@property(retain) NSDate *expiration; // @synthesize expiration=_expiration;
+@property _Bool autoAdded; // @synthesize autoAdded=_autoAdded;
+@property(retain) NSDate *birthdayDate; // @synthesize birthdayDate=_birthdayDate;
+@property(copy) NSString *birthday; // @synthesize birthday=_birthday;
+@property _Bool unVerifiedByServer; // @synthesize unVerifiedByServer=_unVerifiedByServer;
+@property(copy) NSString *latestStoryThumbnailUrl; // @synthesize latestStoryThumbnailUrl=_latestStoryThumbnailUrl;
+@property(copy) NSString *latestStoryThumbnailIv; // @synthesize latestStoryThumbnailIv=_latestStoryThumbnailIv;
+@property(copy) NSString *latestStoryMediaKey; // @synthesize latestStoryMediaKey=_latestStoryMediaKey;
+@property(retain) Media *latestStoryThumbnailMedia; // @synthesize latestStoryThumbnailMedia=_latestStoryThumbnailMedia;
+@property(copy) NSString *bitmojiAvatarId; // @synthesize bitmojiAvatarId=_bitmojiAvatarId;
+@property(copy) NSString *storyPrivacy; // @synthesize storyPrivacy=_storyPrivacy;
+@property _Bool sharedLocalStory; // @synthesize sharedLocalStory=_sharedLocalStory;
+@property(copy) NSString *sharedStoryVenue; // @synthesize sharedStoryVenue=_sharedStoryVenue;
+@property(copy) NSString *sharedStoryId; // @synthesize sharedStoryId=_sharedStoryId;
+@property _Bool hasCustomDescriptionForSharedStory; // @synthesize hasCustomDescriptionForSharedStory=_hasCustomDescriptionForSharedStory;
+@property(copy) NSString *sharedStoryDescription; // @synthesize sharedStoryDescription=_sharedStoryDescription;
+@property _Bool isSharedStory; // @synthesize isSharedStory=_isSharedStory;
+@property(retain) NSString *snaptagUrl; // @synthesize snaptagUrl=_snaptagUrl;
+@property long long snapStreakCount; // @synthesize snapStreakCount=_snapStreakCount;
+@property(retain) NSArray *friendmojis; // @synthesize friendmojis=_friendmojis;
+@property _Bool needsLoveCandidate; // @synthesize needsLoveCandidate=_needsLoveCandidate;
+@property _Bool canSeeCustomStories; // @synthesize canSeeCustomStories=_canSeeCustomStories;
+@property(retain) NSNumber *score; // @synthesize score=_score;
+@property(retain) NSNumber *contactBasedRecommendationScore; // @synthesize contactBasedRecommendationScore=_contactBasedRecommendationScore;
+@property _Bool isRecommended; // @synthesize isRecommended=_isRecommended;
+@property _Bool hidden; // @synthesize hidden=_hidden;
+@property _Bool ignored; // @synthesize ignored=_ignored;
+@property _Bool newLink; // @synthesize newLink=_newLink;
+@property long long type; // @synthesize type=_type;
+@property(retain) NSSet *atomicSearchKeywords; // @synthesize atomicSearchKeywords=_atomicSearchKeywords;
+@property _Bool isVerified; // @synthesize isVerified=_isVerified;
+@property(copy) NSString *suggestReasonDisplay; // @synthesize suggestReasonDisplay=_suggestReasonDisplay;
+@property(copy) NSString *suggestionToken; // @synthesize suggestionToken=_suggestionToken;
+@property(copy) NSString *display; // @synthesize display=_display;
+@property(copy) NSString *userId; // @synthesize userId=_userId;
+@property(copy) NSString *kvoName; // @synthesize kvoName=_kvoName;
+@property(copy) NSString *atomicName; // @synthesize atomicName=_atomicName;
+- (id)URLForMedia:(id)arg1;
+- (id)requestContexts;
+- (_Bool)needsAuthToFetch;
+- (_Bool)encrypt;
+- (_Bool)persist;
+- (id)encryptionDictionaryForMedia:(id)arg1;
+- (id)decryptData:(id)arg1 forMedia:(id)arg2;
+- (id)mediaIdForMedia:(id)arg1;
+- (_Bool)isCurrentFriend;
+- (_Bool)isStoryPublic;
+- (_Bool)isInvitedFriend;
 - (_Bool)shouldShowFriendmoji:(id)arg1 forViewType:(long long)arg2;
+- (id)getFriendmojisWithoutSnapStreakMojis;
+- (void)removeSnapStreak;
+- (void)setSnapStreakMetadataWithExpiryTime:(id)arg1 withCount:(long long)arg2;
 - (id)getFriendmojiForViewType:(long long)arg1;
+- (id)getFriendmoji;
+- (_Bool)hasFriendmoji;
 - (id)getSharedStoriesMessage;
 - (id)getKey;
+- (id)getBirthday;
 - (id)duplicate;
 - (id)updateWithFriend:(id)arg1;
+- (_Bool)hasBirthdayToday;
 - (id)nameToDisplay;
 - (_Bool)hasDisplay;
-- (_Bool)shouldFetchBestFriends;
-- (_Bool)fetchedBestFriends;
 - (id)toDictionary;
 @property(readonly) unsigned long long hash;
 - (_Bool)isEqualToFriend:(id)arg1;
 - (long long)compare:(id)arg1;
 - (_Bool)keywordMatchesCleanedQuery:(id)arg1;
+- (id)searchKeywords;
+- (void)setSearchKeywords:(id)arg1;
+- (_Bool)matchesByPartialName:(id)arg1;
+- (_Bool)matchesByDisplayLastName:(id)arg1;
+- (_Bool)matchesByDisplayFirstName:(id)arg1;
+- (_Bool)matchesByDisplayAndUserNames:(id)arg1;
+- (_Bool)matchesPrefix:(id)arg1;
 - (_Bool)matchesForOfficialStorySearch:(id)arg1;
 - (_Bool)matchesByDisplayName:(id)arg1;
 - (_Bool)matchesByUsername:(id)arg1;
 - (_Bool)matches:(id)arg1;
 - (_Bool)isEqual:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
 - (void)updateSnaptagUrl:(id)arg1;
+- (void)setName:(id)arg1;
+- (id)name;
+- (void)upgradeFriendmojisIfNecessaryWithSymbols:(id)arg1;
+- (id)initUnverifiedUserWithUsername:(id)arg1;
+- (id)initDummyUserWithUsername:(id)arg1 displayName:(id)arg2 userId:(id)arg3;
 - (id)initWithSearchResultSOJU:(id)arg1;
 - (void)initNewFriendFields;
 - (id)initWithName:(id)arg1;
@@ -2019,7 +2095,9 @@ typedef id CDUnknownBlockType;
 - (id)initWithFindFriendsContact:(id)arg1;
 - (id)initWithSoju:(id)arg1;
 
+
 @end
+
 
 @class NSMutableArray, NSMutableDictionary, NSString, SCFriendProfileCollection, SCRecentFriends;
 
@@ -2185,6 +2263,73 @@ typedef id CDUnknownBlockType;
 + (void)fetchBestFriendsOfFriends:(id)arg1 successBlock:(id)arg2 failureBlock:(id)arg3;
 @end
 
+@class NSString, NSTimer, SCAddFriendButtonV2, SCAnimatingReplaySnapView, SCFriendmojiView, SCLoadingIndicatorView, SCReplyButton, UIImageView, UILabel;
+
+
+@interface SCFeedComponentView : UIView
+{
+    SCLoadingIndicatorView *_activityIndicator;
+    UIImageView *_feedIconView;
+    UILabel *_snapCountDownLabel;
+    SCAnimatingReplaySnapView *_animatingReplaySnapView;
+    UILabel *_mainLabel;
+    UILabel *_subLabel;
+    _Bool _isAnimatingSubLabel;
+    UIView *_bottomBorder;
+    SCFriendmojiView *_friendMojiView;
+    SCReplyButton *_replyButton;
+    SCAddFriendButtonV2 *_addFriendButton;
+    UILabel *_groupMojiLabel;
+    _Bool _highlightEnabled;
+    NSTimer *_snapTimer;
+    id _viewModel;
+    id _delegate;
+    UIView *_replyButtonParentView;
+}
+
+- (void)_refreshGroupSnapCountdownLabel;
+- (void)_refreshSnapCountdownLabel;
+- (void)_setSnapCountdownLabelWithTimeLeft:(unsigned long long)arg1;
+- (void)_startSnapTimerIfNecessary;
+- (id)activityIndicator;
+- (void)alternateReplyButtonSubLabelWithTapToChatOn:(_Bool)arg1;
+- (void)animateSnapReplayIfNecessary;
+- (void)animateSubLabelWithAnimations:(CDUnknownBlockType)arg1 completion:(CDUnknownBlockType)arg2;
+- (void)buttonV2Pressed:(id)arg1 friend:(id)arg2;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (id)feedIconView;
+- (void)handlePressOnReplyButton;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (_Bool)isAddFriendButtonVisible;
+- (_Bool)isFriendMojiViewVisible;
+- (_Bool)isGroupMojiLableVisible;
+- (_Bool)isReplyButtonVisible;
+- (void)prepareForReuse;
+- (void)removeSubstituteLabelAnimations;
+- (id)replyButton;
+@property(retain, nonatomic) UIView *replyButtonParentView; // @synthesize replyButtonParentView=_replyButtonParentView;
+- (void)resetBackgroundColorAnimated:(_Bool)arg1;
+- (void)resizeMainLabel;
+- (void)resizeSubLabel;
+- (void)setBackgroundAlpha:(double)arg1;
+- (void)setBackgroundColor:(id)arg1;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)setLabel:(id)arg1 width:(double)arg2;
+- (void)setTouchedBackgroundColor;
+- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
+@property(retain, nonatomic) id viewModel; // @synthesize viewModel=_viewModel;
+- (void)showSubstituteSubLabelBriefly;
+- (id)snapCountDownLabel;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)updateAddFriendButton;
+- (void)updateFriendMojiView;
+- (void)updateGroupIconView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+- (void)updateSnapCountdownLabel;
+- (void)updateSubLabel;
+
+@end
+
 @protocol SCMediaOwnerProtocol, SCUserProtocol, SCFeedSwipeDelegate, SCFeedGestureHandlerDelegate;
 
 @class NSString, NSTimer, SCAnimatingReplaySnapView, SCFriendmojiView, UIActivityIndicatorView, UIImageView, UILabel, UIScrollView, UIView;
@@ -2212,6 +2357,71 @@ typedef id CDUnknownBlockType;
 
 @end
 
+@interface SCFeedSwipeableTableViewCell : SCFeedTableViewCell
+{
+    UIImageView *_swipeBackgroundIconView;
+    _Bool _isPulling;
+    _Bool _isScrolling;
+    _Bool _deceleratingToZero;
+    UIScrollView *_scrollView;
+    UIView *_swipeBackgroundView;
+    SCFeedComponentView *_feedComponentView;
+    double _decelerationDistanceRatio;
+}
+
++ (_Bool)shouldEnableChatButtonReply;
++ (double)feedSwipeViewWidth;
++ (id)swipeBackgroundViewColor;
+@property(nonatomic) double decelerationDistanceRatio; // @synthesize decelerationDistanceRatio=_decelerationDistanceRatio;
+@property(nonatomic) _Bool deceleratingToZero; // @synthesize deceleratingToZero=_deceleratingToZero;
+@property(nonatomic) _Bool isScrolling; // @synthesize isScrolling=_isScrolling;
+@property(nonatomic) _Bool isPulling; // @synthesize isPulling=_isPulling;
+@property(retain, nonatomic) SCFeedComponentView *feedComponentView; // @synthesize feedComponentView=_feedComponentView;
+@property(retain, nonatomic) UIView *swipeBackgroundView; // @synthesize swipeBackgroundView=_swipeBackgroundView;
+@property(retain, nonatomic) UIScrollView *scrollView; // @synthesize scrollView=_scrollView;
+- (id)swipeBackgroundIconView;
+- (void)endPanning:(_Bool)arg1;
+- (void)panOverWithOffset:(double)arg1 isDragging:(_Bool)arg2;
+- (void)bounceWithMagnitude:(long long)arg1 completion:(CDUnknownBlockType)arg2;
+- (double)bounceXOffsetWithMagnitude:(long long)arg1;
+- (void)bounceWithCompletion:(CDUnknownBlockType)arg1;
+- (void)bounce;
+- (void)bounceRepeatedlyAfterDelays:(id)arg1;
+- (void)bounceRepeatedlyIfNecessary;
+- (void)resetNextVC:(id)arg1;
+- (void)prepareNextVC:(id)arg1;
+- (void)snapTimerDidExpire;
+- (void)snapSubstituteLabelDidShow;
+- (void)handlePressOnReplyButton;
+- (void)scrollingEnded;
+- (void)scrollViewWillEndDragging:(id)arg1 withVelocity:(struct CGPoint)arg2 targetContentOffset:(inout struct CGPoint *)arg3;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)scrollViewDidEndDecelerating:(id)arg1;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)removeSubstituteLabelAnimations;
+- (void)showSnapSubstituteSubLabelBrieflyIfNecessary;
+- (void)showSubstituteSubLabelBriefly;
+- (void)resetBackgroundColorAnimated:(_Bool)arg1;
+- (void)setTouchedBackgroundColorWithDismissPercentage:(double)arg1;
+- (void)setTouchedBackgroundColor;
+- (id)feedIconView;
+- (void)updateFriendMojiView;
+- (void)updateReplyButtonWithIdentifer:(id)arg1 updateFriendMoji:(_Bool)arg2;
+- (void)toggleBottomBorderVisibility:(_Bool)arg1;
+- (void)setViewModel:(id)arg1;
+- (_Bool)longPressGestureRecognizerShouldBegin;
+- (_Bool)doubleTapGestureRecognizerShouldBegin;
+- (_Bool)delayedTapGestureRecognizerShouldBegin;
+- (_Bool)tapGestureRecognizerShouldBegin;
+- (void)setHighlighted:(_Bool)arg1 animated:(_Bool)arg2;
+- (void)prepareForReuse;
+- (id)swipeableViewModel;
+- (void)_initV10Views;
+- (void)initViews;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
+
+@end
 
 @class SCFriendProfileCellView, UIView;
 
@@ -2461,10 +2671,16 @@ typedef id CDUnknownBlockType;
 
 @end
 
-@class FriendStories, SCExpandedButton, SCFriendmojiView, SCLoadingIndicatorView, SCMyStories, SCPieSliceView, SCProgressSaveButton, SCSingleIconConfigurer, SCSingleIconViewBase, UIButton, UIImageView, UILabel, UIView;
+@class Friend, FriendStories, NSString, SCExpandedButton, SCFriendRectangleChatButton, SCFriendmojiView, SCMyStories, SCPieSliceView, SCSingleIconConfigurer, SCStoryIconView, SCStorySaveButton, UIButton, UIImageView, UILabel, UIView;
 
 @interface StoriesCell : UITableViewCell
 {
+    Friend *_curFriend;
+    SCStoryIconView *_thumbnailView;
+    SCSingleIconConfigurer *_singleIconConfigurer;
+    NSString *_subText;
+    NSString *_alternativeSubText;
+    _Bool _tapToReplyMode;
     _Bool _needsTopBorder;
     _Bool _needsBottomBorder;
     _Bool _needsRightEdgeInset;
@@ -2472,8 +2688,7 @@ typedef id CDUnknownBlockType;
     _Bool _animatingHideSubView;
     _Bool _myStoriesExpanded;
     id _delegate;
-    SCSingleIconViewBase *_singleIconView;
-    SCLoadingIndicatorView *_loadingIndicator;
+    id _textRotationDataSource;
     long long _cellType;
     long long _previousCellType;
     SCMyStories *_myStories;
@@ -2481,32 +2696,39 @@ typedef id CDUnknownBlockType;
     FriendStories *_previousStories;
     UILabel *_nameLabel;
     SCExpandedButton *_expandMyStoryButton;
-    UIButton *_replySnapButton;
+    SCExpandedButton *_myStorySettingButton;
+    SCExpandedButton *_addToStoryButton;
+    UIButton *_replyButton;
     SCFriendmojiView *_friendMojiView;
-    SCProgressSaveButton *_saveButton;
+    SCStorySaveButton *_saveButton;
     UIButton *_mySharedStoryInfoButton;
     UILabel *_subLabel;
     UIView *_topBorder;
     UIView *_bottomBorder;
-    SCSingleIconConfigurer *_singleIconConfigurer;
     SCPieSliceView *_pieSliceView;
     UIView *_subView;
     UIImageView *_cameraReplyIcon;
+    SCFriendRectangleChatButton *_chatButton;
+    UILabel *_chatText;
+    UIView *_separateLine;
 }
 
-+ (void)updateLabel:(id)arg1 withStatusText:(id)arg2 date:(id)arg3 showTimestamp:(_Bool)arg4 timestampBeforeStatusText:(_Bool)arg5 isRefresh:(_Bool)arg6;
+@property(retain, nonatomic) UIView *separateLine; // @synthesize separateLine=_separateLine;
+@property(retain, nonatomic) UILabel *chatText; // @synthesize chatText=_chatText;
+@property(retain, nonatomic) SCFriendRectangleChatButton *chatButton; // @synthesize chatButton=_chatButton;
 @property(retain, nonatomic) UIImageView *cameraReplyIcon; // @synthesize cameraReplyIcon=_cameraReplyIcon;
 @property(retain, nonatomic) UIView *subView; // @synthesize subView=_subView;
 @property(retain, nonatomic) SCPieSliceView *pieSliceView; // @synthesize pieSliceView=_pieSliceView;
-@property(retain, nonatomic) SCSingleIconConfigurer *singleIconConfigurer; // @synthesize singleIconConfigurer=_singleIconConfigurer;
 @property(retain, nonatomic) UIView *bottomBorder; // @synthesize bottomBorder=_bottomBorder;
 @property(retain, nonatomic) UIView *topBorder; // @synthesize topBorder=_topBorder;
 @property(nonatomic) _Bool myStoriesExpanded; // @synthesize myStoriesExpanded=_myStoriesExpanded;
 @property(retain, nonatomic) UILabel *subLabel; // @synthesize subLabel=_subLabel;
 @property(retain, nonatomic) UIButton *mySharedStoryInfoButton; // @synthesize mySharedStoryInfoButton=_mySharedStoryInfoButton;
-@property(retain, nonatomic) SCProgressSaveButton *saveButton; // @synthesize saveButton=_saveButton;
+@property(retain, nonatomic) SCStorySaveButton *saveButton; // @synthesize saveButton=_saveButton;
 @property(retain, nonatomic) SCFriendmojiView *friendMojiView; // @synthesize friendMojiView=_friendMojiView;
-@property(retain, nonatomic) UIButton *replySnapButton; // @synthesize replySnapButton=_replySnapButton;
+@property(retain, nonatomic) UIButton *replyButton; // @synthesize replyButton=_replyButton;
+@property(retain, nonatomic) SCExpandedButton *addToStoryButton; // @synthesize addToStoryButton=_addToStoryButton;
+@property(retain, nonatomic) SCExpandedButton *myStorySettingButton; // @synthesize myStorySettingButton=_myStorySettingButton;
 @property(retain, nonatomic) SCExpandedButton *expandMyStoryButton; // @synthesize expandMyStoryButton=_expandMyStoryButton;
 @property(retain, nonatomic) UILabel *nameLabel; // @synthesize nameLabel=_nameLabel;
 @property(retain, nonatomic) FriendStories *previousStories; // @synthesize previousStories=_previousStories;
@@ -2516,55 +2738,61 @@ typedef id CDUnknownBlockType;
 @property(nonatomic) long long cellType; // @synthesize cellType=_cellType;
 @property(nonatomic) _Bool animatingHideSubView; // @synthesize animatingHideSubView=_animatingHideSubView;
 @property(nonatomic) _Bool animatingShowSubView; // @synthesize animatingShowSubView=_animatingShowSubView;
-@property(retain, nonatomic) SCLoadingIndicatorView *loadingIndicator; // @synthesize loadingIndicator=_loadingIndicator;
-@property(retain, nonatomic) SCSingleIconViewBase *singleIconView; // @synthesize singleIconView=_singleIconView;
 @property(nonatomic) _Bool needsRightEdgeInset; // @synthesize needsRightEdgeInset=_needsRightEdgeInset;
 @property(nonatomic) _Bool needsBottomBorder; // @synthesize needsBottomBorder=_needsBottomBorder;
 @property(nonatomic) _Bool needsTopBorder; // @synthesize needsTopBorder=_needsTopBorder;
+@property(nonatomic) __weak id textRotationDataSource; // @synthesize textRotationDataSource=_textRotationDataSource;
 @property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+- (void)setPressedState:(_Bool)arg1;
 - (long long)loadStateForFriendStories:(id)arg1 cellType:(long long)arg2;
 - (id)thumbnailLayer;
 - (id)thumbnailIcon;
+- (void)_chatButtonPressed;
 - (void)mySharedStoryInfoPressed;
 - (void)savePressed;
+- (void)addToStoryButtonPressed;
+- (void)myStorySettingButtonPressed;
 - (void)expandMyStoryButtonPressed;
-- (void)replySnapButtonPressed;
+- (void)replyButtonPressed;
+- (void)_updateSubLabelWithSubText:(id)arg1 alternativeSubText:(id)arg2 useAlternative:(_Bool)arg3;
+- (void)_updateSubLabel:(id)arg1;
 - (void)saveStorySucceeded:(_Bool)arg1;
-- (_Bool)shouldShowTapToReplyForFriendStories:(id)arg1 cellType:(long long)arg2;
 - (void)updateSaveStoryProgress:(double)arg1;
-- (void)updateStatusTextForFriendStoriesCellWithFriendStories:(id)arg1 forViewingType:(long long)arg2;
-- (void)layoutRowsWithHasThumbnail:(_Bool)arg1 hasRightButton:(_Bool)arg2;
-- (id)timestampForDate:(id)arg1;
+- (void)_updateStatusTextForFriendStoriesCellWithFriendStories:(id)arg1 forViewingType:(long long)arg2;
+- (void)toggleSelectedThumbnail:(_Bool)arg1 animated:(_Bool)arg2;
 - (void)toggleRightOffset:(_Bool)arg1;
+- (void)_updateSubviewsForFriend;
 - (void)updateWithFriend:(id)arg1;
-- (void)updateSubLabelWithStatusText:(id)arg1 date:(id)arg2 showTimestamp:(_Bool)arg3 timestampBeforeStatusText:(_Bool)arg4;
-- (void)updateSubLabelWithStatusText:(id)arg1 date:(id)arg2 showTimestamp:(_Bool)arg3;
-- (_Bool)cellIsBeingRefreshed;
-- (void)updateSubLabelWithMyStories:(id)arg1;
+- (_Bool)_cellIsBeingRefreshed;
+- (void)_updateSubLabelWithMyStories:(id)arg1;
 - (void)updateWithMyStories:(id)arg1 expanded:(_Bool)arg2 isContributionStory:(_Bool)arg3;
-- (void)hideSaveButtonHelper:(_Bool)arg1;
-- (void)setFriendmojiViewForFriend:(id)arg1;
-- (void)addFriendmojiViewForFriend:(id)arg1;
+- (void)_setFriendmojiViewForFriend:(id)arg1;
+- (void)_addFriendmojiViewForFriend:(id)arg1;
 - (void)showPieSliceView:(_Bool)arg1 forFriendStories:(id)arg2;
-- (void)updateWithCellType:(long long)arg1 friendStories:(id)arg2;
+- (_Bool)_shouldShowTapToReplyWithCellType:(long long)arg1 friendStories:(id)arg2;
+- (void)_updateWithCellType:(long long)arg1 friendStories:(id)arg2;
 - (void)updateWithFriendStories:(id)arg1;
 - (void)updateWithUnviewedFriendStories:(id)arg1;
 - (void)updateWithDiscoverChannel:(id)arg1;
-- (void)showTapToReply:(_Bool)arg1;
+- (void)toggleSubText:(_Bool)arg1;
+- (void)_showTapToReply:(_Bool)arg1;
 - (void)hideSubViewWithoutAnimation;
-- (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1 duration:(double)arg2 delay:(double)arg3 completion:(id)arg4;
+- (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1 duration:(double)arg2 delay:(double)arg3 completion:(CDUnknownBlockType)arg4;
 - (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1 duration:(double)arg2;
 - (void)hideSubViewIfNecessaryAnimated:(_Bool)arg1;
 - (void)showSubViewWithoutAnimation;
 - (void)showSubViewIfNecessaryAnimated:(_Bool)arg1;
 - (void)setDisplayNameForDiscoverChannel:(id)arg1;
 - (void)setDisplayNameForFriendStories:(id)arg1;
-- (void)layoutSubviewsForFriend;
-- (void)layoutSubviewsForStoryOrDiscover;
-- (id)leftButtonConstraintMakerWithView:(id)arg1 referenceView:(id)arg2 resizable:(_Bool)arg3;
-- (id)rightButtonConstraintMakerWithView:(id)arg1 resizable:(_Bool)arg2;
+- (void)layoutLabels;
+- (void)layoutSubviews;
+- (CDUnknownBlockType)_leftButtonConstraintMakerWithView:(id)arg1 referenceView:(id)arg2 resizable:(_Bool)arg3;
+- (id)replySnapButton;
+- (_Bool)isTapToReplyMode;
+- (id)dismissBaseView;
+- (struct CGRect)thumbnailTouchRegion;
 - (struct CGRect)thumbnailRect;
-- (id)defaultBackgroundColor;
+- (void)clearThumbnail;
 - (void)prepareForReuse;
 - (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2;
 
@@ -2906,3 +3134,720 @@ typedef id CDUnknownBlockType;
 - (id)initWithFrame:(struct CGRect)arg1 configuration:(id)arg2;
 
 @end
+
+
+@class NSNumber, NSString;
+
+@interface SOJUFriendmoji : NSObject
+{
+    NSString *_categoryName;
+    NSNumber *_expirationTime;
+}
+
+@property(readonly, copy, nonatomic) NSNumber *expirationTime; // @synthesize expirationTime=_expirationTime;
+@property(readonly, copy, nonatomic) NSString *categoryName; // @synthesize categoryName=_categoryName;
+@property(readonly, copy) NSString *description;
+@property(readonly) unsigned long long hash;
+- (_Bool)isEqual:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithCategoryName:(id)arg1 expirationTime:(id)arg2;
+- (id)toJson;
+- (id)toDictionary;
+- (id)initWithJSONDictionary:(id)arg1;
+- (long long)expirationTimeValue;
+
+@end
+
+@class SCHeaderStatusView, UILabel, UIView;
+
+@interface SCMessageChatTableViewCell : UITableViewCell
+{
+    UIView *_payloadView;
+    UIView *_metadataView;
+    UILabel *_timeLabel;
+    UIView *_senderLine;
+    SCHeaderStatusView *_headerStatusView;
+    id _viewModel;
+}
+
++ (double)senderLineWidth;
++ (id)_timeLabelFont;
++ (double)timeLabelWidth;
+@property(retain, nonatomic) id viewModel; // @synthesize viewModel=_viewModel;
+@property(retain, nonatomic) SCHeaderStatusView *headerStatusView; // @synthesize headerStatusView=_headerStatusView;
+@property(retain, nonatomic) UIView *senderLine; // @synthesize senderLine=_senderLine;
+@property(retain, nonatomic) UILabel *timeLabel; // @synthesize timeLabel=_timeLabel;
+@property(retain, nonatomic) UIView *metadataView; // @synthesize metadataView=_metadataView;
+@property(retain, nonatomic) UIView *payloadView; // @synthesize payloadView=_payloadView;
+- (void)showHeader;
+- (void)hideHeader;
+- (double)payloadHeight;
+- (void)renderMetadata;
+- (unsigned long long)_senderLineCornerMask;
+- (double)senderLineHeight;
+- (void)renderRoundCorners;
+- (void)renderPayload;
+- (void)renderBody;
+- (void)_renderSenderHeader:(_Bool)arg1;
+- (void)_setHeaderVisible:(_Bool)arg1 dateHeaderVisible:(_Bool)arg2;
+- (void)_renderHeaderWithDateHeader:(_Bool)arg1 withSenderHeader:(_Bool)arg2;
+- (void)displayCell;
+- (void)prepareForReuse;
+- (void)initPayloadView;
+- (void)initMetadataViews;
+- (void)initHeader;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2 parentVC:(id)arg3;
+
+@end
+
+@class NSString, SCAnimatingReplaySnapView, SCSnapMediaCardView, UILabel, UIView;
+
+@interface SCSnapChatTableViewCellV2 : SCMessageChatTableViewCell
+{
+    SCSnapMediaCardView *_mediaCardView;
+    UILabel *_replayNotificationLabel;
+    UILabel *_screenshotNotificationLabel;
+    SCAnimatingReplaySnapView *_animatingReplaySnapView;
+    UIView *_animatingSnapView;
+}
+
++ (id)notificationLabelFont;
+- (_Bool)fullScreenIsShown;
+- (void)dismissFullScreenView;
+- (void)resetWithOriginalContent;
+- (id)actionMenuContentViewForIndex:(unsigned long long)arg1;
+- (void)configureWithActionMenuVC:(id)arg1;
+- (void)didEndDisplay;
+- (void)updatePullToDismissFinalCircleFrame;
+- (void)onLongPress;
+- (void)onTap;
+- (_Bool)_isGroupChat;
+- (void)_setupMediaCardConstraints;
+- (void)_setupNotificationLabels;
+- (struct CGRect)getSnapIconViewRect;
+- (double)senderLineHeight;
+- (void)renderPayload;
+- (id)snapViewModel;
+- (void)setViewModel:(id)arg1;
+- (void)prepareForReuse;
+- (id)initWithStyle:(long long)arg1 reuseIdentifier:(id)arg2 parentVC:(id)arg3 delegate:(id)arg4;
+
+
+@end
+
+@interface SCBaseChatCellViewModel : NSObject
+{
+    _Bool _topRightCornerIsRounded;
+    _Bool _bottomRightCornerIsRounded;
+    _Bool _bottomLeftCornerIsRounded;
+    int _headerIndex;
+}
+
++ (id)notificationLabelColor;
++ (id)notificationLabelFont;
++ (id)dateHeaderLabelColor;
++ (id)dateHeaderLabelFont;
+@property(nonatomic) int headerIndex; // @synthesize headerIndex=_headerIndex;
+@property(nonatomic) _Bool bottomLeftCornerIsRounded; // @synthesize bottomLeftCornerIsRounded=_bottomLeftCornerIsRounded;
+@property(nonatomic) _Bool bottomRightCornerIsRounded; // @synthesize bottomRightCornerIsRounded=_bottomRightCornerIsRounded;
+@property(nonatomic) _Bool topRightCornerIsRounded; // @synthesize topRightCornerIsRounded=_topRightCornerIsRounded;
+- (_Bool)isEqual:(id)arg1;
+- (void)refreshViewModel;
+- (double)intervalFromPrevious;
+- (_Bool)shouldShowTimestamp;
+- (_Bool)shouldShowSenderHeader;
+- (_Bool)shouldShowDateHeader;
+- (_Bool)shouldDisplayBelowFoldInChatForPreviewMode;
+- (_Bool)shouldDisplayBelowFoldInChat;
+- (id)reusableCellIdentifier;
+- (double)heightWithBottomPadding:(_Bool)arg1 isLastMessage:(_Bool)arg2 cellHeightCache:(id)arg3;
+- (id)createChatCellWithParentVC:(id)arg1 delegate:(id)arg2;
+
+@end
+
+
+@class NSDate, NSDictionary, NSString, SCUserSession, UIColor;
+
+@interface SCMessageChatViewModel : SCBaseChatCellViewModel
+{
+    double _intervalFromPrevious;
+    _Bool _isFailed;
+    _Bool _isFailedAtleastOnce;
+    _Bool _isSending;
+    _Bool _canDelete;
+    _Bool _hasDateHeader;
+    _Bool _hasSenderHeader;
+    _Bool _hasTimestamp;
+    _Bool _hasURLMediaCards;
+    _Bool _displayInBubbleChat;
+    _Bool _displayBelowTheFold;
+    _Bool _previewModeDisplayBelowTheFold;
+    id _message;
+    id _metadata;
+    NSString *_currentUsername;
+    SCUserSession *_userSession;
+    NSString *_messageId;
+    NSString *_conversationId;
+    NSDate *_timestamp;
+    NSString *_senderUsername;
+    NSDictionary *_releaseState;
+    NSString *_senderDisplayname;
+    NSDate *_expirationDate;
+    UIColor *_senderColor;
+    unsigned long long _textCheckingTypes;
+}
+
++ (double)lastCellExtraBottomMargin;
++ (double)bottomMargin;
++ (id)timeLabelColor;
++ (id)blackActionColor;
++ (id)grayActionColor;
++ (id)grayChatColor;
++ (id)sendingTextColor;
++ (id)textLabelColor;
++ (id)headerLabelFont;
++ (id)dateHeaderLabelFont;
++ (id)actionTextFont;
++ (id)emojiOnlyLabelFont;
++ (id)textLabelFont;
++ (_Bool)textHasOnlyEmoji:(id)arg1;
+@property(readonly, nonatomic) _Bool previewModeDisplayBelowTheFold; // @synthesize previewModeDisplayBelowTheFold=_previewModeDisplayBelowTheFold;
+@property(readonly, nonatomic) _Bool displayBelowTheFold; // @synthesize displayBelowTheFold=_displayBelowTheFold;
+@property(readonly, nonatomic) _Bool displayInBubbleChat; // @synthesize displayInBubbleChat=_displayInBubbleChat;
+@property(readonly, nonatomic) _Bool hasURLMediaCards; // @synthesize hasURLMediaCards=_hasURLMediaCards;
+@property(readonly, nonatomic) _Bool hasTimestamp; // @synthesize hasTimestamp=_hasTimestamp;
+@property(readonly, nonatomic) _Bool hasSenderHeader; // @synthesize hasSenderHeader=_hasSenderHeader;
+@property(readonly, nonatomic) _Bool hasDateHeader; // @synthesize hasDateHeader=_hasDateHeader;
+@property(nonatomic) unsigned long long textCheckingTypes; // @synthesize textCheckingTypes=_textCheckingTypes;
+@property(readonly, copy, nonatomic) UIColor *senderColor; // @synthesize senderColor=_senderColor;
+@property(readonly, copy, nonatomic) NSDate *expirationDate; // @synthesize expirationDate=_expirationDate;
+@property(readonly, copy, nonatomic) NSString *senderDisplayname; // @synthesize senderDisplayname=_senderDisplayname;
+@property(readonly, copy, nonatomic) NSDictionary *releaseState; // @synthesize releaseState=_releaseState;
+@property(readonly, copy, nonatomic) NSString *senderUsername; // @synthesize senderUsername=_senderUsername;
+@property(readonly, copy, nonatomic) NSDate *timestamp; // @synthesize timestamp=_timestamp;
+@property(readonly, copy, nonatomic) NSString *conversationId; // @synthesize conversationId=_conversationId;
+@property(readonly, copy, nonatomic) NSString *messageId; // @synthesize messageId=_messageId;
+@property(readonly, nonatomic) SCUserSession *userSession; // @synthesize userSession=_userSession;
+@property(readonly, nonatomic) _Bool canDelete; // @synthesize canDelete=_canDelete;
+@property(readonly, nonatomic) _Bool isSending; // @synthesize isSending=_isSending;
+@property(readonly, nonatomic) _Bool isFailedAtleastOnce; // @synthesize isFailedAtleastOnce=_isFailedAtleastOnce;
+@property(readonly, nonatomic) _Bool isFailed; // @synthesize isFailed=_isFailed;
+@property(readonly, copy, nonatomic) NSString *currentUsername; // @synthesize currentUsername=_currentUsername;
+@property(retain, nonatomic) id metadata; // @synthesize metadata=_metadata;
+@property(retain, nonatomic) id message; // @synthesize message=_message;
+- (id)displayNamesForUsernamesList:(id)arg1;
+- (id)displayNamesStringForUsernameListWithoutCurrentUser:(id)arg1;
+- (double)heightWithBottomPadding:(_Bool)arg1 isLastMessage:(_Bool)arg2 cellHeightCache:(id)arg3;
+- (_Bool)shouldShowRetryStatusView;
+- (_Bool)shouldShowRetryIcon;
+- (id)textForDateHeaderLabel;
+- (id)textForTimeLabel;
+- (id)textForSenderHeaderLabel;
+- (void)setShouldDisplayURL:(_Bool)arg1;
+- (double)verticalOffsetForBodyView;
+- (double)verticalOffsetForSenderHeaderLabel;
+- (_Bool)isGrayScaleMediaCard;
+- (id)colorForActionText;
+- (id)sectionColor;
+- (id)fontForActionText;
+- (_Bool)isSentByUser;
+- (double)widthForSenderLine;
+- (_Bool)hasTheSameMetadataAsViewModel:(id)arg1;
+- (_Bool)isEqual:(id)arg1;
+- (double)bubbleChatLifespan;
+- (double)intervalFromPrevious;
+- (_Bool)shouldDisplayBelowFoldInChatForPreviewMode;
+- (_Bool)shouldDisplayBelowFoldInChat;
+- (_Bool)shouldDisplayInBubbleChat;
+- (_Bool)shouldShowURLMediaCards;
+- (_Bool)shouldShowTimestamp;
+- (_Bool)shouldShowSenderHeader;
+- (_Bool)shouldShowDateHeader;
+@property(readonly, copy) NSString *description;
+- (id)initWithMessage:(id)arg1 metadata:(id)arg2 props:(id)arg3;
+- (double)bodyHeightWithCache:(id)arg1;
+- (double)bodyContentWidth;
+- (double)bubbleCellWidth;
+- (double)payloadContentWidth;
+- (double)payloadWidth;
+- (double)bodyWidth;
+- (_Bool)payloadHeightCacheable;
+- (double)payloadHeight;
+- (double)payloadVerticalMargin;
+
+
+@end
+
+
+@class NSDictionary, NSSet, NSString;
+
+@interface SCSnapChatTableViewCellViewModel : SCMessageChatViewModel
+{
+    _Bool _canBeReplayed;
+    _Bool _shouldDisplayReplayAnimation;
+    _Bool _isBroadcastSnap;
+    _Bool _isPending;
+    _Bool _isVideoWithSound;
+    NSSet *_replayParticipants;
+    NSSet *_viewedParticipants;
+    NSDictionary *_screenshotState;
+    NSString *_textForTimer;
+    long long _cellState;
+    NSString *_broadcastSnapText;
+}
+
+@property(nonatomic) _Bool isVideoWithSound; // @synthesize isVideoWithSound=_isVideoWithSound;
+@property(nonatomic) _Bool isPending; // @synthesize isPending=_isPending;
+@property(copy, nonatomic) NSString *broadcastSnapText; // @synthesize broadcastSnapText=_broadcastSnapText;
+@property(nonatomic) _Bool isBroadcastSnap; // @synthesize isBroadcastSnap=_isBroadcastSnap;
+@property(nonatomic) _Bool shouldDisplayReplayAnimation; // @synthesize shouldDisplayReplayAnimation=_shouldDisplayReplayAnimation;
+@property(nonatomic) long long cellState; // @synthesize cellState=_cellState;
+@property(copy, nonatomic) NSString *textForTimer; // @synthesize textForTimer=_textForTimer;
+@property(nonatomic) _Bool canBeReplayed; // @synthesize canBeReplayed=_canBeReplayed;
+@property(retain, nonatomic) NSDictionary *screenshotState; // @synthesize screenshotState=_screenshotState;
+@property(retain, nonatomic) NSSet *viewedParticipants; // @synthesize viewedParticipants=_viewedParticipants;
+@property(retain, nonatomic) NSSet *replayParticipants; // @synthesize replayParticipants=_replayParticipants;
+- (Snap*)message;
+- (double)replayNotificationLabelHeight;
+- (double)screenshotNotificationLabelHeight;
+- (_Bool)shouldRecognizeLongPress;
+- (_Bool)shouldRecognizeTap;
+- (id)replayIconImage;
+- (id)viewedIconImage;
+- (long long)viewType;
+- (void)setSnapReplayAnimationState:(long long)arg1;
+- (_Bool)shouldShowReplayNotificationLabel;
+- (_Bool)shouldShowTimer;
+- (_Bool)shouldShowScreenshotNotificationLabel;
+- (id)attributedTextForReplayNotificationLabel;
+- (id)attributedTextForScreenshotNotificationLabel;
+- (id)_textForReplayNotificationLabel;
+- (id)_textForScreenshotNotificationLabel;
+- (id)_statusIconImageName;
+- (_Bool)_shouldDisplayBirthdaySnap;
+- (_Bool)shouldShowSubLabelForWelcomeMessage;
+- (id)_actionText;
+- (id)subLabelText;
+- (id)attributedActionText;
+- (id)statusIconImage;
+- (_Bool)shouldShowActivity;
+- (double)bodyContentWidth;
+- (double)payloadVerticalMargin;
+- (double)payloadHeight;
+- (_Bool)isEqual:(id)arg1;
+- (void)refreshViewModel;
+- (id)createChatCellWithParentVC:(id)arg1 delegate:(id)arg2;
+- (id)reusableCellIdentifier;
+- (id)initWithMessage:(id)arg1 metadata:(id)arg2 props:(id)arg3;
+
+
+@end
+
+@interface SCChatV2SnapChatTableViewCellViewModel : SCSnapChatTableViewCellViewModel
+{
+    _Bool _isSentSnap;
+    long long _status;
+    long long _state;
+}
+
+@property(readonly, nonatomic) long long state; // @synthesize state=_state;
+@property(readonly, nonatomic) long long status; // @synthesize status=_status;
+- (_Bool)shouldRecognizeLongPress;
+- (_Bool)shouldRecognizeTap;
+- (id)_statusIconImageName;
+- (id)_actionText;
+- (id)_textForReplayNotificationLabel;
+- (id)_textForScreenshotNotificationLabel;
+- (double)replayNotificationLabelHeight;
+- (double)screenshotNotificationLabelHeight;
+- (_Bool)isGrayScaleMediaCard;
+- (void)setSnapReplayAnimationState:(long long)arg1;
+- (void)refreshViewModel;
+- (void)_setupWithSnap:(id)arg1;
+- (_Bool)isSentByUser;
+- (_Bool)isEqual:(id)arg1;
+- (id)initWithMessage:(id)arg1 metadata:(id)arg2 props:(id)arg3;
+
+@end
+
+
+@class NSString, SCAppNotification, SCChatInputController, SCChatViewHeader, UIView;
+
+@interface SCChatBaseViewController : UIViewController
+{
+    _Bool _adjustedContainerViewHeight;
+    _Bool _isSnapFullscreen;
+    UIView *_recipientBar;
+    _Bool _isInPreviewMode;
+    id _parentDelegate;
+    UIView *_containerView;
+    id _delegate;
+    id _navigationDelegate;
+    id _replyDelegate;
+    SCAppNotification *_sourceNotification;
+    id _statusBarDelegate;
+    id _stackChatsDelegate;
+    UIView *_tableContainerView;
+    SCChatViewHeader *_header;
+    SCChatInputController *_chatInputController;
+}
+
++ (id)stringForStatusBarActionSource:(long long)arg1;
+@property(retain, nonatomic) SCChatInputController *chatInputController; // @synthesize chatInputController=_chatInputController;
+@property(retain, nonatomic) SCChatViewHeader *header; // @synthesize header=_header;
+@property(retain, nonatomic) UIView *tableContainerView; // @synthesize tableContainerView=_tableContainerView;
+@property(nonatomic) _Bool isInPreviewMode; // @synthesize isInPreviewMode=_isInPreviewMode;
+@property(nonatomic) __weak id stackChatsDelegate; // @synthesize stackChatsDelegate=_stackChatsDelegate;
+@property(nonatomic) __weak id statusBarDelegate; // @synthesize statusBarDelegate=_statusBarDelegate;
+@property(retain, nonatomic) SCAppNotification *sourceNotification; // @synthesize sourceNotification=_sourceNotification;
+@property(nonatomic) __weak id replyDelegate; // @synthesize replyDelegate=_replyDelegate;
+@property(nonatomic) __weak id navigationDelegate; // @synthesize navigationDelegate=_navigationDelegate;
+@property(nonatomic) __weak id delegate; // @synthesize delegate=_delegate;
+@property(retain, nonatomic) UIView *containerView; // @synthesize containerView=_containerView;
+@property(nonatomic) __weak id parentDelegate; // @synthesize parentDelegate=_parentDelegate;
+- (void)rightButtonPressed;
+- (void)leavePreviewMode:(_Bool)arg1;
+- (void)enterPreviewMode;
+- (void)didAttemptToSendMessage;
+- (void)removeRecipientBar:(_Bool)arg1;
+- (void)addRecipientBar:(id)arg1;
+- (void)updateTableContainerViewTopConstraint;
+- (_Bool)isPlayingSnap;
+- (_Bool)isHeaderShown;
+- (_Bool)isRemoteOrLocalPreviewFullscreen;
+- (void)hideStatusBarFromActionSource:(long long)arg1;
+- (void)showStatusBarFromActionSource:(long long)arg1;
+- (void)setIsSnapFullscreen:(_Bool)arg1;
+- (id)imageForRightButtonInState:(unsigned long long)arg1;
+- (id)conversationId;
+- (_Bool)isSnapFullscreen;
+- (_Bool)canBeShown;
+- (_Bool)shouldDisableScrollOut:(id)arg1;
+- (void)viewDidPopFromStack;
+- (void)viewDidSwipeOut;
+- (void)viewDidSwipeIn;
+- (void)_adjustViewHeight:(id)arg1;
+- (void)viewDidFullyDisappear;
+- (void)viewDidFullyAppearFromStack:(_Bool)arg1;
+- (void)prepareToBeVisible;
+- (void)viewDidAppearAtOffset:(double)arg1;
+- (void)updateHeaderForPreviewMode;
+- (void)_initLeftShadow;
+- (void)loadView;
+- (id)getPageViewName;
+- (id)initWithUserSession:(id)arg1 parentDelegate:(id)arg2;
+
+
+@end
+
+
+@class NSMutableSet, NSString, SCActionSheetCoordinator, SCBaseMediaFullScreenView, SCChat, SCChatAutoResponderController, SCChatCashController, SCChatMessageReleaser, SCChatMessageUpdater, SCChatSendBlockAssigner, SCChatTableViewDataSourceV2, SCChatTableViewDelegate, SCChatTableViewPresenter, SCChatUserProfileViewController, SCChatViewLifeCycleListenerAnnouncer, SCChatViewLogger, SCChatViewModelForChat, SCChatViewModelReducer, SCCustomVolumeController, SCDetectTouchView, SCManagedCapturerState, SCMiniProfileController, SCUserSession, SCVideoChatClientController, SCVideoChatPresenceController, UILongPressGestureRecognizer, UIPanGestureRecognizer, UITableView, UIWindow;
+
+@interface SCChatViewControllerV2 : SCChatBaseViewController
+{
+    SCActionSheetCoordinator *_actionSheetCoordinator;
+    NSMutableSet *_clearChatTimers;
+    double _lastYOffset;
+    SCManagedCapturerState *_managedCapturerState;
+    NSString *_managedCapturerToken;
+    _Bool _isRegularSession;
+    _Bool _togglingCamera;
+    _Bool _isChatViewCentered;
+    SCUserSession *_userSession;
+    SCChatSendBlockAssigner *_blockAssigner;
+    SCChatViewModelReducer *_chatViewModelReducer;
+    SCChatTableViewDataSourceV2 *_tableDataSource;
+    SCChatViewLifeCycleListenerAnnouncer *_lifeCycleAnnouncer;
+    SCChatMessageReleaser *_messageReleaser;
+    SCChatMessageUpdater *_messageUpdater;
+    SCChatViewLogger *_lifeCycleLogger;
+    SCChatTableViewPresenter *_tableViewPresenter;
+    SCVideoChatClientController *_videoChatClient;
+    SCVideoChatPresenceController *_presenceController;
+    SCChatAutoResponderController *_autoResponderController;
+    SCChatCashController *_cashController;
+    unsigned long long _lastRecipientChatSequenceSounded;
+    long long _missCallType;
+    SCDetectTouchView *_detectTouchView;
+    SCMiniProfileController *_miniProfileController;
+    SCChat *_chat;
+    SCChatViewModelForChat *_chatViewModel;
+    SCBaseMediaFullScreenView *_baseMediaFullScreenView;
+    UIWindow *_mediaFullScreenWindow;
+    SCChatUserProfileViewController *_chatUserProfileVC;
+    SCCustomVolumeController *_customVolumeController;
+    UILongPressGestureRecognizer *_longPressGestureRecognizer;
+    UIPanGestureRecognizer *_panGestureRecognizer;
+    double _snapViewingChatOffset;
+    SCChatTableViewDelegate *_tableDelegate;
+    UITableView *_tableView;
+}
+
++ (long long)context;
++ (id)profiledSelectorNames;
++ (id)pageViewName;
+@property(retain, nonatomic) UITableView *tableView; // @synthesize tableView=_tableView;
+@property(retain, nonatomic) SCChatTableViewDelegate *tableDelegate; // @synthesize tableDelegate=_tableDelegate;
+@property(nonatomic) double snapViewingChatOffset; // @synthesize snapViewingChatOffset=_snapViewingChatOffset;
+@property(retain, nonatomic) UIPanGestureRecognizer *panGestureRecognizer; // @synthesize panGestureRecognizer=_panGestureRecognizer;
+@property(retain, nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer; // @synthesize longPressGestureRecognizer=_longPressGestureRecognizer;
+@property(retain, nonatomic) SCCustomVolumeController *customVolumeController; // @synthesize customVolumeController=_customVolumeController;
+@property(retain, nonatomic) SCChatUserProfileViewController *chatUserProfileVC; // @synthesize chatUserProfileVC=_chatUserProfileVC;
+@property(retain, nonatomic) UIWindow *mediaFullScreenWindow; // @synthesize mediaFullScreenWindow=_mediaFullScreenWindow;
+@property(retain, nonatomic) SCBaseMediaFullScreenView *baseMediaFullScreenView; // @synthesize baseMediaFullScreenView=_baseMediaFullScreenView;
+@property(retain, nonatomic) SCChatViewModelForChat *chatViewModel; // @synthesize chatViewModel=_chatViewModel;
+@property(retain, nonatomic) SCChat *chat; // @synthesize chat=_chat;
+- (void)_switchChatTo:(id)arg1;
+- (id)getAddSourceTypeForFriend:(id)arg1 controller:(id)arg2;
+- (void)showCameraForUsername:(id)arg1 doubleTap:(_Bool)arg2 context:(id)arg3;
+- (void)didPressSnapButtonForFriend:(id)arg1 controller:(id)arg2;
+- (void)didPressChatButtonForFriend:(id)arg1 controller:(id)arg2;
+- (void)storyPresenterDidDisappear;
+- (void)storyPresenterWillAppear;
+- (void)storySnapPresenterDidDisappear;
+- (void)storySnapPresenterWillAppear;
+- (void)didTapWatchButton;
+- (void)liveStoryMiniProfileDidDisappear;
+- (void)liveStoryMiniProfileWillAppear;
+- (void)didDismissMiniProfile;
+- (_Bool)isPresentingMiniProfile;
+- (void)didTapAddButtonForSnapchatter:(id)arg1;
+- (void)presentMiniProfileForSnapchatter:(id)arg1;
+- (id)presentingVC;
+- (struct CGRect)_iconViewRectForIndexPath:(id)arg1;
+- (struct CGRect)iconViewRectForSnap:(id)arg1;
+- (_Bool)tableIsFadedOut;
+- (struct CGRect)_screenFrameExcludingHeader;
+- (struct CGRect)mediaBoundingFrame;
+- (_Bool)shouldDisableFullScreen;
+- (_Bool)isSendingOrReceivingAudioOrVideo;
+- (void)hideCustomVolumeView;
+- (void)showCustomVolumeViewIgnoringNextVolumeChange:(_Bool)arg1;
+- (void)mediaDidDismissFullscreen;
+- (void)mediaDidGoFullscreen:(_Bool)arg1;
+- (void)didShowPendingDisplayForMessageId:(id)arg1;
+- (void)didShowCompleteDisplayForMessageId:(id)arg1;
+- (void)didRequestRetryFailedMessage:(id)arg1;
+- (void)didRequestStateUpdateForMessageCell:(id)arg1;
+- (void)didViewModelsChange;
+- (void)resumeVideoChatAudioMaybeWithCompletion:(CDUnknownBlockType)arg1;
+- (void)suspendVideoChatAudioWithCompletion:(CDUnknownBlockType)arg1;
+- (void)enableTableViewInteractionAfterChatNotesRecording;
+- (void)disableTableViewInteractionBeforeChatNotesRecording;
+- (void)sendVideoNoteWithData:(id)arg1 duration:(double)arg2;
+- (void)sendAudioNoteWithData:(id)arg1 duration:(double)arg2;
+- (void)_prepareMediaData:(id)arg1 withMediaDrawerMedia:(id)arg2 atIndex:(unsigned long long)arg3;
+- (void)_sendBatchedMediaDrawerMedia:(id)arg1 fromPosition:(unsigned long long)arg2;
+- (void)prepareMedia:(id)arg1 withMediaDrawerMedia:(id)arg2 atIndex:(unsigned long long)arg3;
+- (void)sendMediaDrawerMedia:(id)arg1 fromPosition:(unsigned long long)arg2;
+- (void)sendSticker:(id)arg1 fromPack:(id)arg2 fromPosition:(unsigned long long)arg3;
+- (void)removeLifeCycleListener:(id)arg1;
+- (void)addLifeCycleListener:(id)arg1;
+- (void)deviceLocked:(id)arg1;
+- (unsigned long long)supportedInterfaceOrientations;
+- (id)_tableViewCellForMessage:(id)arg1;
+- (id)_messageViewModelForIndexPath:(id)arg1;
+- (id)_messageViewModelForPoint:(struct CGPoint)arg1;
+- (id)_messageViewModelForCell:(id)arg1;
+- (id)_messageForViewModel:(id)arg1;
+- (id)_messageForIndexPath:(id)arg1;
+- (void)userDidTakeScreenshot;
+- (void)sccpConnectionStatusChanged:(id)arg1;
+- (void)_saveOrUnsaveMessage:(id)arg1 inStackedGroup:(_Bool)arg2;
+- (void)_deleteFailedMessage:(id)arg1;
+- (_Bool)gestureRecognizer:(id)arg1 shouldRecognizeSimultaneouslyWithGestureRecognizer:(id)arg2;
+- (_Bool)gestureRecognizerShouldBegin:(id)arg1;
+- (id)excludedProfiledSelectorNames;
+- (void)didFinishSnapPlaying:(id)arg1;
+- (void)didFailSetUpSnapPlaying:(id)arg1;
+- (void)didSucceedSetUpSnapPlaying:(id)arg1;
+- (void)didDismissAlertView;
+- (void)willDisplayAlertView;
+- (long long)sourceViewType;
+- (_Bool)isVisibleAndCanPlaySnap;
+- (id)mediaContainerView;
+- (void)rightButtonPressed;
+- (void)leftButtonPressed;
+- (void)scrollViewDidEndDragging:(id)arg1 willDecelerate:(_Bool)arg2;
+- (void)scrollViewWillBeginDragging:(id)arg1;
+- (void)_updatePullToDismissFinalCircleFrame;
+- (void)scrollViewDidScroll:(id)arg1;
+- (void)chatDidAttemptToSendMessage;
+- (void)onSnapTapped:(id)arg1;
+- (void)onPaymentTapped:(id)arg1;
+- (void)attemptRetryBlockForMessage:(id)arg1;
+- (void)onChatTapped:(id)arg1;
+- (void)onCellTapped:(id)arg1;
+- (double)yOffsetForPaymentView;
+- (void)didSendPayment;
+- (void)didFinishSwipeToSend;
+- (void)didFinishSwipeDown;
+- (void)deleteFailedPaymentMessage:(id)arg1;
+- (void)didUpdateSaveForPaymentMessage:(id)arg1;
+- (void)flowSuccessfullyCompleted;
+- (void)cardLinkingSuccessful;
+- (void)productViewControllerDidFinish:(id)arg1;
+- (void)didTapDeepLinkWithUrl:(id)arg1 additionalInfo:(id)arg2;
+- (void)didSelectPreserveMessage:(id)arg1;
+- (void)didSelectSaveOrUnsaveMessage:(id)arg1;
+- (void)iTunesLinkOpenedWithLinkAttribute:(id)arg1;
+- (void)stackedTableViewCellDidFinishPlayingNoteWithMessageId:(id)arg1;
+- (void)stackedTableViewCell:(id)arg1 didSelectIndex:(unsigned long long)arg2;
+- (void)textTableViewCellDidSelectCashLabelWithCell:(id)arg1;
+- (_Bool)isFromMischief;
+- (_Bool)isQuickSnapEnabled;
+- (id)replyParameters;
+- (struct CGSize)_chatViewSize;
+- (void)updateChatViewSize;
+- (void)chatInputController:(id)arg1 inputTextHeightDidChangeAnimated:(_Bool)arg2;
+- (_Bool)isAnimatingVideoChatFullscreen;
+- (_Bool)isRemoteOrLocalPreviewFullscreen;
+- (_Bool)receivingVideo;
+- (_Bool)receivingAudioOrVideo;
+- (_Bool)sendingVideo;
+- (_Bool)sendingAudioOrVideo;
+- (void)drawerInactiveButVisible:(_Bool)arg1;
+- (void)drawerActive;
+- (void)unpublishMedia:(unsigned long long)arg1 withCompletion:(CDUnknownBlockType)arg2;
+- (void)publishMedia:(unsigned long long)arg1 withCompletion:(CDUnknownBlockType)arg2;
+- (void)resizePreview:(_Bool)arg1 dueToTextInput:(_Bool)arg2 completion:(CDUnknownBlockType)arg3;
+- (_Bool)isEligibleSenderReceiverPair;
+- (void)_presentSwipeToSend;
+- (void)handleSendCashActionInitiatedWithSwipe:(_Bool)arg1;
+- (void)chatInputController:(id)arg1 didTapSendPaymentText:(id)arg2 cashTagRanges:(id)arg3 amount:(unsigned long long)arg4;
+- (double)_chatHeaderVerticalTranslationUpForContentHeight:(double)arg1;
+- (_Bool)isHeaderShown;
+- (void)chatInputControllerCashSendButtonPressed:(id)arg1;
+- (void)chatInputControllerViewWillChange:(id)arg1;
+- (void)chatInputControllerTextDidChange:(id)arg1;
+- (void)chatInputController:(id)arg1 didTypingStateChange:(long long)arg2;
+- (void)chatInputController:(id)arg1 didPasteGifData:(id)arg2;
+- (void)chatInputController:(id)arg1 didTapSendText:(id)arg2;
+- (id)chatInputControllerRecipient:(id)arg1;
+- (_Bool)paymentSwipeSenderVisible;
+- (void)sideMenuDidDisappear;
+- (void)sideMenuDidAppear;
+- (void)sideMenuWillAppear;
+- (void)setChatUserProfileHidden:(_Bool)arg1;
+- (void)goRightWithAnimation:(_Bool)arg1;
+- (id)chatMessages;
+- (id)chatRecipientUsername;
+- (_Bool)_isPlayingMedia;
+- (void)_playChatSoundMaybe:(unsigned long long)arg1;
+- (void)_playChatSentSoundMaybe;
+- (void)_playChatReceivedSoundMaybe;
+- (void)_addCustomVolumeIgnoringNextVolumeChange:(_Bool)arg1;
+- (void)_removeCustomVolume;
+- (void)dismissFullScreenView;
+@property(readonly, nonatomic) SCUserSession *userSession;
+- (void)updateTableContentInsetForPresenceWithHeight:(double)arg1;
+- (_Bool)isTheUserConsumingMedia;
+- (_Bool)isTextLengthBlockingPreview;
+- (id)myUsername;
+@property(nonatomic) _Bool isFullScreenMode;
+@property(nonatomic) _Bool inputViewTransparent;
+@property(nonatomic) _Bool snapAccessoryHidden;
+@property(nonatomic) _Bool keyboardHidden;
+@property(nonatomic) _Bool inputAccessoriesHidden;
+- (void)panInputAccessoriesWithGestureRecognizer:(id)arg1 dragToHide:(_Bool)arg2;
+- (void)callTimedOutForTypeOfCall:(unsigned long long)arg1;
+- (void)detectTouchViewDidDetectTouch:(id)arg1;
+- (void)dismissTooltipIfNeeded;
+- (void)showTooltip;
+- (void)showTooltipIfNeeded;
+- (void)unlockScrollWithRequestId:(id)arg1;
+- (void)lockScrollWithRequestId:(id)arg1;
+- (void)videoPreviewWillGoFullscreen;
+- (void)didRemoteIgnoreCall;
+- (void)didRemoteConsumeCall;
+- (void)didRemotelJoinCall;
+- (void)didLocalIgnoreCall;
+- (void)didLocalConsumeCall;
+- (void)didLocalJoinCall;
+- (void)outgoingCardDidHide;
+- (void)outgoindCardWillBeShown;
+- (void)cancelAudioVideoNoteMaybeWithCompletion:(CDUnknownBlockType)arg1;
+- (void)resetVideoAccessory;
+- (void)resetAudioAccessory;
+- (void)triggerVideoAccessoryTap;
+- (void)triggerAudioAccessoryTap;
+- (id)getInputView;
+- (id)getContainerView;
+- (void)presenceBarInitialized:(id)arg1;
+- (void)handleOffsetChangedForCells:(double)arg1;
+- (void)longPressBeganForCellWithSnap:(id)arg1;
+- (void)handleLongPressForCellWithBaseMessage:(id)arg1 inStackedGroup:(_Bool)arg2;
+- (void)handleLongPressForMessage:(id)arg1;
+- (void)didLongPressOnMessageViewModel:(id)arg1;
+- (void)handleLongPress:(id)arg1 forStackedViewModel:(id)arg2;
+- (void)pan:(id)arg1;
+- (void)longPress:(id)arg1;
+- (_Bool)isPlayingSnap;
+- (id)getSnapPlayControllerInCurrentVC;
+- (id)chatInputController;
+- (id)conversationId;
+- (_Bool)canBeShown;
+- (_Bool)shouldDisableScrollOut:(id)arg1;
+- (void)viewDidPopFromStack;
+- (void)viewDidSwipeOut;
+- (void)viewDidSwipeIn;
+- (void)viewDidFullyDisappear;
+- (void)viewDidFullyAppearFromStack:(_Bool)arg1;
+- (void)viewDidAppearAtOffset:(double)arg1;
+- (_Bool)isNotificationForTalk:(id)arg1;
+- (void)didReceiveMemoryWarning;
+- (void)didLogout;
+- (void)viewWillEnterBackground;
+- (void)viewDidBecomeActive;
+- (void)viewWillResignActive;
+- (_Bool)shouldPopToRootViewController;
+- (void)_stopObserveScreenshotNotification;
+- (void)_startObserveScreenshotNotification;
+@property(readonly, copy) NSString *description;
+- (void)dealloc;
+- (void)viewDidLoad;
+- (void)_initCashController;
+- (void)_initAutoResponderController;
+- (void)_initMessageUpdater;
+- (void)_initMessageReleaser;
+- (void)_initVideoChatClientController;
+- (void)_initGestures;
+- (void)_initInputView;
+- (void)layoutChatTableViewIfNeeded;
+- (void)_initChatTable;
+- (id)tableDataSource;
+- (void)_initChatViewModelReducer;
+- (void)_initHeader;
+- (void)_initLogger;
+- (void)loadView;
+- (id)initWithUserSession:(id)arg1 parentDelegate:(id)arg2;
+- (id)getPageName;
+- (id)getPageViewName;
+
+@end
+
+@interface SCChatTableViewDataSourceV2 : NSObject
+{
+    double _lastXOffset;
+    SCChatViewModelForChat *_chatViewModel;
+    UIViewController *_parentVC;
+}
+
++ (long long)context;
++ (id)profiledSelectorNames;
+- (id)tableView:(id)arg1 cellForRowAtIndexPath:(id)arg2;
+- (long long)tableView:(id)arg1 numberOfRowsInSection:(long long)arg2;
+- (void)setLastXOffset:(double)arg1;
+- (void)setChatViewModel:(id)arg1;
+- (id)initWithParentVC:(id)arg1;
+
+@end
+
+@interface SCSnapMediaCardView : UIView
+@end
+
+@interface SCReplyButton : UIView
+@end
+
