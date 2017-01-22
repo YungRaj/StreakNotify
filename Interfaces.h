@@ -3822,6 +3822,7 @@ typedef id CDUnknownBlockType;
 - (void)_initHeader;
 - (void)_initLogger;
 - (void)loadView;
+
 - (id)initWithUserSession:(id)arg1 parentDelegate:(id)arg2;
 - (id)getPageName;
 - (id)getPageViewName;
@@ -3850,4 +3851,5 @@ typedef id CDUnknownBlockType;
 
 @interface SCReplyButton : UIView
 @end
+
 

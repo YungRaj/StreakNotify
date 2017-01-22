@@ -202,7 +202,7 @@ SOJUFriendmoji* FindOnFireEmoji(NSArray *friendmojis){
 
 static
 NSString*
-GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
+GetTimeRemaining(Friend *f,SCChat *c,NSDate *expirationDate){
     
     /* In the new chat 2.0 update to snapchat, the SOJUFriend and SOJUFriendBuilder class now sets a property called snapStreakExpiration/snapStreakExpiryTime which is basically a long long value that describes the time in seconds since 1970 of when the snap streak should end when that expiration date arrives.
      */
@@ -213,20 +213,6 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
     }
     
     NSDate *date = [NSDate date];
-    
-    
-    NSDate *expirationDate = nil;
-    if(objc_getClass("SOJUFriendmoji")){
-        NSArray *friendmojis = f.friendmojis;
-        SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
-        long long expirationTimeValue = [friendmoji expirationTimeValue];
-        expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
-        
-    }else{
-        NSDate *latestSnapDate = [earliestUnrepliedSnap timestamp];
-        int daysToAdd = 1;
-        expirationDate = [latestSnapDate dateByAddingTimeInterval:60*60*24*daysToAdd];
-    }
     
     NSCalendar *gregorianCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     NSUInteger unitFlags = NSSecondCalendarUnit | NSMinuteCalendarUnit |NSHourCalendarUnit | NSDayCalendarUnit;
@@ -251,16 +237,6 @@ GetTimeRemaining(Friend *f,SCChat *c,Snap *earliestUnrepliedSnap){
         goto NotExactTime;
     }
 NotExactTime:
-    if(day<0 || hour<0 || minute<0 || second<0){
-        return @"Limited";
-        /* this means that the last snap + 24 hours later is earlier than the current time... and a streak is still valid assuming that the function that called this checked for a valid streak
-         in the new chat 2.0 update the new properties introduced into the public API for the SOJUFriend and SOJUFriendBuilder class allow us to know when the server will end the streak
-         if I use snapStreakExpiration/snapStreakExpiryTime then this shouldn't happen unless there's a bug in the Snapchat application
-         this API isn't available (or public) so for previous versions of Snapchat this would not work
-         Note: IGNORE this, we have what we are looking for now with the SOJUFriendmoji class
-         */
-    }
-    
     if(day){
         return [NSString stringWithFormat:@"%ld d",(long)day];
     }else if(hour){
@@ -381,7 +357,7 @@ static void ResetNotifications(){
                 
                 NSLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if([f snapStreakCount]>2 && (earliestUnrepliedSnap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
+                    if([f snapStreakCount]>2 && (earliestUnrepliedSnap || objc_getClass("SOJUFriendmoji"))){
                         if([prefs[@"kTwelveHours"] boolValue]){
                             NSLog(@"Scheduling for 12 hours %@",[f name]);
                             ScheduleNotification(expirationDate,f,0,0,12);
@@ -442,25 +418,41 @@ static UILabel* GetLabelFromCell(UIView *cell,
     return label;
 }
 
+static NSDate* GetExpirationDate(Friend *f,SCChat *chat,Snap *snap){
+    if(objc_getClass("SOJUFriendmoji")){
+        NSArray *friendmojis = f.friendmojis;
+        SOJUFriendmoji *friendmoji = FindOnFireEmoji(friendmojis);
+        long long expirationTimeValue = [friendmoji expirationTimeValue];
+        return [NSDate dateWithTimeIntervalSince1970:expirationTimeValue/1000];
+    }
+    if(!snap){
+        snap = FindEarliestUnrepliedSnapForChat(NO,chat);
+    }
+    NSDate *latestSnapDate = [snap timestamp];
+    return [latestSnapDate dateByAddingTimeInterval:60*60*24];
+}
+
 static NSString *TextForLabel(Friend *f,
                               SCChat *chat,
                               Snap *snap){
-    if([f snapStreakCount]>2 &&
+    NSDate *expirationDate = GetExpirationDate(f,chat,snap);
+    if([expirationDate laterDate:[NSDate date]]!=expirationDate){
+        return @"";
+    }else if([f snapStreakCount]>2 &&
        (snap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
-        return [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,snap)];
+        return [NSString stringWithFormat:@"⏰ %@",GetTimeRemaining(f,chat,expirationDate)];
     }else if([f snapStreakCount]>2){
-        Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
-        return [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,sentUnrepliedSnap)];
+        return [NSString stringWithFormat:@"⌛️ %@",GetTimeRemaining(f,chat,expirationDate)];
     }
     return @"";
 }
 
 static NSString* ConfigureCell(UIView *cell,
-                          NSMutableArray *instances,
-                          NSMutableArray *labels,
-                          Friend *f,
-                          SCChat *chat,
-                          Snap *snap){
+                               NSMutableArray *instances,
+                               NSMutableArray *labels,
+                                Friend *f,
+                               SCChat *chat,
+                               Snap *snap){
     UILabel *label = GetLabelFromCell(cell,instances,labels);
     
     NSString *text = TextForLabel(f,chat,snap);
@@ -550,7 +542,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-@implementation SnapchatHooks
+//@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -600,6 +592,16 @@ void HandleLocalNotification(NSString *username){
             [alert release];
         }
     }
+}
+
+-(void)didSendSnap:(Snap*)snap{
+    %orig();
+    NSLog(@"StreakNotify::snap to %@ has sent successfully",[snap recipient])
+    ;
+    Manager *manager = [objc_getClass("Manager") shared];
+    User *user = [manager user];
+    SCChats *chats = [user chats];
+    [chats chatsDidChange];
 }
 
 #ifdef THEOS
@@ -686,35 +688,6 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
     [c sendMessageName:@"applicationTerminated"
               userInfo:nil];
     %orig();
-}
-
-
-#ifdef THEOS
-%end
-#endif
-
-
-#ifdef THEOS
-%hook Snap
-#endif
-
-/* the number has changed for the friend and now we must let the daemon know of the changes so that they can be saved to file */
--(void)setSnapStreakCount:(long long)snapStreakCount{
-    %orig(snapStreakCount);
-    
-    SendFriendmojisToDaemon();
-}
-
-/* call the chatsDidChange Method on the chats object so that the SCFeedViewController tableview can reload safely */
-
--(void)postSend{
-    %orig();
-    NSLog(@"StreakNotify::snap to %@ has sent successfully",[self recipient])
-    ;
-    Manager *manager = [objc_getClass("Manager") shared];
-    User *user = [manager user];
-    SCChats *chats = [user chats];
-    [chats chatsDidChange];
 }
 
 
@@ -1027,15 +1000,15 @@ static NSMutableArray *storyCellLabels = nil;
                 Snap *snap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
                 UILabel *label = contactCell.subNameLabel;
+                NSDate *expirationDate = GetExpirationDate(f,chat,snap);
                 if([f snapStreakCount]>2 && (snap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
-                    NSString *timeRemaining = GetTimeRemaining(f,chat,snap);
+                    NSString *timeRemaining = GetTimeRemaining(f,chat,expirationDate);
                     if(![label.text isEqual:timeRemaining]){
                         label.text = [NSString stringWithFormat:@"⏰ %@",timeRemaining];
                     }
                     label.hidden = NO;
                 }else if([f snapStreakCount]>2){
-                    Snap *sentUnrepliedSnap = FindEarliestUnrepliedSnapForChat(NO,chat);
-                    NSString *timeRemaining = GetTimeRemaining(f,chat,sentUnrepliedSnap);
+                    NSString *timeRemaining = GetTimeRemaining(f,chat,expirationDate);
                     if(![label.text isEqual:timeRemaining]){
                         label.text = [NSString stringWithFormat:@"⌛️ %@",timeRemaining];
                     }
@@ -1156,7 +1129,7 @@ static NSMutableArray *chatCellLabels = nil;
 %end
 %end
 #else
-@end
+//@end
 #endif
 
 
