@@ -40,7 +40,7 @@
 }
 
  -(void)choosePhotoForAutoReplySnapstreak{
-     NSLog(@"streaknotify:: prompting user to select auto reply snapstreak image");
+    NSLog(@"streaknotify:: prompting user to select auto reply snapstreak image");
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
     pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     pickerLibrary.delegate = self;

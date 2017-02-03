@@ -1000,22 +1000,13 @@ static NSMutableArray *storyCellLabels = nil;
                 Snap *snap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
                 UILabel *label = contactCell.subNameLabel;
-                NSDate *expirationDate = GetExpirationDate(f,chat,snap);
-                if([f snapStreakCount]>2 && (snap || (objc_getClass("SOJUFriendmoji") && [[chat lastSnap] sender]))){
-                    NSString *timeRemaining = GetTimeRemaining(f,chat,expirationDate);
-                    if(![label.text isEqual:timeRemaining]){
-                        label.text = [NSString stringWithFormat:@"⏰ %@",timeRemaining];
-                    }
-                    label.hidden = NO;
-                }else if([f snapStreakCount]>2){
-                    NSString *timeRemaining = GetTimeRemaining(f,chat,expirationDate);
-                    if(![label.text isEqual:timeRemaining]){
-                        label.text = [NSString stringWithFormat:@"⌛️ %@",timeRemaining];
-                    }
-                    label.hidden = NO;
-                }else{
-                    label.text = @"";
+                NSString *text = TextForLabel(f,chat,snap);
+                label.text = text;
+                
+                if([text isEqualToString:@""]){
                     label.hidden = YES;
+                }else{
+                    label.hidden = NO;
                 }
             }
         }
