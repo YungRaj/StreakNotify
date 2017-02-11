@@ -541,8 +541,6 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
-#else
-//@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -570,13 +568,18 @@ void HandleLocalNotification(NSString *username){
             [UIAlertAction actionWithTitle:@"Ok"
                                      style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction* action){
-                                       prefs = @{@"kTwelveHours" : @NO,
+                                       NSDictionary *preferences = [@{@"kStreakNotifyDisabled" : @NO,
+                                                 @"kExactTime" : @YES,
+                                                 @"kTwelveHours" : @YES,
                                                  @"kFiveHours" : @NO,
                                                  @"kOneHour" : @NO,
                                                  @"kTenMinutes" : @NO,
                                                  @"kCustomHours" : @"0",
                                                  @"kCustomMinutes" : @"0",
-                                                 @"kCustomSeconds" : @"0"};
+                                                 @"kCustomSeconds" : @"0"} retain];
+                                       [preferences writeToFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist" atomically:YES];
+                                       prefs = preferences;
+                                       NSLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
                                    }];
             [controller addAction:cancel];
             [controller addAction:ok];
@@ -612,13 +615,15 @@ void HandleLocalNotification(NSString *username){
 clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(buttonIndex==0){
         NSLog(@"StreakNotify:: using default preferences");
-        NSDictionary *preferences = [@{@"kTwelveHours" : @YES,
-                                      @"kFiveHours" : @NO,
-                                      @"kOneHour" : @NO,
-                                      @"kTenMinutes" : @NO,
-                                      @"kCustomHours" : @"1",
-                                      @"kCustomMinutes" : @"1",
-                                      @"kCustomSeconds" : @"1"} retain] ;
+        NSDictionary *preferences = [@{@"kStreakNotifyDisabled" : @NO,
+                                       @"kExactTime" : @YES,
+                                       @"kTwelveHours" : @YES,
+                                       @"kFiveHours" : @NO,
+                                       @"kOneHour" : @NO,
+                                       @"kTenMinutes" : @NO,
+                                       @"kCustomHours" : @"0",
+                                       @"kCustomMinutes" : @"0",
+                                       @"kCustomSeconds" : @"0"} retain] ;
         [preferences writeToFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist" atomically:YES];
         prefs = preferences;
         NSLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
@@ -1120,7 +1125,6 @@ static NSMutableArray *chatCellLabels = nil;
 %end
 %end
 #else
-//@end
 #endif
 
 

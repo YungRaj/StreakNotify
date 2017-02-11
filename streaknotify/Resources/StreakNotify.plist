@@ -42,7 +42,7 @@
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
-			<false/>
+			<true/>
 			<key>defaults</key>
 			<string>com.YungRaj.streaknotify</string>
 			<key>key</key>
