@@ -6,16 +6,11 @@ This tweak notifies a user when a snapchat streak with another friend is running
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "BulletinBoard/BBBulletin.h"
 #import <objc/runtime.h>
 #import <substrate.h>
 #import <rocketbootstrap/rocketbootstrap.h>
 
 #import "Interfaces.h"
-
-#define kiOS7 (kCFCoreFoundationVersionNumber >= 847.20 && kCFCoreFoundationVersionNumber <= 847.27)
-#define kiOS8 (kCFCoreFoundationVersionNumber >= 1140.10 && kCFCoreFoundationVersionNumber >= 1145.15)
-#define kiOS9 (kCFCoreFoundationVersionNumber == 1240.10)
 
 
 static NSString *snapchatVersion = nil;
