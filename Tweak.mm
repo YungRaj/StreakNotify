@@ -31,9 +31,11 @@ static void LoadPreferences() {
         NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
         snapchatVersion = [infoDict objectForKey:@"CFBundleVersion"];
     }
-    if(!prefs){
-        prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
+    if(prefs){
+        [prefs release];
+        prefs = nil;
     }
+    prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
     if(!customFriends){
         NSDictionary *friendmojiList = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         customFriends = [[NSMutableArray alloc] init];
@@ -536,6 +538,8 @@ void HandleLocalNotification(NSString *username){
 #ifdef THEOS
 %group SnapchatHooks
 %hook MainViewController
+#else
+@implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -600,6 +604,12 @@ void HandleLocalNotification(NSString *username){
     User *user = [manager user];
     SCChats *chats = [user chats];
     [chats chatsDidChange];
+    /*
+     *  This is expected to show the changes in a SCChat after sending a Snap
+     *  Works great but ever since SOJUFriendmoji we rely on the lastSnap property
+     *  rather than the sorted array we created for tracking Snaps. This method call
+     *  doesn't update it though, which should be the case.
+     */
 }
 
 #ifdef THEOS
@@ -719,17 +729,21 @@ static NSMutableArray *feedCellLabels = nil;
 -(UITableViewCell*)tableView:(UITableView*)tableView
        cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     
-    /* updating tableview and we want to make sure the feedCellLabels are updated too, if not created if the feed is now being populated
-    */
+    /* 
+     *  updating tableview and we want to make sure the feedCellLabels are updated too, if not
+     *  created if the feed is now being populated
+     */
     
     UITableViewCell *cell = %orig(tableView,indexPath);
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        /* want to do this on the main thread because all ui updates should be done on the main thread
-         this should already be on the main thread but we should make sure of this
-        */
+        /* 
+         *  want to do this on the main thread because all UI updates should be done on the main
+         *  thread
+         *  this should already be on the main thread but we should make sure of this
+         */
         
         if([cell isKindOfClass:objc_getClass("SCFeedSwipeableTableViewCell")]
            && [cell respondsToSelector:@selector(viewModel)]){
@@ -744,7 +758,6 @@ static NSMutableArray *feedCellLabels = nil;
             NSString *username = nil;
             if([[feedCell viewModel] respondsToSelector:@selector(identifier)]){
                 username = [(SCFeedChatCellViewModel*)[feedCell viewModel] identifier];
-                /* not sure if this works yet */
                 /* after reversing snapToHandle in the SCFeedChatCellViewModel class, it seems to use the identifier property to get the snapToHandle from the SCChats class */
             }else if([[feedCell viewModel] respondsToSelector:@selector(snapToHandle)]){
                 SCFeedChatCellViewModel *viewModel = (SCFeedChatCellViewModel*)[feedCell viewModel];
@@ -767,6 +780,10 @@ static NSMutableArray *feedCellLabels = nil;
                 username = [viewModel friendUsername];
             }
             
+            /*
+             *  find the username of the friend we are trying to show the timer for
+             *  SCFeedViewController has changed a lot throughout many Snapchat versions
+             */
             
             if(username){
                 NSLog(@"StreakNotify::%@ username found, showing label if possible",username);
@@ -803,7 +820,7 @@ static NSMutableArray *feedCellLabels = nil;
     return cell;
 }
 
-
+// deprecated in a recent Snapchat version
 -(void)didFinishReloadData{
     /* want to update notifications if something has changed after reloading data */
     NSLog(@"StreakNotify::Finished reloading data");
@@ -812,6 +829,7 @@ static NSMutableArray *feedCellLabels = nil;
     
 }
 
+// still active in the current Snapchat version
 -(void)pullToRefreshDidFinish{
     NSLog(@"StreakNotify::Finished reloading data");
     %orig();
@@ -1131,13 +1149,17 @@ void constructor()
 #endif
 {
     
-    /* constructor for the tweak, registers preferences stored in /var/mobile
-     and uses the proper group based on the iOS version, might want to use Snapchat version instead but we'll see
+    /* 
+     *  Coming from MobileLoader, which loads into Snapchat via the DYLD_INSERT_LIBRARIES
+     *  variable. Let's start doing some fun hooks into Snapchat to keep the streak going
+     *  I don't know why I made this, I just found that people took streaks seriously, so
+     *  might as well. A tweak like this isn't that serious so why not make it open source
      */
     
     LoadPreferences();
     if(![prefs[@"kStreakNotifyDisabled"] boolValue]){
         // Class Friend = objc_getClass("Friend");
+        // Was going to create a unconventional hook to Friend but SOJUFriendmoji saved my ass
         
         %init(SnapchatHooks);
         // this has to be done otherwise our hooks would not be used!
