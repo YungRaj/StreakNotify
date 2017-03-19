@@ -4,47 +4,63 @@
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : 0,
-    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++109647F" : 0,
-    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : 0,
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : 0,
-    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++EB23671" : 0,
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++29D2E5E" : 0,
-    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++7BD6755" : 0,
-    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : 0,
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : 0,
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : 0,
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : 0,
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : 0,
-    "FD5B7A3C893A0087E296C39076112BC34274A33A+++85AAB63" : 0,
-    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : 0,
-    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++B31B9CE" : 0,
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++B6471C3" : 0,
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++6777172" : 0,
     "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++3A25364" : 0,
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++2D2DA0B" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++29D2E5E" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++C260539" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++4A1B7D6" : 0,
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++B31B9CE" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : 0,
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++7BD6755" : 0,
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++46C1703" : 0,
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : 0,
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++B6471C3" : 0,
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++EB23671" : 0,
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++AE8A5DE" : 0,
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : 0,
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : 0,
     "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34" : 0,
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : 0
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++85AAB63" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : 0,
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : 0,
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++112C82E" : 0,
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++109647F" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : 0,
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : 0,
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++BBE6BD7" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9F19FBD9-EA16-42D8-BAA7-BADEE29510A5",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : "..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
-    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++109647F" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/libactivator",
-    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : "..\/..\/..\/opt\/theos\/vendor\/include",
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
-    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++EB23671" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++29D2E5E" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/LightMessaging",
-    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++7BD6755" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include",
-    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : "StreakNotify\/",
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : "..\/..\/..\/..\/..\/opt\/theos",
-    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : "..\/..\/..\/opt\/theos",
-    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : "StreakNotify-beta-testing\/",
-    "FD5B7A3C893A0087E296C39076112BC34274A33A+++85AAB63" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
-    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : "..\/..\/..\/opt\/theos\/vendor\/lib",
-    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++B31B9CE" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/lib",
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++B6471C3" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++6777172" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/libactivator",
     "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++3A25364" : "..\/..\/..\/opt\/theos\/vendor\/include\/LightMessaging",
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++2D2DA0B" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/lib",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++29D2E5E" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/LightMessaging",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++C260539" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/LightMessaging",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++4A1B7D6" : "..\/..\/..\/..\/..\/..\/opt\/theos",
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++B31B9CE" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/lib",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++B327A79" : "..\/..\/..\/..\/..\/opt\/theos",
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++7BD6755" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include",
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++46C1703" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include",
+    "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++61FFAA3" : "..\/..\/..\/opt\/theos\/vendor\/include",
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417" : "StreakNotify-beta-testing\/",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++A0BF792" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++B6471C3" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++EB23671" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++AE8A5DE" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
+    "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++2385F64" : "StreakNotify\/",
+    "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++882D7D8" : "..\/..\/..\/opt\/theos\/vendor\/lib",
     "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34" : "..\/..\/..\/opt\/theos\/vendor\/include\/libactivator",
-    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging"
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++85AAB63" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++DF418B0" : "..\/..\/..\/opt\/theos",
+    "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++88D01CF" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap",
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++112C82E" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
+    "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++109647F" : "..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/libactivator",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++53F8D1A" : "..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging",
+    "FD5B7A3C893A0087E296C39076112BC34274A33A+++BD7A29A" : "..\/..\/..\/opt\/theos\/vendor\/include\/CaptainHook",
+    "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++BBE6BD7" : "..\/..\/..\/..\/..\/..\/opt\/theos\/vendor\/include\/rocketbootstrap\/LightMessaging"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "StreakNotify",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
@@ -58,7 +74,17 @@
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/rocketbootstrap.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++AE8A5DE"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/rocketbootstrap.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0A50B67FB6BA9078DCCCDA0FFB2B1B6F891F7893+++EB23671"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/lib.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++2D2DA0B"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/lib.git",
@@ -69,6 +95,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/lib.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "24B4D0BEB30A91FDD08C51BBF393023C9FBD5A9B+++B31B9CE"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/headers.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "72C7A478705D53F39E89FE8E2D7FE4B3DF42000E+++46C1703"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/theos\/headers.git",
@@ -88,6 +119,11 @@
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/libactivator.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++6777172"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/libactivator.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2088C35C624FD9DE0EE604D81708DE9C8E10C19+++E059A34"
     },
     {
@@ -99,6 +135,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ilhanraja\/StreakNotify",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DFD7EB92006DC6CEC3DEA90F20BF238578B833B3+++C67E417"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/DHowett\/theos.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580+++4A1B7D6"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/DHowett\/theos.git",
@@ -134,6 +175,21 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/rpetrich\/LightMessaging.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++B6471C3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/rpetrich\/LightMessaging.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++BBE6BD7"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/LightMessaging.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAEB85186220EEE7B05C0CBCEFE562358FF0114B+++C260539"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/CaptainHook.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FD5B7A3C893A0087E296C39076112BC34274A33A+++112C82E"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/CaptainHook.git",

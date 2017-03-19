@@ -31,11 +31,9 @@ static void LoadPreferences() {
         NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
         snapchatVersion = [infoDict objectForKey:@"CFBundleVersion"];
     }
-    if(prefs){
-        [prefs release];
-        prefs = nil;
+    if(!prefs){
+        prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
     }
-    prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist"];
     if(!customFriends){
         NSDictionary *friendmojiList = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         customFriends = [[NSMutableArray alloc] init];
@@ -59,7 +57,7 @@ static void LoadPreferences() {
    this is a better solution than the private SnapStreakData class that the app uses in the new chat 2.0 update
  */
 
-Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
+static Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
     NSArray *snaps = [chat allSnapsArray];
     
     if(!snaps || ![snaps count]){
@@ -148,7 +146,7 @@ static NSDictionary* GetFriendmojis(){
 /* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
 /* triggered when the application is open, coming from the background, or when the friends values change */
 
-static void SendFriendmojisToDaemon(){
+ static void SendFriendmojisToDaemon(){
     NSLog(@"StreakNotify::Sending friendmojis to Daemon");
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
@@ -539,7 +537,7 @@ void HandleLocalNotification(NSString *username){
 %group SnapchatHooks
 %hook MainViewController
 #else
-@implementation SnapchatHooks
+// @implementation SnapchatHooks
 #endif
 
 -(void)viewDidLoad{
@@ -693,10 +691,11 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
 -(void)applicationWillTerminate:(UIApplication *)application {
     NSLog(@"StreakNotify:: Snapchat application exiting, daemon will handle the exit of the application");
     
-    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
+    /*
+     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
     rocketbootstrap_distributedmessagingcenter_apply(c);
     [c sendMessageName:@"applicationTerminated"
-              userInfo:nil];
+              userInfo:nil];*/
     %orig();
 }
 
@@ -735,7 +734,6 @@ static NSMutableArray *feedCellLabels = nil;
      */
     
     UITableViewCell *cell = %orig(tableView,indexPath);
-    
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1133,11 +1131,21 @@ static NSMutableArray *chatCellLabels = nil;
     return cell;
 }
 
+-(void)dealloc{
+    [chatCells removeAllObjects];
+    [chatCellLabels removeAllObjects];
+    [chatCells release];
+    [chatCellLabels release];
+    chatCells = nil;
+    chatCellLabels = nil;
+    %orig();
+}
 
 #ifdef THEOS
 %end
 %end
 #else
+// @end
 #endif
 
 
@@ -1165,4 +1173,13 @@ void constructor()
         // this has to be done otherwise our hooks would not be used!
         
     }
+}
+
+#ifdef THEOS
+%dtor
+#else
+void deconstructor()
+#endif
+{
+    
 }
