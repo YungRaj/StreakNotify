@@ -1,7 +1,10 @@
 /*
-This tweak notifies a user when a snapchat streak with another friend is running down in time. It also tells a user how much time is remanining in their feed. Customizable with a bunch of settings, custom time, custom friends, and even preset values that you can enable with a switch in preferences. Auto-send snap will be implemented soon so that the streak is kept with a person
- 
-*/
+ *   This tweak notifies a user when a snapchat streak with another friend is running down in time.
+ *   It also tells a user how much time is remanining in their feed. Customizable with a bunch of settings,
+ *   custom time, custom friends, and even preset values that you can enable with a switch in preferences.
+ *   Auto-send snap will be implemented soon so that the streak is kept with a person
+ *
+ */
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -12,19 +15,21 @@ This tweak notifies a user when a snapchat streak with another friend is running
 
 #import "Interfaces.h"
 
+#ifdef DEBUG
+    #define SNLog(...) NSLog(__VA_ARGS__)
+#else
+    #define SNLog(...) void(0)
+#endif
+
 
 static NSString *snapchatVersion = nil;
 static NSDictionary *prefs = nil;
 static NSMutableArray *customFriends = nil;
 static UIImage *autoReplySnapstreakImage = nil;
-// static CFStringRef applicationID = CFSTR("com.YungRaj.streaknotify");
+// static CFStringRef applicationID = CFSTR("com.toyopagroup.picaboo");
 
 
-/* load preferences and the custom friends that we must apply notifications to */
-/* load the true values from the customFriends plist into an array so that they can be searched quicker
-    make sure the custom friends and the prefs objects are memory managed properly otherwise we will have a memory leak or a dangling pointer
- */
-/* load the image that the user wants to auto reply to a streak to */
+/* Load Preferences and other relevant data */
 
 static void LoadPreferences() {
     if(!snapchatVersion){
@@ -53,8 +58,12 @@ static void LoadPreferences() {
     }
 }
 
-/* gets the earliest snap that wasn't replied to, it is important to do that because a user can just send a snap randomly and reset the 24 hours. basically forces you to respond if you just keep opening messages 
-   this is a better solution than the private SnapStreakData class that the app uses in the new chat 2.0 update
+// DEPRECATED, should not be used
+/* Gets the earliest snap that wasn't replied to, so 24 hours past that date is accurate enough to show time left.
+   Not used anymore if SOJUFriendmoji class isn't sufficient.
+ 
+    @param receive
+    A flag that specifies if it is the user that we find earliest unreplied snap for
  */
 
 static Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
@@ -104,6 +113,7 @@ static Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
     return earliestUnrepliedSnap;
 }
 
+
 static NSDictionary* GetFriendmojis(){
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
@@ -143,11 +153,10 @@ static NSDictionary* GetFriendmojis(){
     return dictionary;
 }
 
-/* sends the request to the daemon of the different names of the friends and their corresponding friendmoji */
-/* triggered when the application is open, coming from the background, or when the friends values change */
+/* Sends a mach message to the Daemon using distributed messaging */
 
- static void SendFriendmojisToDaemon(){
-    NSLog(@"StreakNotify::Sending friendmojis to Daemon");
+static void SendFriendmojisToDaemon(){
+    SNLog(@"StreakNotify::Sending friendmojis to Daemon");
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
@@ -157,7 +166,7 @@ static NSDictionary* GetFriendmojis(){
 }
 
 static void SizeLabelToRect(UILabel *label, CGRect labelRect){
-    /* utility method to make sure that the label's size doesn't truncate the text that it is supposed to display */
+    /* Fit text into UILabel */
     label.frame = labelRect;
     
     int fontSize = 15;
@@ -195,9 +204,9 @@ SOJUFriendmoji* FindOnFireEmoji(NSArray *friendmojis){
 }
 
 
-static
-NSString*
-GetTimeRemaining(Friend *f,SCChat *c,NSDate *expirationDate){
+static NSString* GetTimeRemaining(Friend *f,
+                                  SCChat *c,
+                                  NSDate *expirationDate){
     
     /* In the new chat 2.0 update to snapchat, the SOJUFriend and SOJUFriendBuilder class now sets a property called snapStreakExpiration/snapStreakExpiryTime which is basically a long long value that describes the time in seconds since 1970 of when the snap streak should end when that expiration date arrives.
      */
@@ -241,17 +250,12 @@ NotExactTime:
     }else if(second){
         return [NSString stringWithFormat:@"%ld s",(long)second];
     }
-    /* this shouldn't happen but to shut the compiler up this is needed */
+    /* Shouldn't happen but to shut the compiler up this is needed */
     return @"Unknown";
 }
 
-/* easier to read when viewing the code, can call [application cancelAllLocalNotfiications] though */
 static void CancelScheduledLocalNotifications(){
-    UIApplication *application = [UIApplication sharedApplication];
-    NSArray *scheduledLocalNotifications = [application scheduledLocalNotifications];
-    for(UILocalNotification *notification in scheduledLocalNotifications){
-        [application cancelLocalNotification:notification];
-    }
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 static void ScheduleNotification(NSDate *expirationDate,
@@ -259,15 +263,14 @@ static void ScheduleNotification(NSDate *expirationDate,
                                  float seconds,
                                  float minutes,
                                  float hours){
-    /* schedules the notification and makes sure it isn't before the current time
-     todo: get this particular function working with the BulletinBoard framework */
+    /* Schedules notification using UIKit to specify when streak is over */
     NSString *displayName = f.display;
     NSString *username = f.name;
     if([customFriends count] && ![customFriends containsObject:displayName]){
-        NSLog(@"StreakNotify:: Not scheduling notification for %@, not enabled in custom friends!",displayName);
+        SNLog(@"StreakNotify:: Not scheduling notification for %@, not enabled in custom friends!",displayName);
         return;
     }
-    NSLog(@"Attempting to schedule a notification for %@",[f name]);
+    SNLog(@"Attempting to schedule a notification for %@",[f name]);
     float t = hours ? hours : minutes ? minutes : seconds;
     NSString *time =  hours ? @"hours" : minutes ? @"minutes" : @"seconds";
     NSDate *notificationDate = nil;
@@ -285,42 +288,9 @@ static void ScheduleNotification(NSDate *expirationDate,
     NSDate *latestDate = [notificationDate laterDate:[NSDate date]];
     if(latestDate==notificationDate){
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        NSLog(@"StreakNotify:: Scheduling notification for %@, firing at %@",displayName,[notification fireDate]);
+        SNLog(@"StreakNotify:: Scheduling notification for %@, firing at %@",displayName,[notification fireDate]);
     }
 }
-
-/*
-static void ScheduleNotificationBB(NSDate *snapDate,
-                                   Friend *f,
-                                   float seconds,
-                                   float minutes,
-                                   float hours){
-    NSString *displayName = f.display;
-    NSString *username = f.name;
-    if([customFriends count] && ![customFriends containsObject:displayName]){
-        NSLog(@"StreakNotify:: Not scheduling bulletin for %@, not enabled in custom friends",displayName);
-        return;
-    }
-    NSLog(@"Using BulletinBoard Framework to schedule bulletin for %@",displayName);
-    float t = hours ? hours : minutes ? minutes : seconds;
-    NSString *time = hours ? @"hours" : minutes ? @"minutes" : @"seconds";
-    NSDate *bulletinDate = [[NSDate alloc] initWithTimeInterval:60*60*24 - 60*60*hours - 60*minutes - seconds
-                                                          sinceDate:snapDate];
-    // BBDataProviderWithdrawBulletinsWithRecordID(self, @"com.toyopagroup.picaboo");
-    // once bulletin is working, use this function to clear all Bulletins
-    BBBulletinRequest *bulletin = [[BBBulletinRequest alloc] init];
-    bulletin.sectionID = @"com.toyopagroup.picaboo";
-    // bulletin.defaultAction = [BBAction actionWithLaunchURL:[NSURL URLWithString:@"music://"] callblock:nil];
-    bulletin.bulletinID = @"com.toyopagroup.picaboo";
-    bulletin.publisherBulletinID = @"com.toyopagroup.picaboo";
-    bulletin.recordID = @"com.toyopagroup.picaboo";
-    bulletin.showsUnreadIndicator = NO;
-    bulletin.message = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
-    bulletin.date = notificationDate;
-    bulletin.lastInterruptDate = notificationDate;
-}
-
-*/
 
 static void ResetNotifications(){
     /* Set the local notifications based on the preferences, good utility function that is commonly used in the tweak
@@ -332,7 +302,7 @@ static void ResetNotifications(){
         Friends *friends = [user friends];
         SCChats *chats = [user chats];
         
-        NSLog(@"SCChats allChats %@",[chats allChats]);
+        SNLog(@"SCChats allChats %@",[chats allChats]);
         
         if([[chats allChats] count]){
             for(SCChat *chat in [chats allChats]){
@@ -350,23 +320,23 @@ static void ResetNotifications(){
                     expirationDate = [earliestUnrepliedSnap timestamp];
                 }
                 
-                NSLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
+                SNLog(@"StreakNotify:: Name and date %@ for %@",expirationDate,[chat recipient]);
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([f snapStreakCount]>2 && (earliestUnrepliedSnap || objc_getClass("SOJUFriendmoji"))){
                         if([prefs[@"kTwelveHours"] boolValue]){
-                            NSLog(@"Scheduling for 12 hours %@",[f name]);
+                            SNLog(@"Scheduling for 12 hours %@",[f name]);
                             ScheduleNotification(expirationDate,f,0,0,12);
                             
                         } if([prefs[@"kFiveHours"] boolValue]){
-                            NSLog(@"Scheduling for 5 hours %@",[f name]);
+                            SNLog(@"Scheduling for 5 hours %@",[f name]);
                             ScheduleNotification(expirationDate,f,0,0,5);
                             
                         } if([prefs[@"kOneHour"] boolValue]){
-                            NSLog(@"Scheduling for 1 hour %@",[f name]);
+                            SNLog(@"Scheduling for 1 hour %@",[f name]);
                             ScheduleNotification(expirationDate,f,0,0,1);
                             
                         } if([prefs[@"kTenMinutes"] boolValue]){
-                            NSLog(@"Scheduling for 10 minutes %@",[f name]);
+                            SNLog(@"Scheduling for 10 minutes %@",[f name]);
                             ScheduleNotification(expirationDate,f,0,10,0);
                         }
                         
@@ -374,14 +344,14 @@ static void ResetNotifications(){
                         float minutes = [prefs[@"kCustomMinutes"] floatValue];
                         float hours = [prefs[@"kCustomHours"] floatValue] ;
                         if(hours || minutes || seconds){
-                            NSLog(@"Scheduling for custom time %@",[f name]);
+                            SNLog(@"Scheduling for custom time %@",[f name]);
                             ScheduleNotification(expirationDate,f,seconds,minutes,hours);
                         }
                     }
                 });
             }
         }
-        NSLog(@"StreakNotify:: Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
+        SNLog(@"StreakNotify:: Resetting notifications success %@",[[UIApplication sharedApplication] scheduledLocalNotifications]);
     });
 }
 
@@ -445,7 +415,7 @@ static NSString *TextForLabel(Friend *f,
 static NSString* ConfigureCell(UIView *cell,
                                NSMutableArray *instances,
                                NSMutableArray *labels,
-                                Friend *f,
+                               Friend *f,
                                SCChat *chat,
                                Snap *snap){
     UILabel *label = GetLabelFromCell(cell,instances,labels);
@@ -463,6 +433,7 @@ static NSString* ConfigureCell(UIView *cell,
 }
 
 void SendAutoReplySnapToUser(NSString *username){
+#ifdef AUTO_REPLY
     UIImage *image = [UIImage imageWithContentsOfFile:@"/var/mobile/Documents/streaknotify_autoreply.jpeg"];
     if(image){
         Snap *snap = [[objc_getClass("Snap") alloc] init];
@@ -470,19 +441,20 @@ void SendAutoReplySnapToUser(NSString *username){
         snap.media.captionText = prefs[@"kAutoReplySnapstreakCaption"];
         snap.recipient = username;
         
-        NSLog(@"StreakNotify:: Snap has been created successfully, preparing to send");
+        SNLog(@"StreakNotify:: Snap has been created successfully, preparing to send");
         
-        /* todo gotta figure out how to configure the snap that I want to send before it can be sent, right now we have the recipient and the image that we want to send but there are more routines to be done before it can be sent successfully */
+        /* UNFINISHED: this is clearly not enough to send a Snap successfully */
         
         [snap send];
-        NSLog(@"StreakNotify:: Snap has been requested to send");
+        SNLog(@"StreakNotify:: Snap has been requested to send");
     }
+#endif
     
 }
 
-/* a remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
-/* we need to fetch updates so that the new snap that was sent from the notification can now be recognized as far as notifications go */
-/* otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
+/* Remote notification has been sent from the APNS server and we must let the app know so that it can schedule a notification for the chat */
+/* We need to fetch updates so that the new snap that was sent from the notification can now be recognized as far as notifications go */
+/* Otherwise we won't be able to set the notification properly because the new snap or message hasn't been tracked by the application */
 
 void FetchUpdates(){
     Manager *manager = [objc_getClass("Manager") shared];
@@ -490,7 +462,7 @@ void FetchUpdates(){
                                              includeStories:
                                              didHappendWhenAppLaunch:)]){
         [[objc_getClass("Manager") shared] fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            SNLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
                                                               includeStories:NO
@@ -503,7 +475,7 @@ void FetchUpdates(){
                                                    didHappendWhenAppLaunch:)]){
         
         [manager fetchUpdatesWithCompletionHandler:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            SNLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         }
                                     includeStories:NO
@@ -512,7 +484,7 @@ void FetchUpdates(){
         // Snapchat 9.40 and greater
     }else{
         [objc_getClass("Manager") fetchAllUpdatesWithParameters:nil successBlock:^{
-            NSLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
+            SNLog(@"StreakNotify:: Finished fetching updates from remote notification, resetting local notifications");
             ResetNotifications();
         } failureBlock:nil];
         // Snapchat 9.45.x and greater
@@ -524,8 +496,7 @@ void HandleRemoteNotification(){
 }
 
 void HandleLocalNotification(NSString *username){
-    NSLog(@"StreakNotify:: Handling local notification, sending auto reply snap to %@",username);
-    /* handle local notification and send auto reply message for a streak */
+    SNLog(@"StreakNotify:: Handling local notification, sending auto reply snap to %@",username);
     /* let's say that someone hasn't enabled custom friends and receives a notification, that means that we can send the auto reply snap regardless... if custom friends is enabled for the friend the notification wouldn't have been scheduled in the first place without it being enabled in custom friends */
     if(prefs[@"kAutoReplySnapstreak"]){
         SendAutoReplySnapToUser(username);
@@ -546,10 +517,9 @@ void HandleLocalNotification(NSString *username){
      */
     
     %orig();
-    FetchUpdates();
     
     if(!prefs) {
-        NSLog(@"StreakNotify:: No preferences found on file, letting user know");
+        SNLog(@"StreakNotify:: No preferences found on file, letting user know");
         if([UIAlertController class]){
             UIAlertController *controller =
             [UIAlertController alertControllerWithTitle:@"StreakNotify"
@@ -576,13 +546,13 @@ void HandleLocalNotification(NSString *username){
                                                  @"kCustomSeconds" : @"0"} retain];
                                        [preferences writeToFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist" atomically:YES];
                                        prefs = preferences;
-                                       NSLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
+                                       SNLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
                                    }];
             [controller addAction:cancel];
             [controller addAction:ok];
             [self presentViewController:controller animated:NO completion:nil];
         } else{
-            NSLog(@"StreakNotify:: UIAlertController class not available, iOS 9 and earlier");
+            SNLog(@"StreakNotify:: UIAlertController class not available, iOS 9 and earlier");
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"StreakNotify"
                                                             message:@"You haven't selected any preferences yet in Settings, use defaults?"
                                                            delegate:self
@@ -596,7 +566,7 @@ void HandleLocalNotification(NSString *username){
 
 -(void)didSendSnap:(Snap*)snap{
     %orig();
-    NSLog(@"StreakNotify::snap to %@ has sent successfully",[snap recipient])
+    SNLog(@"StreakNotify::Snap to %@ has sent successfully",[snap recipient])
     ;
     Manager *manager = [objc_getClass("Manager") shared];
     User *user = [manager user];
@@ -617,7 +587,7 @@ void HandleLocalNotification(NSString *username){
 -(void)alertView:(UIAlertView *)alertView
 clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(buttonIndex==0){
-        NSLog(@"StreakNotify:: using default preferences");
+        SNLog(@"StreakNotify:: using default preferences");
         NSDictionary *preferences = [@{@"kStreakNotifyDisabled" : @NO,
                                        @"kExactTime" : @YES,
                                        @"kTwelveHours" : @YES,
@@ -629,9 +599,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex{
                                        @"kCustomSeconds" : @"0"} retain] ;
         [preferences writeToFile:@"/var/mobile/Library/Preferences/com.YungRaj.streaknotify.plist" atomically:YES];
         prefs = preferences;
-        NSLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
+        SNLog(@"StreakNotify:: saved default preferences to file, default settings will now appear in the preferences bundle");
     }else {
-        NSLog(@"StreakNotify:: exiting application - user denied default settings");
+        SNLog(@"StreakNotify:: exiting application - user denied default settings");
         exit(0);
     }
 }
@@ -647,8 +617,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex{
 -(BOOL)application:(UIApplication*)application
 didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
     
-    /* just makes sure that the app is registered for local notifications, might be implemented in the app but haven't explored it, for now just do this.
-     */
+    /* Register for local notifications, and do what we normally do */
     
     snapchatVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     
@@ -659,7 +628,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes: (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
     
-    NSLog(@"StreakNotify:: Just launched application successfully running Snapchat version %@",snapchatVersion);
+    SNLog(@"StreakNotify:: Just launched application successfully running Snapchat version %@",snapchatVersion);
     
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
@@ -675,7 +644,7 @@ didFinishLaunchingWithOptions:(NSDictionary*)launchOptions{
 -(void)application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    /* everytime we receive a snap or even a chat message (wouldn't know in a remote notification), we want to make sure that the notifications are updated each time */
+    /* Update LocalNotifications when a RemoteNotification is received */
     LoadPreferences();
     HandleRemoteNotification();
     %orig();
@@ -689,7 +658,7 @@ didReceiveLocalNotification:(UILocalNotification *)notification{
 }
 
 -(void)applicationWillTerminate:(UIApplication *)application {
-    NSLog(@"StreakNotify:: Snapchat application exiting, daemon will handle the exit of the application");
+    SNLog(@"StreakNotify:: Snapchat application exiting, daemon will handle the exit of the application");
     
     /*
      CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotify"];
@@ -727,7 +696,6 @@ static NSMutableArray *feedCellLabels = nil;
 
 -(UITableViewCell*)tableView:(UITableView*)tableView
        cellForRowAtIndexPath:(NSIndexPath*)indexPath{
-    
     /* 
      *  updating tableview and we want to make sure the feedCellLabels are updated too, if not
      *  created if the feed is now being populated
@@ -738,9 +706,9 @@ static NSMutableArray *feedCellLabels = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         /* 
-         *  want to do this on the main thread because all UI updates should be done on the main
+         *  Do this on the main thread because all UI updates should be done on the main
          *  thread
-         *  this should already be on the main thread but we should make sure of this
+         *  This should already be on the main thread but we should make sure of this
          */
         
         if([cell isKindOfClass:objc_getClass("SCFeedSwipeableTableViewCell")]
@@ -784,7 +752,7 @@ static NSMutableArray *feedCellLabels = nil;
              */
             
             if(username){
-                NSLog(@"StreakNotify::%@ username found, showing label if possible",username);
+                SNLog(@"StreakNotify::%@ username found, showing label if possible",username);
                 Manager *manager = [objc_getClass("Manager") shared];
                 User *user = [manager user];
                 
@@ -794,12 +762,12 @@ static NSMutableArray *feedCellLabels = nil;
                 Friend *f = [friends friendForName:username];
                 
                 // Friend *f = [feedItem friendForFeedItem];
-                /* deprecated/removed in Snapchat 9.34.0 */
-                /* this caused the crash in that update */
+                /* Deprecated/removed in Snapchat 9.34.0 */
+                /* Caused the crash in that update */
                 
                 Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
-                NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+                SNLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 
                 if(!MSHookIvar<SCReplyButton*>(feedCell.feedComponentView,"_replyButton")){
                     ConfigureCell(feedCell.feedComponentView, feedCells, feedCellLabels, f, chat, earliestUnrepliedSnap);
@@ -809,8 +777,8 @@ static NSMutableArray *feedCellLabels = nil;
                     label.hidden = YES;
                 }
             } else{
-                NSLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
-                // todo: let the user know that the timer could not added to the cells
+                SNLog(@"StreakNotify::username not found, Snapchat was updated and no selector was found");
+                // Todo: let the user know that the timer could not added to the cells
             }
         }
     });
@@ -818,25 +786,25 @@ static NSMutableArray *feedCellLabels = nil;
     return cell;
 }
 
-// deprecated in a recent Snapchat version
+// Deprecated in a recent Snapchat version
 -(void)didFinishReloadData{
-    /* want to update notifications if something has changed after reloading data */
-    NSLog(@"StreakNotify::Finished reloading data");
+    /* Want to update notifications if something has changed after reloading data */
+    SNLog(@"StreakNotify::Finished reloading data");
     %orig();
     ResetNotifications();
     
 }
 
-// still active in the current Snapchat version
+// Still active in the current Snapchat version
 -(void)pullToRefreshDidFinish{
-    NSLog(@"StreakNotify::Finished reloading data");
+    SNLog(@"StreakNotify::Finished reloading data");
     %orig();
     ResetNotifications();
 }
 
 
 -(void)dealloc{
-    NSLog(@"StreakNotify::Deallocating feedViewController");
+    SNLog(@"StreakNotify::Deallocating feedViewController");
     [feedCells removeAllObjects];
     [feedCellLabels removeAllObjects];
     [feedCells release];
@@ -883,7 +851,7 @@ static NSMutableArray *contactCellLabels = nil;
             }
             
             if(f){
-                NSLog(@"StreakNotify::contactsViewController:%@ friend found displaying timer",[f name]);
+                SNLog(@"StreakNotify::contactsViewController:%@ friend found displaying timer",[f name]);
                 Manager *manager = [objc_getClass("Manager") shared];
                 User *user = [manager user];
                 SCChats *chats = [user chats];
@@ -891,10 +859,10 @@ static NSMutableArray *contactCellLabels = nil;
                 
                 Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
                 
-                NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+                SNLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
                 ConfigureCell(cell, contactCells, contactCellLabels, f, chat, earliestUnrepliedSnap);
             }else{
-                NSLog(@"StreakNotify::contactsViewController: friend not found, no selector was found to find the model!");
+                SNLog(@"StreakNotify::contactsViewController: friend not found, no selector was found to find the model!");
             }
         }
     });
@@ -904,7 +872,7 @@ static NSMutableArray *contactCellLabels = nil;
 }
 
 -(void)dealloc{
-    NSLog(@"StreakNotify::Deallocating contactsViewController");
+    SNLog(@"StreakNotify::Deallocating contactsViewController");
     [contactCells removeAllObjects];
     [contactCellLabels removeAllObjects];
     [contactCells release];
@@ -963,7 +931,7 @@ static NSMutableArray *storyCellLabels = nil;
             
             Snap *earliestUnrepliedSnap = FindEarliestUnrepliedSnapForChat(YES,chat);
             
-            NSLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
+            SNLog(@"StreakNotify::%@ is earliest unreplied snap %@",earliestUnrepliedSnap,[earliestUnrepliedSnap timestamp]);
             
             if([storiesCell respondsToSelector:@selector(isTapToReplyMode)]
                && ![storiesCell isTapToReplyMode]){
@@ -981,7 +949,7 @@ static NSMutableArray *storyCellLabels = nil;
 }
 
 -(void)dealloc{
-    NSLog(@"StreakNotify::Deallocating storiesViewController");
+    SNLog(@"StreakNotify::Deallocating storiesViewController");
     [storyCells removeAllObjects];
     [storyCellLabels removeAllObjects];
     [storyCells release];
@@ -1054,7 +1022,7 @@ static NSMutableArray *chatCellLabels = nil;
             
             SCSnapMediaCardView *mediaCardView = MSHookIvar<SCSnapMediaCardView*>(chatCell, "_mediaCardView");
             
-            NSLog(@"%@ is the date for Snap",date);
+            SNLog(@"StreakNotify::%@ is the date for Snap",date);
             
             CGSize size = mediaCardView.frame.size;
             CGRect rect = CGRectMake(size.width*.1,
@@ -1092,7 +1060,7 @@ static NSMutableArray *chatCellLabels = nil;
             
             NSString *timeSinceSnap = nil;
             
-           if(today){
+            if(today){
                 NSUInteger unitFlags = NSSecondCalendarUnit | NSMinuteCalendarUnit | NSHourCalendarUnit | NSDayCalendarUnit;
                 NSDateComponents *components = [calendar components:unitFlags
                                                                fromDate:date

@@ -1,6 +1,5 @@
 #import "FriendmojiTableDataSource.h"
 
-
 @interface FriendmojiCell : UITableViewCell {
     
 }
@@ -38,7 +37,7 @@
     if (self) {
         self.settings = [NSMutableDictionary dictionaryWithContentsOfFile:@"var/mobile/Library/Preferences/com.YungRaj.friendmoji.plist"];
         
-        /* if the daemon loaded right during a springboard launch, then it's theoreotically impossible to not have the file saved to disk */
+        /* if the daemon loaded right during a Springboard launch, then it's theoreotically impossible to not have the file saved to disk */
         
         NSDictionary *friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Documents/streaknotifyd"];
         

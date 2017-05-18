@@ -54,8 +54,8 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 }
 
 -(void)setUpDaemon{
-    /* load the data from the application if it is saved to file, if not then open the snapchat application and wait for the message to be sent from the client */
-    /* the daemon should have a copy of the data saved to file always unless the daemon is running on the device for the first time (if yes, then start the snapchat application so that we can retrieve them immediately after the SpringBoard starts) */
+    /* Load the data from the application if it is saved to file, if not then open the snapchat application and wait for the message to be sent from the client */
+    /* The daemon should have a copy of the data saved to file always unless the daemon is running on the device for the first time (if yes, then start the snapchat application so that we can retrieve them immediately after the SpringBoard starts) */
     
     NSDictionary *friendNamesAndEmojis;
     
@@ -66,7 +66,6 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:filePath];
     
     
-
     if(!friendNamesAndEmojis){
         void *sbServices = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_LAZY);
         int (*SBSLaunchApplicationWithIdentifier)(CFStringRef identifier, Boolean suspended) = (int (*)(CFStringRef, Boolean))dlsym(sbServices, "SBSLaunchApplicationWithIdentifier");
@@ -79,12 +78,11 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     }
     
     
-    
     NSLog(@"Running servers on the daemon");
     
     self.applicationLaunched = NO;
     
-    /* run a messaging center server on the daemon so that the client (tweak) can send us messages when it needs to update anything that we need */
+    /* Run a messaging center server on the daemon so that the client (tweak) can send us messages when it needs to update anything that we need */
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
@@ -101,17 +99,15 @@ This is a daemon that handles requests to the Snapchat application and retrieves
                        target:self
                      selector:@selector(message: userInfo:)];
     
-    /* start the server so that clients can start listening to us, and sends a notification to us if a client does in fact start listening, at this point none of the clients are created and the daemon is being initialized after a reboot/respring of the device */
+    /* Start the server so that clients can start listening to us, and sends a notification to us if a client does in fact start listening, at this point none of the clients are created and the daemon is being initialized after a reboot/respring of the device */
     
-    /* the daemon is only a server of both the app and the preferences bundle but not a client (could make the daemon a client of the app but can't as of now because of Sandboxing. RocketBootstrap's functionality is only to expose services to the sandboxed app and not vice versa [can't register sandboxed services]) */
+    /* The daemon is only a server of both the app and the preferences bundle but not a client (could make the daemon a client of the app but can't as of now because of Sandboxing. RocketBootstrap's functionality is only to expose services to the sandboxed app and not vice versa [can't register sandboxed services]) */
     
 }
 
 
 -(void)saveDataToPlist{
-    /* saves the dictionary containing the data that we need for the preferences bundle to disk so that it can be recycled */
-    /* this is a workaround so that we don't have to request to the snapchat application every time the preferences bundle wants information it */
-    /* make sure that the file in /var/root/Documents is valid so that it doesn't fail saving to file */
+    // Save received dictionary to plist
     NSString *documentsDirectory = @"/var/mobile/Documents";
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:documentsDirectory]){
