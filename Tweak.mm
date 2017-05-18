@@ -492,7 +492,7 @@ void FetchUpdates(){
 }
 
 void HandleRemoteNotification(){
-    FetchUpdates();
+    // FetchUpdates();
 }
 
 void HandleLocalNotification(NSString *username){
