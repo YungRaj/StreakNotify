@@ -6,7 +6,7 @@ export SDKVERSION = 9.0
 
 TWEAK_NAME = StreakNotify
 StreakNotify_FILES = Tweak.xm
-StreakNotify_PRIVATE_FRAMEWORKS = AppSupport BulletinBoard
+StreakNotify_PRIVATE_FRAMEWORKS = AppSupport
 StreakNotify_LIBRARIES = rocketbootstrap
 StreakNotify_CFLAGS = -DTHEOS -Wno-deprecated-declarations
 
@@ -19,5 +19,4 @@ after-install::
 SUBPROJECTS += streaknotify
 SUBPROJECTS += streaknotifyd
 SUBPROJECTS += friendmojilist
-SUBPROJECTS += libsnbulletins
 include $(THEOS_MAKE_PATH)/aggregate.mk

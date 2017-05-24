@@ -1914,7 +1914,6 @@
 		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
-		A5D8A4291DDE1A5E002847FD /* libsnbulletins.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libsnbulletins.xcodeproj; path = libsnbulletins/libsnbulletins.xcodeproj; sourceTree = "<group>"; };
 		A5E994A31CC5EFD900543E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5E994AA1CC5F1D600543E5C /* librocketbootstrap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librocketbootstrap.dylib; path = /opt/theos/lib/librocketbootstrap.dylib; sourceTree = "<absolute>"; };
 		A5E994AD1CC5F28400543E5C /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = ../streaknotifyd/main.mm; sourceTree = "<group>"; };
@@ -1948,7 +1947,6 @@
 				A51981B61C7EBFB6004BB62B /* StreakNotify.plist */,
 				A51981B71C7EBFB6004BB62B /* theos */,
 				A519897A1C7EBFC1004BB62B /* Tweak.mm */,
-				A5D8A4291DDE1A5E002847FD /* libsnbulletins.xcodeproj */,
 				A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */,
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 				A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */,
@@ -4684,13 +4682,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A5D8A42A1DDE1A5E002847FD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		A5E994911CC5EFD900543E5C /* Dummy */ = {
 			isa = PBXGroup;
 			children = (
@@ -4785,10 +4776,6 @@
 				{
 					ProductGroup = A54E30031CB1F4E200C15C00 /* Products */;
 					ProjectRef = A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */;
-				},
-				{
-					ProductGroup = A5D8A42A1DDE1A5E002847FD /* Products */;
-					ProjectRef = A5D8A4291DDE1A5E002847FD /* libsnbulletins.xcodeproj */;
 				},
 				{
 					ProductGroup = A5D2232A1C856859002B8AA1 /* Products */;

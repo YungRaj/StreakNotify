@@ -1,12 +1,20 @@
-/*
-This is a daemon that handles requests to the Snapchat application and retrieves information from models that are only available in classes that the app uses, what I can do later is send requests to the Snapchat server for the information wanted (it is possible if I decide to make this an application later for those not able to jailbreak their iPhones), but this is probably a easier solution for the time being.
- 
-    -YungRaj
-*/
+/* 
+ * This daemon is a helper process that processes Mach messages using the Distributed Notifications API's
+ * in efforts to respond to events that are crucial to the tweak's functionality. It registers a service via
+ * the bootstrap context and uses a CFRunLoop in order to keep the daemon running continuously
+ */
+
+#include <asl.h>
 #include <dlfcn.h>
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import <rocketbootstrap/rocketbootstrap.h>
+
+#ifndef kCFCoreFoundationVersionNumber_iOS_9_0
+#define kCFCoreFoundationVersionNumber_iOS_9_0 1240.10
+#endif
+
+#define IOS_LT(version) (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_##version)
 
 @interface SpringBoard : UIApplication
 
@@ -16,19 +24,113 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 @interface CPDistributedMessagingCenter : NSObject
 
 + (instancetype)centerNamed:(NSString *)name;
-
 - (void)runServer;
 - (void)runServerOnCurrentThread;
 - (void)stopServer;
-
 - (void)registerForMessageName:(NSString *)messageName target:(id)target selector:(SEL)selector;
-
 - (BOOL)sendMessageName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
-
 - (NSDictionary*)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo;
 - (NSDictionary*)sendMessageAndReceiveReplyName:(NSString *)messageName userInfo:(NSDictionary *)userInfo error:(NSError **)error;
 
 @end
+
+// Firmware < 9.0
+@interface SBSLocalNotificationClient : NSObject
++ (id)scheduledLocalNotificationsForBundleIdentifier:(id)arg1;
++ (void)setScheduledLocalNotifications:(id)arg1 bundleIdentifier:(id)arg2;
++ (void)cancelAllLocalNotificationsForBundleIdentifier:(id)arg1;
++ (void)cancelLocalNotification:(id)arg1 bundleIdentifier:(id)arg2 waitUntilDone:(_Bool)arg3;
++ (void)cancelLocalNotification:(id)arg1 bundleIdentifier:(id)arg2;
++ (void)scheduleLocalNotification:(id)arg1 bundleIdentifier:(id)arg2 waitUntilDone:(_Bool)arg3;
++ (void)scheduleLocalNotification:(id)arg1 bundleIdentifier:(id)arg2;
++ (id)scheduledLocalNotifications;
++ (void)setScheduledLocalNotifications:(id)arg1;
++ (void)cancelAllLocalNotifications;
++ (void)cancelLocalNotification:(id)arg1;
++ (void)scheduleLocalNotification:(id)arg1;
++ (void)_scheduleLocalNotifications:(id)arg1 cancel:(_Bool)arg2 replace:(_Bool)arg3 optionalBundleIdentifier:(id)arg4;
++ (void)_scheduleLocalNotifications:(id)arg1 cancel:(_Bool)arg2 replace:(_Bool)arg3 optionalBundleIdentifier:(id)arg4 waitUntilDone:(_Bool)arg5;
++ (id)getPendingNotification;
+@end
+
+// Firmware >= 9.0
+@interface UNSNotificationScheduler
+- (void)_addScheduledLocalNotifications:(id)arg1 withCompletion:(id /* block */)arg2;
+- (void)_cancelScheduledLocalNotifications:(id)arg1 withCompletion:(id /* block */)arg2;
+- (void)addScheduledLocalNotifications:(id)arg1;
+- (void)addScheduledLocalNotifications:(id)arg1 waitUntilDone:(bool)arg2;
+- (id)bundleIdentifier;
+- (void)cancelAllScheduledLocalNotifications;
+- (void)cancelScheduledLocalNotifications:(id)arg1;
+- (void)cancelScheduledLocalNotifications:(id)arg1 waitUntilDone:(bool)arg2;
+- (void)dealloc;
+- (id)delegate;
+- (id)init;
+- (id)initWithBundleIdentifier:(id)arg1;
+- (id)scheduledLocalNotifications;
+- (void)scheduledLocalNotificationsWithResult:(id /* block */)arg1;
+- (void)setBundleIdentifier:(id)arg1;
+- (void)setDelegate:(id)arg1;
+- (void)setScheduledLocalNotifications:(id)arg1;
+- (void)setUserNotificationCenter:(id)arg1;
+- (void)snoozeScheduledLocalNotifications:(id)arg1;
+- (void)snoozeScheduledLocalNotifications:(id)arg1 withCompletion:(id /* block */)arg2;
+- (id)userNotificationCenter;
+- (void)userNotificationCenter:(id)arg1 didChangePendingNotificationRequests:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didDeliverNotifications:(id)arg2;
+@end
+
+static void ScheduleNotification(NSDate *date,
+                                  NSString *message,
+                                  NSString *friendName){
+    NSLog(@"Scheduling notification at %@ with message for friend %@",date,friendName);
+    
+    void *handle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_LAZY);
+    if(handle != NULL){
+        UILocalNotification *notification = [objc_getClass("UILocalNotification") new];
+        notification.alertBody = message;
+        notification.fireDate = date;
+        notification.userInfo = @{@"Username" : friendName};
+        
+        // NOTE: Notification will be shown immediately as no fire date was set.
+        if (IOS_LT(9_0)) {
+            [objc_getClass("SBSLocalNotificationClient") scheduleLocalNotification:notification
+                                                                  bundleIdentifier:@"com.toyopagroup.picaboo"];
+        } else {
+            UNSNotificationScheduler *scheduler = [[objc_getClass("UNSNotificationScheduler") alloc] initWithBundleIdentifier:@"com.toyopagroup.picaboo"];
+            [scheduler addScheduledLocalNotifications:@[notification] waitUntilDone:YES];
+            dlclose(handle);
+        }
+        [notification release];
+    }
+    
+    
+}
+
+static void ResetNotifications(NSDictionary *info){
+    void *handle = NULL;
+    
+    if (IOS_LT(9_0)) {
+        [objc_getClass("SBSLocalNotificationClient") cancelAllLocalNotificationsForBundleIdentifier:@"com.toyopagroup.picaboo"];
+    } else {
+        handle = dlopen("/System/Library/PrivateFrameworks/UserNotificationServices.framework/UserNotificationServices", RTLD_LAZY);
+        if (handle != NULL) {
+            UNSNotificationScheduler *scheduler = [[objc_getClass("UNSNotificationScheduler") alloc] initWithBundleIdentifier:@"com.toyopagroup.picaboo"];
+            [scheduler cancelAllScheduledLocalNotifications];
+        }
+    }
+    
+    NSArray *notifications = [info objectForKey:@"kNotifications"];
+    for(NSDictionary *notification in notifications){
+        ScheduleNotification(notification[@"kNotificationDate"],
+                             notification[@"kNotificationMessage"],
+                             notification[@"kNotifictionFriendName"]);
+    }
+    
+    if(handle != NULL){
+        dlclose(handle);
+    }
+}
 
 
 @interface SNDaemon : NSObject {
@@ -52,8 +154,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 }
 
 -(void)setUpDaemon{
-    /* load the data from the application if it is saved to file, if not then open the snapchat application and wait for the message to be sent from the client */
-    /* the daemon should have a copy of the data saved to file always unless the daemon is running on the device for the first time (if yes, then start the snapchat application so that we can retrieve them immediately after the SpringBoard starts) */
+    /* Load previously saved data from file */
     
     NSDictionary *friendNamesAndEmojis;
     
@@ -64,6 +165,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     friendNamesAndEmojis = [NSDictionary dictionaryWithContentsOfFile:filePath];
     
     
+    /* Start the Snapchat Application in the background suspended so that the friendmojis get saved */
 
     if(!friendNamesAndEmojis){
         void *sbServices = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_LAZY);
@@ -82,7 +184,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     
     self.applicationLaunched = NO;
     
-    /* run a messaging center server on the daemon so that the client (tweak) can send us messages when it needs to update anything that we need */
+    /* Register a server through the bootstrap context that allows IPC between Snapchat and streaknotifyd */
     
     CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
     rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
@@ -92,18 +194,17 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     [c registerForMessageName:@"friendmojis"
                        target:self
                      selector:@selector(friendmojis:userInfo:)];
+    [c registerForMessageName:@"notifications"
+                       target:self
+                     selector:@selector(notifications:userInfo:)];
     
-    /* start the server so that clients can start listening to us, and sends a notification to us if a client does in fact start listening, at this point none of the clients are created and the daemon is being initialized after a reboot/respring of the device */
-    
-    /* the daemon is only a server of both the app and the preferences bundle but not a client (could make the daemon a client of the app but can't as of now because of Sandboxing. RocketBootstrap's functionality is only to expose services to the sandboxed app and not vice versa [can't register sandboxed services]) */
+    /* The daemon is only a server of the Snapchat application because it processes Mach Messages between
+     * my tweak and streaknotifyd */
     
 }
 
 
 -(void)saveDataToPlist{
-    /* saves the dictionary containing the data that we need for the preferences bundle to disk so that it can be recycled */
-    /* this is a workaround so that we don't have to request to the snapchat application every time the preferences bundle wants information it */
-    /* make sure that the file in /var/root/Documents is valid so that it doesn't fail saving to file */
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
@@ -124,9 +225,7 @@ This is a daemon that handles requests to the Snapchat application and retrieves
 
 -(void)friendmojis:(NSString*)name userInfo:(NSDictionary*)userInfo{
     if([name isEqual:@"friendmojis"]){
-        
-        /* the snapchat application has started or friends have changed and it has sent us this message so that we can grab a copy of the data that we need and save it to file. So that when the preferences bundle requests the display names, we will have them. We should have them already if the daemon is not running for the first time, but it could be an updated list when a friend has been added or the snap streak count has been updated for a friend. We can keep this data and have it stored in the daemon if the preferences bundle is open but still store it so that the next time it is open we can use it  */
-        
+        // Received friendmojis, handle them by saving to file
         NSLog(@"Got dictionary from tweak, updating for preferences on next launch");
         self.friendNamesAndEmojis = userInfo;
         NSLog(@"%@",userInfo);
@@ -134,6 +233,13 @@ This is a daemon that handles requests to the Snapchat application and retrieves
     }
 }
 
+-(void)notifications:(NSString*)name userInfo:(NSDictionary*)userInfo{
+    if([name isEqual:@"notifications"]){
+        // Received notification data, schedule them using bootstrap
+        NSLog(@"Resetting notifications");
+        ResetNotifications(userInfo);
+    }
+}
 
 
 @end

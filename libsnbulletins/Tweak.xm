@@ -21,28 +21,17 @@
 
 @end
 
-__attribute__((visibility("hidden")))
-@interface SNDataProvider : NSObject <BBDataProvider>
 
-+(SNDataProvider*)sharedProvider;
--(void)dataProviderDidLoad;
-
+// Firmware < 9.0
+@interface SBSLocalNotificationClient : NSObject
++ (void)scheduleLocalNotification:(id)notification bundleIdentifier:(id)bundleIdentifier;
 @end
 
-@interface SBBulletinBannerItem : NSObject
-
-+(SBBulletinBannerItem *)itemWithBulletin:(BBBulletin *)bulletin;
-
+// Firmware >= 9.0
+@interface UNSNotificationScheduler
+- (id)initWithBundleIdentifier:(NSString *)bundleIdentifier;
+- (void)addScheduledLocalNotifications:(NSArray *)notifications waitUntilDone:(BOOL)waitUntilDone;
 @end
-
-@interface SBBulletinBannerController : NSObject
-
-+(SBBulletinBannerController *)sharedInstance;
--(id)_presentBannerForItem:(SBBulletinBannerItem *)item;
-
-@end
-
-static SNDataProvider *provider = nil;
 
 static void ScheduleBulletin(NSDate *bulletinDate,
                              NSString *bulletinMessage){
@@ -60,111 +49,11 @@ static void ScheduleBulletin(NSDate *bulletinDate,
     BBDataProviderAddBulletin(provider,bulletin);
 }
 
-static void ResetBulletins(SNDataProvider *provider,
-                           NSDictionary *info){
-    BBDataProviderWithdrawBulletinsWithRecordID(provider, @"com.toyopagroup.picaboo");
+static void ResetBulletins(NSDictionary *info){
     NSArray *bulletins = [info objectForKey:@"kBulletins"];
     for(NSDictionary *bulletin in bulletins){
         ScheduleBulletin(bulletin[@"kBulletinDate"],bulletin[@"kBulletinMessage"]);
     }
     
-}
-
-@implementation SNDataProvider
-
-+(SNDataProvider *)sharedProvider{
-    return [[provider retain] autorelease];
-}
-
--(id)init{
-    if(self = [super init]){
-        provider = self;
-        CPDistributedMessagingCenter *server = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.libsnbulletins"];
-        rocketbootstrap_unlock("com.YungRaj.libsnbulletins");
-        rocketbootstrap_distributedmessagingcenter_apply(server);
-        [server runServerOnCurrentThread];
-        [server registerForMessageName:@"bulletins" target:self selector:@selector(scheduleBulletins:userInfo:)];
-        
-    }
-    return self;
-}
-
--(NSDictionary*)scheduleBulletins:(NSString*)name userInfo:(NSDictionary*)info{
-    NSLog(@"libsnbulletins::attempting to schedule bulletins");
-    [NSThread detachNewThreadSelector:@selector(scheduleBulletins:) toTarget:self withObject:info];
-    return [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:1] forKey:@"status"];
-}
-
--(void)scheduleBulletins:(NSDictionary*)info{
-    NSLog(@"libsnbulletins::using current thread to schedule bulletins");
-    ResetBulletins(self,info);
-    [self dataProviderDidLoad];
-}
-
--(void)dealloc{
-    [super dealloc];
-}
-
--(NSString *)sectionIdentifier{
-    return @"com.toyopagroup.picaboo";
-}
-
--(NSArray *)sortDescriptors{
-    return [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
-}
-
--(NSArray*)bulletinsFilteredBy:(NSUInteger)by
-                         count:(NSUInteger)count
-                   lastCleared:(id)cleared{
-    return nil;
-}
-
--(NSString *)sectionDisplayName{
-    return @"StreakNotify";
-}
-
--(void)dataProviderDidLoad{
-    NSLog(@"libsnbulletins::Sucessfully updated bulletins");
-}
-
-@end
-
-
-#ifdef THEOS
-%group Bulletins
-%hook BBLocalDataProviderStore
-//#else
-//@implementation Bulletins
-#endif
-
--(void)loadAllDataProvidersAndPerformMigration:(bool)performMigration{
-    %orig();
-    NSLog(@"libsnbulletins::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
-    SNDataProvider *provider = [[SNDataProvider alloc] init];
-    [self addDataProvider:provider performMigration:performMigration];
-    [provider release];
-}
-
--(void)loadAllDataProviders{
-    %orig();
-    NSLog(@"libsnbulletins::BulletinBoard is finally integrated with SN! Using SNDataProvider to work on notifications");
-    SNDataProvider *provider = [[SNDataProvider alloc] init];
-    [self addDataProvider: provider];
-    [provider release];
-}
-
-#ifdef THEOS
-%end
-%end
-#endif
-
-#ifdef THEOS
-%ctor
-#else
-void constructor()
-#endif
-{
-    
-    %init(Bulletins);
 }
 
