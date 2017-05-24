@@ -278,10 +278,14 @@ static NSDictionary* SetUpNotification(NSDate *expirationDate,
     }
     NSString *notificationMessage = [NSString stringWithFormat:@"Keep streak with %@. %ld %@ left!",displayName,(long)t,time];
     
-    return [@{@"kNotificationFriendName" : friendName,
-              @"kNotificationMessage" : notificationMessage,
-              @"kNotificationDate" : notificationDate } retain];
-    
+    if([notificationDate laterDate:[NSDate date]] == notificationDate)
+        return [@{@"kNotificationFriendName" : friendName,
+                  @"kNotificationMessage" : notificationMessage,
+                  @"kNotificationDate" : notificationDate } retain];
+    else {
+        SNLog(@"Not setting up notification at %@ for friend %@",notificationDate,friendName);
+        return nil;
+    }
 }
 
 static void ScheduleNotifications(){
@@ -360,13 +364,12 @@ static void ScheduleNotifications(){
     [notificationsInfo setObject:notifications forKey:@"kNotifications"];
     SNLog(@"StreakNotify::Sending request to streaknotifyd");
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
-        rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
-        rocketbootstrap_distributedmessagingcenter_apply(c);
-        [c sendMessageName:@"notifications"
+    // Send a message with name notifications to streaknotifyd to handle dictionary data
+    CPDistributedMessagingCenter *c = [CPDistributedMessagingCenter centerNamed:@"com.YungRaj.streaknotifyd"];
+    rocketbootstrap_unlock("com.YungRaj.streaknotifyd");
+    rocketbootstrap_distributedmessagingcenter_apply(c);
+    [c sendMessageName:@"notifications"
                   userInfo:notificationsInfo];
-    });
 }
 
 
@@ -511,11 +514,14 @@ void HandleRemoteNotification(){
 }
 
 void HandleLocalNotification(NSString *username){
-    SNLog(@"StreakNotify:: Handling local notification, sending auto reply snap to %@",username);
-    /* let's say that someone hasn't enabled custom friends and receives a notification, that means that we can send the auto reply snap regardless... if custom friends is enabled for the friend the notification wouldn't have been scheduled in the first place without it being enabled in custom friends */
+    SNLog(@"StreakNotify:: Handling local notification, attempting to send auto-reply snap to %@",username);
+    /* Callback from LocalNotification which means we check if it is necessary to reply using AutoReply */
+    
+#ifdef AUTO_REPLY
     if(prefs[@"kAutoReplySnapstreak"]){
         SendAutoReplySnapToUser(username);
     }
+#endif
     
 }
 
@@ -527,9 +533,7 @@ void HandleLocalNotification(NSString *username){
 #endif
 
 -(void)viewDidLoad{
-    /* easy way to tell the user that they haven't configured any settings, let's make sure that they know that so that can customize how they want to their notifications for streaks to work
-     it's ok if the custom friends hasn't been configured because it's ok for none to be selected
-     */
+    /* Setting up all the user specific data */
     
     %orig();
     

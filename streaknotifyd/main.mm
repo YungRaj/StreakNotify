@@ -85,6 +85,7 @@ static void ScheduleNotification(NSDate *date,
                                   NSString *friendName){
     NSLog(@"Scheduling notification at %@ with message for friend %@",date,friendName);
     
+    // Load UIKit to setup notification for SpringBoardServices/UserNotificationServices
     void *handle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_LAZY);
     if(handle != NULL){
         UILocalNotification *notification = [objc_getClass("UILocalNotification") new];
@@ -92,7 +93,7 @@ static void ScheduleNotification(NSDate *date,
         notification.fireDate = date;
         notification.userInfo = @{@"Username" : friendName};
         
-        // NOTE: Notification will be shown immediately as no fire date was set.
+        // Detect firmware version to select the correct API's
         if (IOS_LT(9_0)) {
             [objc_getClass("SBSLocalNotificationClient") scheduleLocalNotification:notification
                                                                   bundleIdentifier:@"com.toyopagroup.picaboo"];
@@ -110,9 +111,12 @@ static void ScheduleNotification(NSDate *date,
 static void ResetNotifications(NSDictionary *info){
     void *handle = NULL;
     
+    // Lazy loading/binding of a required library to schedule a notification
     if (IOS_LT(9_0)) {
+        // SpringBoardServices
         [objc_getClass("SBSLocalNotificationClient") cancelAllLocalNotificationsForBundleIdentifier:@"com.toyopagroup.picaboo"];
     } else {
+        // UserNotificationServices
         handle = dlopen("/System/Library/PrivateFrameworks/UserNotificationServices.framework/UserNotificationServices", RTLD_LAZY);
         if (handle != NULL) {
             UNSNotificationScheduler *scheduler = [[objc_getClass("UNSNotificationScheduler") alloc] initWithBundleIdentifier:@"com.toyopagroup.picaboo"];
