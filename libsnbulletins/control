@@ -1,9 +1,0 @@
-Package: com.YungRaj.libsnbulletins
-Name: libsnbulletins
-Depends: mobilesubstrate
-Version: 0.0.1
-Architecture: iphoneos-arm
-Description: A helper library that handles bulletins from StreakNotify
-Maintainer: Ilhan Raja
-Author: Ilhan Raja
-Section: Tweaks
