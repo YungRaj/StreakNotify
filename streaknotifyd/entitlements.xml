@@ -3,5 +3,9 @@
     <dict>
         <key>com.apple.springboard.launchapplications</key>
         <true/>
+        <key>com.apple.localnotification.schedulingproxy</key>
+        <true/>
+        <key>com.apple.usernotification.notificationschedulerproxy</key>
+        <true/>
     </dict>
 </plist>

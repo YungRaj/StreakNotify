@@ -1911,7 +1911,7 @@
 		A519897A1C7EBFC1004BB62B /* Tweak.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tweak.mm; sourceTree = "<group>"; };
 		A54E30021CB1F4E200C15C00 /* friendmojilist.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = friendmojilist.xcodeproj; path = friendmojilist/friendmojilist.xcodeproj; sourceTree = "<group>"; };
 		A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotifyd.xcodeproj; path = streaknotifyd/streaknotifyd.xcodeproj; sourceTree = "<group>"; };
-		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dummy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5A753CB1CC6B2EC00E26892 /* Dummy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Dummy.app; path = "/Users/ilhan/Downloads/Files/Code/Snapchat/StreakNotify-background/build/Debug-iphoneos/Dummy.app"; sourceTree = "<absolute>"; };
 		A5B4BFA51C7F63330056EC0E /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = streaknotify.xcodeproj; path = streaknotify/streaknotify.xcodeproj; sourceTree = "<group>"; };
 		A5E994A31CC5EFD900543E5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1951,7 +1951,6 @@
 				A5D223291C856859002B8AA1 /* streaknotify.xcodeproj */,
 				A586A5F31CA065C4009D163B /* streaknotifyd.xcodeproj */,
 				A5E994911CC5EFD900543E5C /* Dummy */,
-				A5A753CB1CC6B2EC00E26892 /* Dummy.app */,
 			);
 			sourceTree = "<group>";
 		};

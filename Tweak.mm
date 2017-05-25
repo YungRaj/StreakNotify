@@ -537,6 +537,8 @@ void HandleLocalNotification(NSString *username){
     
     %orig();
     
+    ScheduleNotifications();
+    
     if(!prefs) {
         SNLog(@"StreakNotify:: No preferences found on file, letting user know");
         if([UIAlertController class]){
@@ -821,6 +823,12 @@ cellForRowAtIndexPath:(NSIndexPath*)indexPath{
     ScheduleNotifications();
 }
 
+
+-(void)pullToRefreshDidFinish:(id)arg{
+    SNLog(@"StreakNotify::Finished reloading data");
+    %orig();
+    ScheduleNotifications();
+}
 
 -(void)dealloc{
     SNLog(@"StreakNotify::Deallocating feedViewController");
