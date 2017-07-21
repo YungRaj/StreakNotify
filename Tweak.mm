@@ -67,6 +67,16 @@ static void LoadPreferences() {
  */
 
 static Snap* FindEarliestUnrepliedSnapForChat(BOOL receive, SCChat *chat){
+    Snap *lastSnap = [chat lastSnap];
+    if(objc_getClass("SOJUFriendmoji")){
+        if(([lastSnap sender] && receive) ||
+           ([lastSnap recipient] && !receive)){
+           return lastSnap;
+        } else {
+            return nil;
+        }
+   }
+    
     NSArray *snaps = [chat allSnapsArray];
     
     if(!snaps || ![snaps count]){

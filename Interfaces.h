@@ -1248,8 +1248,8 @@ typedef id CDUnknownBlockType;
     NSArray *_enabledIAPCurrencies;
     unsigned long long _seqno;
     unsigned long long _sessionCount;
-    NSObject<OS_dispatch_queue> *_flushEventsQueue;
-    NSObject<OS_dispatch_queue> *_spotlightIndexingQueue;
+    NSObject *_flushEventsQueue;
+    NSObject *_spotlightIndexingQueue;
 }
 
 + (long long)context;
@@ -1271,8 +1271,8 @@ typedef id CDUnknownBlockType;
 + (void)flushEvents:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
 + (void)markViewedSnapsWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
 + (void)fetchAllUpdatesWithParameters:(id)arg1 successBlock:(CDUnknownBlockType)arg2 failureBlock:(CDUnknownBlockType)arg3;
-@property(readonly, nonatomic) NSObject<OS_dispatch_queue> *spotlightIndexingQueue; // @synthesize spotlightIndexingQueue=_spotlightIndexingQueue;
-@property(readonly, nonatomic) NSObject<OS_dispatch_queue> *flushEventsQueue; // @synthesize flushEventsQueue=_flushEventsQueue;
+@property(readonly, nonatomic) NSObject *spotlightIndexingQueue; // @synthesize spotlightIndexingQueue=_spotlightIndexingQueue;
+@property(readonly, nonatomic) NSObject *flushEventsQueue; // @synthesize flushEventsQueue=_flushEventsQueue;
 @property(nonatomic) unsigned long long sessionCount; // @synthesize sessionCount=_sessionCount;
 @property(nonatomic) unsigned long long seqno; // @synthesize seqno=_seqno;
 @property(retain, nonatomic) NSArray *enabledIAPCurrencies; // @synthesize enabledIAPCurrencies=_enabledIAPCurrencies;
